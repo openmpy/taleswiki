@@ -1,5 +1,7 @@
 package com.openmpy.taleswiki.dictionary.domain.entity;
 
+import static com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus.ALL_ACTIVE;
+
 import com.openmpy.taleswiki.common.domain.ClientIp;
 import com.openmpy.taleswiki.common.domain.entity.BaseEntity;
 import com.openmpy.taleswiki.dictionary.domain.DictionaryHistoryAuthor;
@@ -28,6 +30,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class DictionaryHistory extends BaseEntity {
+
+    private static final long DEFAULT_VERSION = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +82,24 @@ public class DictionaryHistory extends BaseEntity {
         this.ip = new ClientIp(ip);
         this.status = status;
         this.dictionary = dictionary;
+    }
+
+    public static DictionaryHistory create(
+            final String author,
+            final String content,
+            final Long size,
+            final String ip,
+            final Dictionary dictionary
+    ) {
+        return DictionaryHistory.builder()
+                .author(author)
+                .content(content)
+                .version(DEFAULT_VERSION)
+                .size(size)
+                .ip(ip)
+                .status(ALL_ACTIVE)
+                .dictionary(dictionary)
+                .build();
     }
 
     public String getAuthor() {

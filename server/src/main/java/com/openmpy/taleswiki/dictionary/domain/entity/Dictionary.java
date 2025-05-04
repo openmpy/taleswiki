@@ -1,5 +1,7 @@
 package com.openmpy.taleswiki.dictionary.domain.entity;
 
+import static com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus.ALL_ACTIVE;
+
 import com.openmpy.taleswiki.common.domain.entity.BaseEntity;
 import com.openmpy.taleswiki.dictionary.domain.DictionaryTitle;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
@@ -18,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,10 +48,23 @@ public class Dictionary extends BaseEntity {
     @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<DictionaryHistory> histories = new ArrayList<>();
 
+    @Builder
     public Dictionary(final String title, final DictionaryCategory category, final DictionaryStatus status) {
         this.title = new DictionaryTitle(title);
         this.category = category;
         this.status = status;
+    }
+
+    public static Dictionary create(final String title, final DictionaryCategory category) {
+        return Dictionary.builder()
+                .title(title)
+                .category(category)
+                .status(ALL_ACTIVE)
+                .build();
+    }
+
+    public void addHistory(final DictionaryHistory history) {
+        this.histories.add(history);
     }
 
     public String getTitle() {

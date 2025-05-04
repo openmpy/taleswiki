@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain.constants;
 
+import java.util.Arrays;
 import lombok.Getter;
 
 @Getter
@@ -11,5 +12,12 @@ public enum DictionaryCategory {
 
     DictionaryCategory(final String value) {
         this.value = value;
+    }
+
+    public static DictionaryCategory fromName(final String name) {
+        return Arrays.stream(DictionaryCategory.values())
+                .filter(it -> it.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 카테고리입니다."));
     }
 }
