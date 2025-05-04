@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryHistoryRepository;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
@@ -27,6 +28,9 @@ class DictionaryCommandServiceTest {
 
     @Autowired
     private DictionaryRepository dictionaryRepository;
+
+    @Autowired
+    private DictionaryHistoryRepository dictionaryHistoryRepository;
 
     @DisplayName("[통과] 사전을 작성한다.")
     @Test
@@ -112,6 +116,31 @@ class DictionaryCommandServiceTest {
         assertThat(foundDictionary.getTitle()).isEqualTo("제목");
         assertThat(foundDictionary.getCategory().name()).isEqualTo("PERSON");
         assertThat(foundDictionary.getStatus().name()).isEqualTo("HIDDEN");
+    }
+
+    @DisplayName("[통과] 사전을 삭제한다.")
+    @Test
+    void dictionary_save_test_04() {
+        // given
+        final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory1 = DictionaryHistory.create(
+                "작성자", "내용", 1L, "192.168.0.1", dictionary
+        );
+        final DictionaryHistory dictionaryHistory2 = DictionaryHistory.create(
+                "작성자", "내용", 1L, "192.168.0.1", dictionary
+        );
+
+        dictionary.addHistory(dictionaryHistory1);
+        dictionary.addHistory(dictionaryHistory2);
+
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+
+        // when
+        dictionaryCommandService.delete(savedDictionary.getId());
+
+        // then
+        assertThat(dictionaryRepository.findAll()).isEmpty();
+        assertThat(dictionaryHistoryRepository.findAll()).isEmpty();
     }
 
     @DisplayName("[예외] 해당 카테고리에 이미 작성된 사전이다.")

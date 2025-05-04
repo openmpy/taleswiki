@@ -6,6 +6,7 @@ import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,12 @@ public class DictionaryCommandController {
             @RequestParam(value = "status") final String status
     ) {
         dictionaryCommandService.changeStatus(dictionaryId, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{dictionaryId}")
+    public ResponseEntity<Void> delete(@PathVariable final Long dictionaryId) {
+        dictionaryCommandService.delete(dictionaryId);
         return ResponseEntity.noContent().build();
     }
 }

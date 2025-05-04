@@ -69,4 +69,12 @@ public class DictionaryCommandService {
 
         dictionary.changeStatus(status);
     }
+
+    @Transactional
+    public void delete(final Long dictionaryId) {
+        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+
+        dictionaryRepository.delete(dictionary);
+    }
 }
