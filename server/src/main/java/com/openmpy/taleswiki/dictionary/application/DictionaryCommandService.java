@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
@@ -44,6 +45,10 @@ public class DictionaryCommandService {
     ) {
         final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+
+        if (dictionary.getStatus() != DictionaryStatus.ALL_ACTIVE) {
+            throw new IllegalArgumentException("수정할 수 없는 사전입니다.");
+        }
 
         final long contentLength = servletRequest.getContentLengthLong();
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);

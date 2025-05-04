@@ -135,6 +135,30 @@ class DictionaryCommandServiceTest {
                 .hasMessage("이미 작성된 사전입니다.");
     }
 
+    @DisplayName("[예외] 수정할 수 없는 사전이다.")
+    @Test
+    void 예외_dictionary_save_test_02() {
+        // given
+        final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
+                "작성자", "내용", 1L, "192.168.0.1", dictionary
+        );
+
+        dictionary.addHistory(dictionaryHistory);
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+
+        savedDictionary.changeStatus("hidden");
+
+        final HttpServletRequest mockHttpServletRequest = createMockHttpServletRequest();
+        final DictionaryUpdateRequest request = new DictionaryUpdateRequest("작성자2", "내용2");
+
+        // when & then
+        assertThatThrownBy(() ->
+                dictionaryCommandService.update(savedDictionary.getId(), mockHttpServletRequest, request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("수정할 수 없는 사전입니다.");
+    }
+
     private HttpServletRequest createMockHttpServletRequest() {
         final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 
