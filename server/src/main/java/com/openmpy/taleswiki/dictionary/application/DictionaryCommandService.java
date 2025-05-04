@@ -6,6 +6,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
+import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,25 @@ public class DictionaryCommandService {
         final Dictionary dictionary = Dictionary.create(request.title(), category);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
                 request.author(), request.content(), contentLength, clientIp, dictionary
+        );
+
+        dictionary.addHistory(dictionaryHistory);
+        dictionaryRepository.save(dictionary);
+    }
+
+    @Transactional
+    public void update(
+            final Long dictionaryId, final HttpServletRequest servletRequest, final DictionaryUpdateRequest request
+    ) {
+        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+
+        final long contentLength = servletRequest.getContentLengthLong();
+        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
+        final int version = dictionary.getHistories().size() + 1;
+
+        final DictionaryHistory dictionaryHistory = DictionaryHistory.update(
+                request.author(), request.content(), (long) version, contentLength, clientIp, dictionary
         );
 
         dictionary.addHistory(dictionaryHistory);

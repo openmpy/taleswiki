@@ -102,6 +102,25 @@ public class DictionaryHistory extends BaseEntity {
                 .build();
     }
 
+    public static DictionaryHistory update(
+            final String author,
+            final String content,
+            final Long version,
+            final Long size,
+            final String ip,
+            final Dictionary dictionary
+    ) {
+        return DictionaryHistory.builder()
+                .author(author)
+                .content(content)
+                .version(version)
+                .size(size)
+                .ip(ip)
+                .status(ALL_ACTIVE)
+                .dictionary(dictionary)
+                .build();
+    }
+
     public String getAuthor() {
         return author.getValue();
     }

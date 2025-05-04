@@ -2,10 +2,13 @@ package com.openmpy.taleswiki.dictionary.presentation;
 
 import com.openmpy.taleswiki.dictionary.application.DictionaryCommandService;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
+import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +25,16 @@ public class DictionaryCommandController {
             final HttpServletRequest servletRequest, @RequestBody final DictionarySaveRequest request
     ) {
         dictionaryCommandService.save(servletRequest, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{dictionaryId}")
+    public ResponseEntity<Void> update(
+            @PathVariable final Long dictionaryId,
+            final HttpServletRequest servletRequest,
+            @RequestBody final DictionaryUpdateRequest request
+    ) {
+        dictionaryCommandService.update(dictionaryId, servletRequest, request);
         return ResponseEntity.noContent().build();
     }
 }
