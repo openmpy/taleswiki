@@ -6,11 +6,13 @@ import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -35,6 +37,15 @@ public class DictionaryCommandController {
             @RequestBody final DictionaryUpdateRequest request
     ) {
         dictionaryCommandService.update(dictionaryId, servletRequest, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{dictionaryId}")
+    public ResponseEntity<Void> changeStatus(
+            @PathVariable final Long dictionaryId,
+            @RequestParam(value = "status") final String status
+    ) {
+        dictionaryCommandService.changeStatus(dictionaryId, status);
         return ResponseEntity.noContent().build();
     }
 }

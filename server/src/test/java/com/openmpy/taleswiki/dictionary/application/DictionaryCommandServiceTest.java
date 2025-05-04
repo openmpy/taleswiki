@@ -91,6 +91,29 @@ class DictionaryCommandServiceTest {
         assertThat(updatedDictionaryHistory.getDictionary()).isEqualTo(dictionary);
     }
 
+    @DisplayName("[통과] 사전 상태를 변경한다.")
+    @Test
+    void dictionary_save_test_03() {
+        // given
+        final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
+                "작성자", "내용", 1L, "192.168.0.1", dictionary
+        );
+
+        dictionary.addHistory(dictionaryHistory);
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+
+        // when
+        dictionaryCommandService.changeStatus(savedDictionary.getId(), "hidden");
+
+        // then
+        final Dictionary foundDictionary = dictionaryRepository.findAll().getFirst();
+
+        assertThat(foundDictionary.getTitle()).isEqualTo("제목");
+        assertThat(foundDictionary.getCategory().name()).isEqualTo("PERSON");
+        assertThat(foundDictionary.getStatus().name()).isEqualTo("HIDDEN");
+    }
+
     @DisplayName("[예외] 해당 카테고리에 이미 작성된 사전이다.")
     @Test
     void 예외_dictionary_save_test_01() {

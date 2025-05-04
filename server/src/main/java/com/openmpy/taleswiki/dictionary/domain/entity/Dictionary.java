@@ -63,6 +63,10 @@ public class Dictionary extends BaseEntity {
                 .build();
     }
 
+    public void changeStatus(final String status) {
+        this.status = DictionaryStatus.fromName(status);
+    }
+
     public void addHistory(final DictionaryHistory history) {
         this.histories.add(history);
     }

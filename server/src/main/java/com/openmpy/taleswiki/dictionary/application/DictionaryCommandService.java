@@ -56,4 +56,12 @@ public class DictionaryCommandService {
         dictionary.addHistory(dictionaryHistory);
         dictionaryRepository.save(dictionary);
     }
+
+    @Transactional
+    public void changeStatus(final Long dictionaryId, final String status) {
+        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+
+        dictionary.changeStatus(status);
+    }
 }
