@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.presentation;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,12 @@ public class DictionaryQueryController {
     @GetMapping("/categories/{categoryName}")
     public ResponseEntity<DictionaryGetGroupResponse> getGroupDictionaries(@PathVariable final String categoryName) {
         final DictionaryGetGroupResponse response = dictionaryQueryService.getGroupDictionaries(categoryName);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/histories/{dictionaryHistoryId}")
+    public ResponseEntity<DictionaryHistoryResponse> get(@PathVariable final Long dictionaryHistoryId) {
+        final DictionaryHistoryResponse response = dictionaryQueryService.get(dictionaryHistoryId);
         return ResponseEntity.ok(response);
     }
 }

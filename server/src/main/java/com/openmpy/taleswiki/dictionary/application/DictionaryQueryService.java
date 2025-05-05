@@ -2,10 +2,13 @@ package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
+import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryHistoryRepository;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.DictionaryGetGroupItemsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DictionaryQueryService {
 
     private final DictionaryRepository dictionaryRepository;
+    private final DictionaryHistoryRepository dictionaryHistoryRepository;
 
     @Transactional(readOnly = true)
     public DictionaryGetTop10Response getTop20Dictionaries() {
@@ -32,8 +36,19 @@ public class DictionaryQueryService {
         return new DictionaryGetGroupResponse(responses);
     }
 
+    @Transactional(readOnly = true)
+    public DictionaryHistoryResponse get(final Long dictionaryHistoryId) {
+        final DictionaryHistory dictionaryHistory = getDictionaryHistory(dictionaryHistoryId);
+        return DictionaryHistoryResponse.of(dictionaryHistory);
+    }
+
     public Dictionary getDictionary(final Long dictionaryId) {
         return dictionaryRepository.findById(dictionaryId)
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+    }
+
+    public DictionaryHistory getDictionaryHistory(final Long dictionaryHistoryId) {
+        return dictionaryHistoryRepository.findById(dictionaryHistoryId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 기록 번호입니다."));
     }
 }

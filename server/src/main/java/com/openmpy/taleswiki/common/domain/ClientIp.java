@@ -17,7 +17,7 @@ public class ClientIp {
 
     public ClientIp(final String value) {
         validateBlank(value);
-        validateIp(value);
+//        validateIp(value);
 
         this.value = value;
     }
