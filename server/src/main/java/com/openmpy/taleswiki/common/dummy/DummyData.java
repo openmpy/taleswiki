@@ -1,10 +1,13 @@
 package com.openmpy.taleswiki.common.dummy;
 
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
+import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class DummyData {
+
+    private static final Faker FAKER = new Faker(new Locale("ko"));
 
     @Bean
     private CommandLineRunner init(
@@ -21,21 +26,37 @@ public class DummyData {
     }
 
     private void saveDictionaries(final DictionaryRepository dictionaryRepository) {
-        for (int i = 1; i <= 100; i++) {
-            DictionaryCategory category = DictionaryCategory.PERSON;
+        for (int i = 1; i <= 1000; i++) {
+            Dictionary dictionary;
+            String title;
+            DictionaryCategory category;
+            DictionaryStatus status;
+            DictionaryHistory dictionaryHistory;
 
             if (i % 2 == 0) {
+                title = FAKER.name().fullName().replaceAll(" ", "") + i;
+                category = DictionaryCategory.PERSON;
+                status = DictionaryStatus.ALL_ACTIVE;
+            } else if (i % 3 == 0) {
+                title = FAKER.animal().name().replaceAll(" ", "") + i;
                 category = DictionaryCategory.GUILD;
+                status = DictionaryStatus.READ_ONLY;
+            } else {
+                title = String.valueOf(i);
+                category = DictionaryCategory.PERSON;
+                status = DictionaryStatus.HIDDEN;
             }
 
-            final Dictionary dictionary = Dictionary.create("제목" + i, category);
-            final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
-                    "작성자" + i, "내용" + i, 1L, "192.168.0." + i, dictionary
+            if (title.length() > 12) {
+                title = title.substring(0, 12);
+            }
+
+            dictionary = Dictionary.create(title, category);
+            dictionary.changeStatus(status.name());
+            dictionaryHistory = DictionaryHistory.create(
+                    "작성자" + i, "내용" + i, 10L, FAKER.internet().ipV4Address(), dictionary
             );
 
-            if (i % 5 == 0) {
-                dictionary.changeStatus("hidden");
-            }
             dictionary.addHistory(dictionaryHistory);
             dictionaryRepository.save(dictionary);
         }
