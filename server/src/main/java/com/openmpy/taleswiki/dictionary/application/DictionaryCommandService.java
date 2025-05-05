@@ -52,10 +52,10 @@ public class DictionaryCommandService {
 
         final long contentLength = servletRequest.getContentLengthLong();
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final int version = dictionary.getHistories().size() + 1;
+        final long version = dictionary.getCurrentHistory().getVersion() + 1;
 
         final DictionaryHistory dictionaryHistory = DictionaryHistory.update(
-                request.author(), request.content(), (long) version, contentLength, clientIp, dictionary
+                request.author(), request.content(), version, contentLength, clientIp, dictionary
         );
 
         dictionary.addHistory(dictionaryHistory);
