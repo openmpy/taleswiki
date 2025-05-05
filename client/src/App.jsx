@@ -13,8 +13,8 @@ function App() {
       <div className="min-h-screen flex flex-col bg-gray-100">
         <Header />
 
-        <div className="flex-1 flex p-4 gap-4">
-          <main className="flex-1 bg-white p-6 rounded-lg border border-gray-200">
+        <div className="flex-1 flex flex-col md:flex-row py-4 md:px-0 gap-4">
+          <main className="w-full md:flex-1 bg-white p-6 md:rounded-lg rounded-none border border-gray-200">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route
@@ -28,7 +28,7 @@ function App() {
             </Routes>
           </main>
 
-          <Sidebar />
+          <Sidebar className="w-full md:w-64 md:rounded-lg rounded-none" />
         </div>
 
         <Footer />
