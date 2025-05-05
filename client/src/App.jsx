@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
+import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
 import DictionaryCategoryPage from "./pages/DictionaryCategoryPage";
+import DictionaryViewPage from "./pages/DictionaryViewPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
 const queryClient = new QueryClient();
@@ -13,6 +15,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col bg-gray-100">
           <Header />
 
@@ -32,6 +35,10 @@ function App() {
                   <Route
                     path="/dictionary/write"
                     element={<DictionaryWritePage />}
+                  />
+                  <Route
+                    path="/dictionary/:id"
+                    element={<DictionaryViewPage />}
                   />
                 </Routes>
               </main>

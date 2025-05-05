@@ -50,9 +50,9 @@ function DictionaryCategoryPage({ type }) {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
             <BiBook className="text-2xl text-gray-700" />
             {isRunnerDictionary ? "런너 사전" : "길드 사전"}
           </h2>
@@ -65,7 +65,7 @@ function DictionaryCategoryPage({ type }) {
               }`
             )
           }
-          className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+          className="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
           작성하기
         </button>
@@ -91,7 +91,7 @@ function DictionaryCategoryPage({ type }) {
                   >
                     <Link
                       to={`/dictionary/${dict.currentHistoryId}`}
-                      className="flex-1 text-gray-700 font-medium text-xs hover:underline"
+                      className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                     >
                       {dict.title}
                     </Link>
@@ -134,7 +134,7 @@ function DictionaryCategoryPage({ type }) {
                     >
                       <Link
                         to={`/dictionary/${dict.currentHistoryId}`}
-                        className="flex-1 text-gray-700 font-medium text-xs hover:underline"
+                        className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                       >
                         {dict.title}
                       </Link>
@@ -174,7 +174,7 @@ function DictionaryCategoryPage({ type }) {
                     >
                       <Link
                         to={`/dictionary/${dict.currentHistoryId}`}
-                        className="flex-1 text-gray-700 font-medium text-xs hover:underline"
+                        className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                       >
                         {dict.title}
                       </Link>

@@ -112,14 +112,14 @@ function Header() {
         <div className="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 px-4 pb-4 z-50">
           <div className="flex flex-col items-center">
             <Link
-              to="/runner-dictionary"
+              to="/dictionary/runner"
               className="w-full py-2 hover:text-blue-400 transition-colors text-center border-b border-gray-700"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               런너사전
             </Link>
             <Link
-              to="/guild-dictionary"
+              to="/dictionary/guild"
               className="w-full py-2 hover:text-blue-400 transition-colors text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >

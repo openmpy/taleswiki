@@ -39,7 +39,7 @@ function Sidebar({ className }) {
             className="py-2 border-b border-gray-200 last:border-b-0"
           >
             <Link
-              to={`/dictionaries/${item.currentHistoryId}`}
+              to={`/dictionary/${item.currentHistoryId}`}
               className="block group"
             >
               <div className="flex items-center gap-2">

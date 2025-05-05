@@ -96,16 +96,16 @@ const DictionaryWritePage = () => {
               language="ko-KR"
             />
           </div>
-          <div className="flex justify-end gap-2 mt-8">
+          <div className="flex flex-col md:flex-row justify-end gap-2 mt-8">
             <button
               onClick={() => navigate(-1)}
-              className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm"
+              className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
               뒤로가기
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+              className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
               작성하기
             </button>

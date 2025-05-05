@@ -19,3 +19,21 @@ export function formatRelativeTime(dateString) {
     });
   }
 }
+
+export function formatKoreanDateTime(dateString) {
+  const date = new Date(dateString);
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+
+  return (
+    date
+      .toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replace(/\./g, "") + ` ${weekdays[date.getDay()]}요일`
+  );
+}
