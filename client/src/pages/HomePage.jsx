@@ -9,7 +9,7 @@ function HomePage() {
         테일즈위키
       </h2>
 
-      <div className="bg-white p-8 rounded-xl border border-blue-100">
+      <div className="bg-white p-8 rounded-xl border border-gray-200">
         <h3 className="text-xl font-semibold mb-6 text-gray-800">
           커뮤니티 규칙
         </h3>
