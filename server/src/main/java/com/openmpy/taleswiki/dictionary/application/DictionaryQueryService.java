@@ -1,7 +1,10 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.DictionaryGetGroupItemsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,14 @@ public class DictionaryQueryService {
         final List<String> statuses = List.of("ALL_ACTIVE", "READ_ONLY");
         final List<Dictionary> dictionaries = dictionaryRepository.findTop20ByStatusInOrderByUpdatedAtDesc(statuses);
         return DictionaryGetTop10Response.of(dictionaries);
+    }
+
+    @Transactional(readOnly = true)
+    public DictionaryGetGroupResponse getGroupDictionaries(final String categoryName) {
+        final DictionaryCategory category = DictionaryCategory.fromName(categoryName);
+        final List<Dictionary> dictionaries = dictionaryRepository.findAllByCategoryOrderByTitle(category);
+        final List<DictionaryGetGroupItemsResponse> responses = DictionaryGetGroupItemsResponse.of(dictionaries);
+        return new DictionaryGetGroupResponse(responses);
     }
 
     public Dictionary getDictionary(final Long dictionaryId) {
