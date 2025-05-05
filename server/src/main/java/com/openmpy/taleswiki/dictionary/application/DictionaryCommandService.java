@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DictionaryCommandService {
 
+    private final DictionaryQueryService dictionaryQueryService;
     private final DictionaryRepository dictionaryRepository;
 
     @Transactional
@@ -43,8 +44,7 @@ public class DictionaryCommandService {
     public void update(
             final Long dictionaryId, final HttpServletRequest servletRequest, final DictionaryUpdateRequest request
     ) {
-        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         if (dictionary.getStatus() != DictionaryStatus.ALL_ACTIVE) {
             throw new IllegalArgumentException("수정할 수 없는 사전입니다.");
@@ -64,16 +64,14 @@ public class DictionaryCommandService {
 
     @Transactional
     public void changeStatus(final Long dictionaryId, final String status) {
-        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         dictionary.changeStatus(status);
     }
 
     @Transactional
     public void delete(final Long dictionaryId) {
-        final Dictionary dictionary = dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         dictionaryRepository.delete(dictionary);
     }
