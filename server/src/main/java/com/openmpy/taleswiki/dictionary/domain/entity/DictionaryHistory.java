@@ -42,7 +42,7 @@ public class DictionaryHistory extends BaseEntity {
     private DictionaryHistoryAuthor author;
 
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "content", nullable = false))
+    @AttributeOverride(name = "value", column = @Column(name = "content", columnDefinition = "TEXT", nullable = false))
     private DictionaryHistoryContent content;
 
     @Embedded
