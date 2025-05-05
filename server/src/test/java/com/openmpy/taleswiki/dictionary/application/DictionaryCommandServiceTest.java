@@ -34,7 +34,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[통과] 사전을 작성한다.")
     @Test
-    void dictionary_save_test_01() {
+    void dictionary_command_service_test_01() {
         // given
         final HttpServletRequest mockHttpServletRequest = createMockHttpServletRequest();
         final DictionarySaveRequest request = new DictionarySaveRequest("제목", "person", "작성자", "내용");
@@ -61,7 +61,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[통과] 사전을 수정한다.")
     @Test
-    void dictionary_save_test_02() {
+    void dictionary_command_service_test_02() {
         // given
         final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
@@ -97,7 +97,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[통과] 사전 상태를 변경한다.")
     @Test
-    void dictionary_save_test_03() {
+    void dictionary_command_service_test_03() {
         // given
         final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
@@ -120,7 +120,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[통과] 사전을 삭제한다.")
     @Test
-    void dictionary_save_test_04() {
+    void dictionary_command_service_test_04() {
         // given
         final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
         final DictionaryHistory dictionaryHistory1 = DictionaryHistory.create(
@@ -145,7 +145,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[예외] 해당 카테고리에 이미 작성된 사전이다.")
     @Test
-    void 예외_dictionary_save_test_01() {
+    void 예외_dictionary_command_service_test_01() {
         // given
         final HttpServletRequest mockHttpServletRequest = createMockHttpServletRequest();
         final DictionarySaveRequest request = new DictionarySaveRequest("제목", "person", "작성자", "내용");
@@ -166,7 +166,7 @@ class DictionaryCommandServiceTest {
 
     @DisplayName("[예외] 수정할 수 없는 사전이다.")
     @Test
-    void 예외_dictionary_save_test_02() {
+    void 예외_dictionary_command_service_test_02() {
         // given
         final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
