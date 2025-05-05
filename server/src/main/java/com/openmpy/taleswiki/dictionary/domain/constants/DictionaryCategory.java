@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public enum DictionaryCategory {
 
-    PERSON("인물"), GUILD("길드");
+    PERSON("런너"), GUILD("길드");
 
     private final String value;
 
