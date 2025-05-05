@@ -54,13 +54,13 @@ function Header() {
         {/* 오른쪽 메뉴 - 데스크톱 */}
         <div className="hidden md:flex flex-shrink-0 space-x-4 justify-center">
           <Link
-            to="/runner-dictionary"
+            to="/dictionary/runner"
             className="hover:text-blue-400 transition-colors"
           >
             런너사전
           </Link>
           <Link
-            to="/guild-dictionary"
+            to="/dictionary/guild"
             className="hover:text-blue-400 transition-colors"
           >
             길드사전

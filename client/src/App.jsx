@@ -4,7 +4,7 @@ import "./App.css";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
-import DictionaryPage from "./pages/DictionaryPage";
+import DictionaryCategoryPage from "./pages/DictionaryCategoryPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
 const queryClient = new QueryClient();
@@ -22,15 +22,15 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route
-                    path="/runner-dictionary"
-                    element={<DictionaryPage type="runner" />}
+                    path="/dictionary/runner"
+                    element={<DictionaryCategoryPage type="runner" />}
                   />
                   <Route
-                    path="/guild-dictionary"
-                    element={<DictionaryPage type="guild" />}
+                    path="/dictionary/guild"
+                    element={<DictionaryCategoryPage type="guild" />}
                   />
                   <Route
-                    path="/dictionaries/write"
+                    path="/dictionary/write"
                     element={<DictionaryWritePage />}
                   />
                 </Routes>

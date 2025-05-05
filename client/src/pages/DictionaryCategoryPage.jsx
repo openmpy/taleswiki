@@ -9,7 +9,7 @@ import {
   koreanInitials,
 } from "../utils/dictionaryUtils";
 
-function DictionaryPage({ type }) {
+function DictionaryCategoryPage({ type }) {
   const isRunnerDictionary = type === "runner";
   const [dictionaryGroups, setDictionaryGroups] = useState([]);
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ function DictionaryPage({ type }) {
         <button
           onClick={() =>
             navigate(
-              `/dictionaries/write?type=${
+              `/dictionary/write?type=${
                 isRunnerDictionary ? "runner" : "guild"
               }`
             )
@@ -90,7 +90,7 @@ function DictionaryPage({ type }) {
                     className="flex items-center justify-between py-0.5 rounded transition-colors"
                   >
                     <Link
-                      to={`/dictionaries/${dict.currentHistoryId}`}
+                      to={`/dictionary/${dict.currentHistoryId}`}
                       className="flex-1 text-gray-700 font-medium text-xs hover:underline"
                     >
                       {dict.title}
@@ -133,7 +133,7 @@ function DictionaryPage({ type }) {
                       className="flex items-center justify-between py-0.5 rounded transition-colors"
                     >
                       <Link
-                        to={`/dictionaries/${dict.currentHistoryId}`}
+                        to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline"
                       >
                         {dict.title}
@@ -173,7 +173,7 @@ function DictionaryPage({ type }) {
                       className="flex items-center justify-between py-0.5 rounded transition-colors"
                     >
                       <Link
-                        to={`/dictionaries/${dict.currentHistoryId}`}
+                        to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline"
                       >
                         {dict.title}
@@ -194,4 +194,4 @@ function DictionaryPage({ type }) {
   );
 }
 
-export default DictionaryPage;
+export default DictionaryCategoryPage;
