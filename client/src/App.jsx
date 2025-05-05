@@ -5,6 +5,7 @@ import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
 import DictionaryPage from "./pages/DictionaryPage";
+import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
 const queryClient = new QueryClient();
 
@@ -27,6 +28,10 @@ function App() {
                   <Route
                     path="/guild-dictionary"
                     element={<DictionaryPage type="guild" />}
+                  />
+                  <Route
+                    path="/dictionaries/write"
+                    element={<DictionaryWritePage />}
                   />
                 </Routes>
               </main>

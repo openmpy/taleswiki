@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BiBook } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   classifyByInitial,
   createInitialGroups,
@@ -12,6 +12,7 @@ import {
 function DictionaryPage({ type }) {
   const isRunnerDictionary = type === "runner";
   const [dictionaryGroups, setDictionaryGroups] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDictionaries = async () => {
@@ -49,14 +50,23 @@ function DictionaryPage({ type }) {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <BiBook className="text-2xl text-gray-700" />
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <BiBook className="text-2xl text-gray-700" />
             {isRunnerDictionary ? "런너 사전" : "길드 사전"}
           </h2>
         </div>
-        <button className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm">
+        <button
+          onClick={() =>
+            navigate(
+              `/dictionaries/write?type=${
+                isRunnerDictionary ? "runner" : "guild"
+              }`
+            )
+          }
+          className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+        >
           작성하기
         </button>
       </div>
@@ -86,7 +96,7 @@ function DictionaryPage({ type }) {
                       {dict.title}
                     </Link>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusInfo.className}`}
+                      className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
                     >
                       {statusInfo.text}
                     </span>
@@ -129,7 +139,7 @@ function DictionaryPage({ type }) {
                         {dict.title}
                       </Link>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusInfo.className}`}
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
                       >
                         {statusInfo.text}
                       </span>
@@ -169,7 +179,7 @@ function DictionaryPage({ type }) {
                         {dict.title}
                       </Link>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusInfo.className}`}
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
                       >
                         {statusInfo.text}
                       </span>
