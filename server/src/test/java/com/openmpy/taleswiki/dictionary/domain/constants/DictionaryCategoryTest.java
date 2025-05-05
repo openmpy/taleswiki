@@ -19,7 +19,7 @@ class DictionaryCategoryTest {
 
         // then
         assertThat(category.name()).isEqualTo("PERSON");
-        assertThat(category.getValue()).isEqualTo("인물");
+        assertThat(category.getValue()).isEqualTo("런너");
     }
 
     @DisplayName("[예외] 사전 카테고리를 찾을 수 없다.")

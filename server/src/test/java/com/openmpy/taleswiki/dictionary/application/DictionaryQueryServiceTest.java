@@ -85,9 +85,9 @@ class DictionaryQueryServiceTest {
         // then
         assertThat(response.dictionaries()).hasSize(16);
         assertThat(response.dictionaries().getFirst().title()).isEqualTo("제목19");
-        assertThat(response.dictionaries().getFirst().category()).isEqualTo("인물");
+        assertThat(response.dictionaries().getFirst().category()).isEqualTo("런너");
         assertThat(response.dictionaries().getLast().title()).isEqualTo("제목1");
-        assertThat(response.dictionaries().getLast().category()).isEqualTo("인물");
+        assertThat(response.dictionaries().getLast().category()).isEqualTo("런너");
     }
 
     @DisplayName("[통과] 최근 수정된 사전을 TOP 20개를 조회하고, 가장 최근에 생성된 사전 기록을 불러온다.")
