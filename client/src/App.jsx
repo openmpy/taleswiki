@@ -4,10 +4,8 @@ import "./App.css";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
-import GuildDictionaryPage from "./pages/GuildDictionaryPage";
+import DictionaryPage from "./pages/DictionaryPage";
 import HomePage from "./pages/HomePage";
-import RunnerDictionaryPage from "./pages/RunnerDictionaryPage";
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -24,11 +22,11 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route
                     path="/runner-dictionary"
-                    element={<RunnerDictionaryPage />}
+                    element={<DictionaryPage type="runner" />}
                   />
                   <Route
                     path="/guild-dictionary"
-                    element={<GuildDictionaryPage />}
+                    element={<DictionaryPage type="guild" />}
                   />
                 </Routes>
               </main>
