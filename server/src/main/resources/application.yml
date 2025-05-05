@@ -20,3 +20,11 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
+
+cors:
+  path-pattern: /**
+  origins: http://localhost:5173
+  methods: POST, GET, PUT, PATCH, DELETE, OPTIONS
+  headers: "*"
+  allow-credentials: true
+  max-age: 3600

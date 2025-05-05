@@ -1,19 +1,24 @@
 package com.openmpy.taleswiki.common.config;
 
+import com.openmpy.taleswiki.common.properties.CorsProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@RequiredArgsConstructor
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private final CorsProperties corsProperties;
+
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600L);
+        registry.addMapping(corsProperties.pathPattern())
+                .allowedOrigins(corsProperties.origins())
+                .allowedMethods(corsProperties.methods())
+                .allowedHeaders(corsProperties.headers())
+                .allowCredentials(corsProperties.allowCredentials())
+                .maxAge(corsProperties.maxAge());
     }
 }
