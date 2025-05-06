@@ -7,6 +7,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
+import AdminPage from "./pages/AdminPage";
 import DictionaryCategoryPage from "./pages/DictionaryCategoryPage";
 import DictionaryEditPage from "./pages/DictionaryEditPage";
 import DictionaryLogPage from "./pages/DictionaryLogPage";
@@ -31,6 +32,7 @@ function App() {
                 <main className="w-full md:flex-1 bg-white md:p-6 md:rounded-lg p-4 rounded-none border border-gray-200">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/admin" element={<AdminPage />} />
                     <Route
                       path="/dictionary/runner"
                       element={<DictionaryCategoryPage type="runner" />}
