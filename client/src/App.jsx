@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
+import ScrollButtons from "./components/ScrollButtons";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
@@ -60,6 +61,7 @@ function App() {
           </div>
 
           <Footer />
+          <ScrollButtons />
         </div>
       </Router>
     </QueryClientProvider>
