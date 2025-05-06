@@ -29,7 +29,7 @@ public class AdminCommandService {
     }
 
     @Transactional
-    public void changeStatus(final String token, final Long dictionaryId, final String status) {
+    public void changeDictionaryStatus(final String token, final Long dictionaryId, final String status) {
         adminQueryService.validateToken(token);
 
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);

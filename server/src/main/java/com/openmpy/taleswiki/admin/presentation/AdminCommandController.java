@@ -33,12 +33,12 @@ public class AdminCommandController {
     }
 
     @PatchMapping("/dictionaries/{dictionaryId}")
-    public ResponseEntity<Void> changeStatus(
+    public ResponseEntity<Void> changeDictionaryStatus(
             @CookieValue("admin_token") final String token,
             @PathVariable final Long dictionaryId,
             @RequestParam(value = "status") final String status
     ) {
-        adminCommandService.changeStatus(token, dictionaryId, status);
+        adminCommandService.changeDictionaryStatus(token, dictionaryId, status);
         return ResponseEntity.noContent().build();
     }
 
