@@ -2,15 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaUserShield } from "react-icons/fa";
 import AdminLogin from "../components/admin/AdminLogin";
+import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
 import DictionaryTable from "../components/admin/DictionaryTable";
 import Pagination from "../components/admin/Pagination";
 
 function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [dictionaries, setDictionaries] = useState([]);
+  const [histories, setHistories] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries" or "histories"
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -63,8 +66,39 @@ function AdminPage() {
       }
     };
 
-    fetchDictionaries();
-  }, [isAuthenticated, currentPage]);
+    if (activeTab === "dictionaries") {
+      fetchDictionaries();
+    }
+  }, [isAuthenticated, currentPage, activeTab]);
+
+  useEffect(() => {
+    const fetchHistories = async () => {
+      if (!isAuthenticated) return;
+
+      setIsLoading(true);
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        setHistories(response.data.content);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("사전 기록 목록을 가져오는 중 오류 발생:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (activeTab === "histories") {
+      fetchHistories();
+    }
+  }, [isAuthenticated, currentPage, activeTab]);
 
   const handleStatusChange = async (dictionaryId, newStatus) => {
     try {
@@ -141,17 +175,44 @@ function AdminPage() {
         관리자 페이지
       </h2>
 
+      <div className="mb-4">
+        <button
+          className={`px-3 py-1.5 mr-2 text-sm rounded ${
+            activeTab === "dictionaries"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("dictionaries")}
+        >
+          사전 목록
+        </button>
+        <button
+          className={`px-3 py-1.5 text-sm rounded ${
+            activeTab === "histories"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("histories")}
+        >
+          사전 기록
+        </button>
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : (
         <>
-          <DictionaryTable
-            dictionaries={dictionaries}
-            onStatusChange={handleStatusChange}
-            onDelete={handleDelete}
-          />
+          {activeTab === "dictionaries" ? (
+            <DictionaryTable
+              dictionaries={dictionaries}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+            />
+          ) : (
+            <DictionaryHistoryTable histories={histories} />
+          )}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
