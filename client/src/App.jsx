@@ -12,6 +12,7 @@ import DictionaryLogPage from "./pages/DictionaryLogPage";
 import DictionaryViewPage from "./pages/DictionaryViewPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
 const queryClient = new QueryClient();
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                     path="/dictionary/:id/log"
                     element={<DictionaryLogPage />}
                   />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
 
