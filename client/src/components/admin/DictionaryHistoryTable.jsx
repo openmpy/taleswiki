@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function DictionaryHistoryTable({ histories }) {
+function DictionaryHistoryTable({ histories, onStatusChange }) {
   const navigate = useNavigate();
 
   const handleRowClick = (dictionaryHistoryId) => {
@@ -25,22 +25,33 @@ function DictionaryHistoryTable({ histories }) {
             <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               상태
             </th>
+            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              상태 수정
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {histories.map((history) => (
             <tr
               key={history.dictionaryHistoryId}
-              onClick={() => handleRowClick(history.dictionaryHistoryId)}
-              className="cursor-pointer hover:bg-gray-50 transition-colors"
+              className="hover:bg-gray-50 transition-colors"
             >
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+              <td
+                className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
+                onClick={() => handleRowClick(history.dictionaryHistoryId)}
+              >
                 {history.dictionaryHistoryId}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-center">
+              <td
+                className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-center cursor-pointer"
+                onClick={() => handleRowClick(history.dictionaryHistoryId)}
+              >
                 {history.title}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-center min-w-[120px]">
+              <td
+                className="px-4 py-2 whitespace-nowrap text-center min-w-[120px] cursor-pointer"
+                onClick={() => handleRowClick(history.dictionaryHistoryId)}
+              >
                 <span
                   className={`px-2 py-0.5 text-xs rounded ${
                     history.category === "런너"
@@ -51,7 +62,10 @@ function DictionaryHistoryTable({ histories }) {
                   {history.category}
                 </span>
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-center">
+              <td
+                className="px-4 py-2 whitespace-nowrap text-center cursor-pointer"
+                onClick={() => handleRowClick(history.dictionaryHistoryId)}
+              >
                 <span
                   className={`px-2 py-0.5 text-xs rounded ${
                     history.dictionaryHistoryStatus === "ALL_ACTIVE"
@@ -67,6 +81,28 @@ function DictionaryHistoryTable({ histories }) {
                     ? "읽기"
                     : "숨김"}
                 </span>
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-center">
+                <div className="flex gap-1 justify-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStatusChange(history.dictionaryHistoryId, "all_active");
+                    }}
+                    className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded hover:bg-green-200"
+                  >
+                    활성
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStatusChange(history.dictionaryHistoryId, "hidden");
+                    }}
+                    className="text-xs px-1 py-0.5 bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
+                  >
+                    숨김
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

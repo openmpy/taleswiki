@@ -5,6 +5,7 @@ import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
+import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,16 @@ public class AdminCommandService {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         dictionaryRepository.delete(dictionary);
+    }
+
+    @Transactional
+    public void changeDictionaryHistoryStatus(
+            final String token, final Long dictionaryHistoriesId, final String status
+    ) {
+        adminQueryService.validateToken(token);
+
+        final DictionaryHistory dictionaryHistory = dictionaryQueryService.getDictionaryHistory(dictionaryHistoriesId);
+
+        dictionaryHistory.changeStatus(status);
     }
 }

@@ -164,6 +164,36 @@ function AdminPage() {
     }
   };
 
+  const handleHistoryStatusChange = async (dictionaryHistoryId, newStatus) => {
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/v1/admin/dictionaries/histories/${dictionaryHistoryId}?status=${newStatus}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      // 상태 변경 후 목록 새로고침
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setHistories(response.data.content);
+    } catch (error) {
+      console.error("상태 변경 중 오류 발생:", error);
+      alert("상태 변경에 실패했습니다.");
+    }
+  };
+
   if (!isAuthenticated) {
     return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
@@ -211,7 +241,10 @@ function AdminPage() {
               onDelete={handleDelete}
             />
           ) : (
-            <DictionaryHistoryTable histories={histories} />
+            <DictionaryHistoryTable
+              histories={histories}
+              onStatusChange={handleHistoryStatusChange}
+            />
           )}
           <Pagination
             currentPage={currentPage}

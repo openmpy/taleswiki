@@ -51,6 +51,16 @@ public class AdminCommandController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/dictionaries/histories/{dictionaryHistoriesId}")
+    public ResponseEntity<Void> changeDictionaryHistoryStatus(
+            @CookieValue("admin_token") final String token,
+            @PathVariable final Long dictionaryHistoriesId,
+            @RequestParam(value = "status") final String status
+    ) {
+        adminCommandService.changeDictionaryHistoryStatus(token, dictionaryHistoriesId, status);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseCookie createCookie(final String token) {
         return ResponseCookie.from("admin_token", token)
                 .httpOnly(cookieProperties.httpOnly())
