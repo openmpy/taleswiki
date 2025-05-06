@@ -6,6 +6,7 @@ import Footer from "./layouts/Footer";
 import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
 import DictionaryCategoryPage from "./pages/DictionaryCategoryPage";
+import DictionaryEditPage from "./pages/DictionaryEditPage";
 import DictionaryViewPage from "./pages/DictionaryViewPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
@@ -39,6 +40,10 @@ function App() {
                   <Route
                     path="/dictionary/:id"
                     element={<DictionaryViewPage />}
+                  />
+                  <Route
+                    path="/dictionary/:id/edit"
+                    element={<DictionaryEditPage />}
                   />
                 </Routes>
               </main>

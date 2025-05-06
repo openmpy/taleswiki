@@ -2,10 +2,12 @@ import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { Viewer } from "@toast-ui/react-editor";
 import { useEffect, useRef, useState } from "react";
 import { BsBook, BsChevronDown, BsChevronUp, BsEyeSlash } from "react-icons/bs";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatKoreanDateTime } from "../utils/dateUtils";
+
 const DictionaryViewPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [dictionary, setDictionary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [toc, setToc] = useState([]);
@@ -84,6 +86,7 @@ const DictionaryViewPage = () => {
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
             disabled={dictionary.status !== "ALL_ACTIVE"}
+            onClick={() => navigate(`/dictionary/${id}/edit`)}
           >
             편집하기
           </button>
