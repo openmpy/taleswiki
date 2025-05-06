@@ -1,15 +1,66 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchResults([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchTerm.trim()) {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/v1/dictionaries/search",
+            {
+              params: { title: searchTerm },
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          setSearchResults(response.data.dictionaries);
+        } catch (error) {
+          console.error("검색 중 오류 발생:", error);
+          setSearchResults([]);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   const handleClearSearch = () => {
     setSearchTerm("");
+    setSearchResults([]);
+  };
+
+  const handleResultClick = (dictionary) => {
+    setSearchTerm("");
+    setSearchResults([]);
+    setIsMobileSearchOpen(false);
+    navigate(`/dictionary/${dictionary.currentHistoryId}`);
   };
 
   const toggleMobileMenu = () => {
@@ -33,22 +84,52 @@ function Header() {
         </div>
 
         {/* 가운데 검색바 - 데스크톱 */}
-        <div className="flex-1 max-w-2xl mx-8 relative hidden md:block">
-          <input
-            type="search"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="검색 하실 사전 제목을 입력해주세요"
-            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
-          />
-          {searchTerm && (
-            <button
-              onClick={handleClearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-            >
-              <IoClose size={20} />
-            </button>
-          )}
+        <div
+          className="flex-1 max-w-2xl mx-8 relative hidden md:block"
+          ref={searchRef}
+        >
+          <div className="relative">
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="검색 하실 사전 제목을 입력해주세요"
+              className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
+            />
+            {searchTerm && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                <IoClose size={20} />
+              </button>
+            )}
+            {/* 검색 결과 드롭다운 */}
+            {searchResults.length > 0 && (
+              <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                {searchResults.map((result) => (
+                  <button
+                    key={result.currentHistoryId}
+                    onClick={() => handleResultClick(result)}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
+                          result.category === "런너"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
+                      >
+                        {result.category}
+                      </span>
+                      <span className="text-gray-200">{result.title}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 오른쪽 메뉴 - 데스크톱 */}
@@ -87,7 +168,7 @@ function Header() {
       {/* 모바일 검색창 */}
       {isMobileSearchOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 px-4 pt-2 pb-4 z-50">
-          <div className="relative">
+          <div className="relative" ref={searchRef}>
             <input
               type="search"
               value={searchTerm}
@@ -102,6 +183,31 @@ function Header() {
               >
                 <IoClose size={20} />
               </button>
+            )}
+            {/* 모바일 검색 결과 */}
+            {searchResults.length > 0 && (
+              <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                {searchResults.map((result) => (
+                  <button
+                    key={result.currentHistoryId}
+                    onClick={() => handleResultClick(result)}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
+                          result.category === "런너"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
+                      >
+                        {result.category}
+                      </span>
+                      <span className="text-gray-200">{result.title}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>

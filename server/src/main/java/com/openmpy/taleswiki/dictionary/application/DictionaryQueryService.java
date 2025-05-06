@@ -12,6 +12,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,13 @@ public class DictionaryQueryService {
 
         final List<DictionaryHistory> histories = dictionary.getHistories();
         return DictionaryGetHistoriesResponse.of(dictionary.getTitle(), histories);
+    }
+
+    @Transactional(readOnly = true)
+    public DictionarySearchDictionariesResponse searchDictionaries(final String title) {
+        final List<Dictionary> dictionaries = dictionaryRepository
+                .findAllByTitle_ValueContainingAndStatusIsNotOrderByUpdatedAtDesc(title, DictionaryStatus.HIDDEN);
+        return DictionarySearchDictionariesResponse.of(dictionaries);
     }
 
     public Dictionary getDictionary(final Long dictionaryId) {
