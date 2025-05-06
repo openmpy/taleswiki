@@ -69,7 +69,7 @@ function AdminPage() {
   const handleStatusChange = async (dictionaryId, newStatus) => {
     try {
       await axios.patch(
-        `http://localhost:8080/api/v1/dictionaries/${dictionaryId}?status=${newStatus}`,
+        `http://localhost:8080/api/v1/admin/dictionaries/${dictionaryId}?status=${newStatus}`,
         {},
         {
           headers: {
@@ -103,7 +103,7 @@ function AdminPage() {
 
     try {
       await axios.delete(
-        `http://localhost:8080/api/v1/dictionaries/${dictionaryId}`,
+        `http://localhost:8080/api/v1/admin/dictionaries/${dictionaryId}`,
         {
           headers: {
             "Content-Type": "application/json",
