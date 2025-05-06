@@ -43,7 +43,7 @@ public class AdminQueryService {
         return PaginatedResponse.of(responses);
     }
 
-    private void validateToken(final String token) {
+    public void validateToken(final String token) {
         final String adminToken = adminProperties.token();
 
         if (token == null || token.isBlank() || !token.equals(adminToken)) {

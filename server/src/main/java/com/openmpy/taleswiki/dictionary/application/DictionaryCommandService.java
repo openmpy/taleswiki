@@ -64,18 +64,4 @@ public class DictionaryCommandService {
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
     }
-
-    @Transactional
-    public void changeStatus(final Long dictionaryId, final String status) {
-        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
-
-        dictionary.changeStatus(status);
-    }
-
-    @Transactional
-    public void delete(final Long dictionaryId) {
-        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
-
-        dictionaryRepository.delete(dictionary);
-    }
 }
