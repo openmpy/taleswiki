@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaUserShield } from "react-icons/fa";
@@ -7,6 +6,7 @@ import BlacklistTable from "../components/admin/BlacklistTable";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
 import DictionaryTable from "../components/admin/DictionaryTable";
 import Pagination from "../components/admin/Pagination";
+import axiosInstance from "../utils/axiosConfig";
 
 function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,21 +22,8 @@ function AdminPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8080/api/v1/admin/me",
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-
-        if (response.status === 204) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        const response = await axiosInstance.get("/api/v1/admin/me");
+        setIsAuthenticated(response.status === 204);
       } catch (error) {
         console.error("인증 확인 중 오류 발생:", error);
         setIsAuthenticated(false);
@@ -52,14 +39,8 @@ function AdminPage() {
 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/admin/dictionaries?page=${currentPage}&size=100`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
+        const response = await axiosInstance.get(
+          `/api/v1/admin/dictionaries?page=${currentPage}&size=100`
         );
         setDictionaries(response.data.content);
         setTotalPages(response.data.totalPages);
@@ -81,14 +62,8 @@ function AdminPage() {
 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
+        const response = await axiosInstance.get(
+          `/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`
         );
         setHistories(response.data.content);
         setTotalPages(response.data.totalPages);
@@ -110,14 +85,8 @@ function AdminPage() {
 
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/admin/blacklist?page=${currentPage}&size=100`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
+        const response = await axiosInstance.get(
+          `/api/v1/admin/blacklist?page=${currentPage}&size=100`
         );
         setBlacklists(response.data.content);
         setTotalPages(response.data.totalPages);
@@ -135,26 +104,12 @@ function AdminPage() {
 
   const handleStatusChange = async (dictionaryId, newStatus) => {
     try {
-      await axios.patch(
-        `http://localhost:8080/api/v1/admin/dictionaries/${dictionaryId}?status=${newStatus}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      await axiosInstance.patch(
+        `/api/v1/admin/dictionaries/${dictionaryId}?status=${newStatus}`
       );
 
-      // 상태 변경 후 목록 새로고침
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/dictionaries?page=${currentPage}&size=100`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.get(
+        `/api/v1/admin/dictionaries?page=${currentPage}&size=100`
       );
       setDictionaries(response.data.content);
     } catch (error) {
@@ -169,25 +124,10 @@ function AdminPage() {
     }
 
     try {
-      await axios.delete(
-        `http://localhost:8080/api/v1/admin/dictionaries/${dictionaryId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      await axiosInstance.delete(`/api/v1/admin/dictionaries/${dictionaryId}`);
 
-      // 삭제 후 목록 새로고침
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/dictionaries?page=${currentPage}&size=100`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.get(
+        `/api/v1/admin/dictionaries?page=${currentPage}&size=100`
       );
       setDictionaries(response.data.content);
       alert("사전이 성공적으로 삭제되었습니다.");
@@ -199,26 +139,12 @@ function AdminPage() {
 
   const handleHistoryStatusChange = async (dictionaryHistoryId, newStatus) => {
     try {
-      await axios.patch(
-        `http://localhost:8080/api/v1/admin/dictionaries/histories/${dictionaryHistoryId}?status=${newStatus}`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      await axiosInstance.patch(
+        `/api/v1/admin/dictionaries/histories/${dictionaryHistoryId}?status=${newStatus}`
       );
 
-      // 상태 변경 후 목록 새로고침
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.get(
+        `/api/v1/admin/dictionaries/histories?page=${currentPage}&size=100`
       );
       setHistories(response.data.content);
     } catch (error) {
@@ -233,25 +159,10 @@ function AdminPage() {
     }
 
     try {
-      await axios.delete(
-        `http://localhost:8080/api/v1/admin/blacklist/${blacklistId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      await axiosInstance.delete(`/api/v1/admin/blacklist/${blacklistId}`);
 
-      // 삭제 후 목록 새로고침
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/blacklist?page=${currentPage}&size=100`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.get(
+        `/api/v1/admin/blacklist?page=${currentPage}&size=100`
       );
       setBlacklists(response.data.content);
       alert("블랙리스트에서 성공적으로 제거되었습니다.");
@@ -265,26 +176,10 @@ function AdminPage() {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "http://localhost:8080/api/v1/admin/blacklist",
-        newBlacklist,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      await axiosInstance.post("/api/v1/admin/blacklist", newBlacklist);
 
-      // 추가 후 목록 새로고침
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/blacklist?page=${currentPage}&size=100`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
+      const response = await axiosInstance.get(
+        `/api/v1/admin/blacklist?page=${currentPage}&size=100`
       );
       setBlacklists(response.data.content);
       setNewBlacklist({ ip: "", reason: "" });

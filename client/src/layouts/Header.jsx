@@ -1,8 +1,8 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 
 function Header() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,13 +29,10 @@ function Header() {
     const delayDebounceFn = setTimeout(async () => {
       if (searchTerm.trim()) {
         try {
-          const response = await axios.get(
-            "http://localhost:8080/api/v1/dictionaries/search",
+          const response = await axiosInstance.get(
+            "/api/v1/dictionaries/search",
             {
               params: { title: searchTerm },
-              headers: {
-                "Content-Type": "application/json",
-              },
             }
           );
           setSearchResults(response.data.dictionaries);

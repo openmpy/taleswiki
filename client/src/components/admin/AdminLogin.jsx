@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useState } from "react";
+import axiosInstance from "../../utils/axiosConfig";
 
 function AdminLogin({ onLoginSuccess }) {
   const [nickname, setNickname] = useState("");
@@ -9,16 +9,10 @@ function AdminLogin({ onLoginSuccess }) {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/admin/signin",
-        { nickname, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post("/api/v1/admin/signin", {
+        nickname,
+        password,
+      });
 
       if (response.status === 200) {
         onLoginSuccess();

@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import React from "react";
 import { HiOutlineClock } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 import { formatRelativeTime } from "../utils/dateUtils";
 
 function Sidebar({ className }) {
   const { data: recentEdits = [] } = useQuery({
     queryKey: ["recentEdits"],
     queryFn: async () => {
-      const response = await axios.get(
-        "http://localhost:8080/api/v1/dictionaries/latest-modified"
+      const response = await axiosInstance.get(
+        "/api/v1/dictionaries/latest-modified"
       );
       return response.data.dictionaries.map((item) => ({
         currentHistoryId: item.currentHistoryId,

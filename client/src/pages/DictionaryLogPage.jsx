@@ -1,8 +1,8 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime } from "../utils/dateUtils";
 
 const DictionaryLogPage = () => {
@@ -14,8 +14,8 @@ const DictionaryLogPage = () => {
   useEffect(() => {
     const fetchDictionaryHistory = async () => {
       try {
-        const { data } = await axios.get(
-          `http://localhost:8080/api/v1/dictionaries/${id}/history`
+        const { data } = await axiosInstance.get(
+          `/api/v1/dictionaries/${id}/history`
         );
         setDictionary(data);
       } catch (error) {

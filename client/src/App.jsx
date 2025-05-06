@@ -15,6 +15,7 @@ import DictionaryViewPage from "./pages/DictionaryViewPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import "./utils/axiosConfig";
 
 const queryClient = new QueryClient();
 

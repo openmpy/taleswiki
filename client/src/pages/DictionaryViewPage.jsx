@@ -1,10 +1,10 @@
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { Viewer } from "@toast-ui/react-editor";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BsBook, BsChevronDown, BsChevronUp, BsEyeSlash } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime } from "../utils/dateUtils";
 
 const DictionaryViewPage = () => {
@@ -34,8 +34,8 @@ const DictionaryViewPage = () => {
       setIsLoading(true);
 
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/dictionaries/histories/${id}`
+        const response = await axiosInstance.get(
+          `/api/v1/dictionaries/histories/${id}`
         );
         const data = response.data;
         setDictionary(data);

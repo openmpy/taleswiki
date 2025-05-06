@@ -1,9 +1,9 @@
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
-import axios from "axios";
 import React, { useRef, useState } from "react";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 
 const DictionaryWritePage = () => {
   const [searchParams] = useSearchParams();
@@ -18,15 +18,12 @@ const DictionaryWritePage = () => {
   const handleSubmit = async () => {
     try {
       const content = editorRef.current.getInstance().getMarkdown();
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/dictionaries",
-        {
-          title,
-          category: isRunnerDictionary ? "person" : "guild",
-          author,
-          content,
-        }
-      );
+      const response = await axiosInstance.post("/api/v1/dictionaries", {
+        title,
+        category: isRunnerDictionary ? "person" : "guild",
+        author,
+        content,
+      });
 
       if (response.status === 204) {
         navigate(-1);

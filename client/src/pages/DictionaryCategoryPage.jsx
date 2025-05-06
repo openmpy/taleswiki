@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiBook } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 import {
   classifyByInitial,
   createInitialGroups,
@@ -21,10 +22,10 @@ function DictionaryCategoryPage({ type }) {
       try {
         setIsLoading(true);
         const category = isRunnerDictionary ? "person" : "guild";
-        const response = await fetch(
-          `http://localhost:8080/api/v1/dictionaries/categories/${category}`
+        const response = await axiosInstance.get(
+          `/api/v1/dictionaries/categories/${category}`
         );
-        const data = await response.json();
+        const data = response.data;
 
         // 초기 그룹 구조 생성
         const initialGroups = createInitialGroups();
