@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -26,19 +27,19 @@ public class DictionaryTitle {
 
     private void validateBlank(final String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("제목에 공백이 들어갈 수 없습니다.");
+            throw new CustomException("제목에 공백이 들어갈 수 없습니다.");
         }
     }
 
     private void validateLength(final String value) {
         if (value.length() > MAX_TITLE_LENGTH) {
-            throw new IllegalArgumentException("제목 길이가 12자를 넘길 수 없습니다.");
+            throw new CustomException("제목 길이가 12자를 넘길 수 없습니다.");
         }
     }
 
     private void validateTitle(final String value) {
         if (!isValidTitle(value)) {
-            throw new IllegalArgumentException("제목이 올바르지 않습니다.");
+            throw new CustomException("제목이 올바르지 않습니다.");
         }
     }
 

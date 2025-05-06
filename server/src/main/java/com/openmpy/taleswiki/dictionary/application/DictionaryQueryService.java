@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
@@ -49,7 +50,7 @@ public class DictionaryQueryService {
         final Dictionary dictionary = getDictionary(dictionaryId);
 
         if (dictionary.getStatus() == DictionaryStatus.HIDDEN) {
-            throw new IllegalArgumentException("숨김 처리된 사전입니다.");
+            throw new CustomException("숨김 처리된 사전입니다.");
         }
 
         final List<DictionaryHistory> histories = dictionary.getHistories();
@@ -58,11 +59,11 @@ public class DictionaryQueryService {
 
     public Dictionary getDictionary(final Long dictionaryId) {
         return dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 번호입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 사전 번호입니다."));
     }
 
     public DictionaryHistory getDictionaryHistory(final Long dictionaryHistoryId) {
         return dictionaryHistoryRepository.findById(dictionaryHistoryId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사전 기록 번호입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 사전 기록 번호입니다."));
     }
 }

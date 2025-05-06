@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
@@ -26,7 +27,7 @@ public class DictionaryCommandService {
         final DictionaryCategory category = DictionaryCategory.fromName(request.category());
 
         if (dictionaryRepository.existsByTitle_ValueAndCategory(request.title(), category)) {
-            throw new IllegalArgumentException("이미 작성된 사전입니다.");
+            throw new CustomException("이미 작성된 사전입니다.");
         }
 
         final long contentLength = servletRequest.getContentLengthLong();
@@ -48,7 +49,7 @@ public class DictionaryCommandService {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         if (dictionary.getStatus() != DictionaryStatus.ALL_ACTIVE) {
-            throw new IllegalArgumentException("수정할 수 없는 사전입니다.");
+            throw new CustomException("수정할 수 없는 사전입니다.");
         }
 
         final long contentLength = servletRequest.getContentLengthLong();

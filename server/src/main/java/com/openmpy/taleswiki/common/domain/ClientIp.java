@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.common.domain;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -24,13 +25,13 @@ public class ClientIp {
 
     private void validateBlank(final String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("IP 값이 공백일 수 없습니다.");
+            throw new CustomException("IP 값이 공백일 수 없습니다.");
         }
     }
 
     private void validateIp(final String value) {
         if (!isValidIpV4(value)) {
-            throw new IllegalArgumentException("IP 값이 올바르지 않습니다.");
+            throw new CustomException("IP 값이 올바르지 않습니다.");
         }
     }
 

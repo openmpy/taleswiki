@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,13 +24,13 @@ public class DictionaryHistoryAuthor {
 
     private void validateBlank(final String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("작성자가 공백일 수 없습니다.");
+            throw new CustomException("작성자가 공백일 수 없습니다.");
         }
     }
 
     private void validateLength(final String value) {
         if (value.length() > MAX_AUTHOR_LENGTH) {
-            throw new IllegalArgumentException("작성자명이 8자를 넘어갈 수 없습니다.");
+            throw new CustomException("작성자명이 8자를 넘어갈 수 없습니다.");
         }
     }
 }

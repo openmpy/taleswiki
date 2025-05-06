@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class DictionaryHistoryVersion {
 
     private void validateVersion(final long value) {
         if (value <= 0) {
-            throw new IllegalArgumentException("버전 값이 0 또는 음수일 수 없습니다.");
+            throw new CustomException("버전 값이 0 또는 음수일 수 없습니다.");
         }
     }
 }
