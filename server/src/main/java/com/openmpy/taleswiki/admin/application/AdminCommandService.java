@@ -73,4 +73,14 @@ public class AdminCommandService {
         final Blacklist blacklist = Blacklist.create(request.ip(), request.reason());
         blacklistRepository.save(blacklist);
     }
+
+    @Transactional
+    public void deleteBlacklist(final String token, final Long blacklistId) {
+        adminQueryService.validateToken(token);
+
+        final Blacklist blacklist = blacklistRepository.findById(blacklistId)
+                .orElseThrow(() -> new CustomException("찾을 수 없는 블랙리스트 번호입니다."));
+
+        blacklistRepository.delete(blacklist);
+    }
 }

@@ -71,6 +71,15 @@ public class AdminCommandController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/blacklist/{blacklistId}")
+    public ResponseEntity<Void> deleteBlacklist(
+            @CookieValue("admin_token") final String token,
+            @PathVariable final Long blacklistId
+    ) {
+        adminCommandService.deleteBlacklist(token, blacklistId);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseCookie createCookie(final String token) {
         return ResponseCookie.from("admin_token", token)
                 .httpOnly(cookieProperties.httpOnly())
