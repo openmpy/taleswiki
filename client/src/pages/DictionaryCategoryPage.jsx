@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { BiBook } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -12,11 +13,13 @@ import {
 function DictionaryCategoryPage({ type }) {
   const isRunnerDictionary = type === "runner";
   const [dictionaryGroups, setDictionaryGroups] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDictionaries = async () => {
       try {
+        setIsLoading(true);
         const category = isRunnerDictionary ? "person" : "guild";
         const response = await fetch(
           `http://localhost:8080/api/v1/dictionaries/categories/${category}`
@@ -42,11 +45,21 @@ function DictionaryCategoryPage({ type }) {
         setDictionaryGroups(initialGroups);
       } catch (error) {
         console.error("사전 데이터를 불러오는데 실패했습니다:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchDictionaries();
   }, [isRunnerDictionary]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
+      </div>
+    );
+  }
 
   return (
     <>

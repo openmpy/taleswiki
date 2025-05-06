@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatKoreanDateTime } from "../utils/dateUtils";
+
 const DictionaryLogPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -28,8 +30,8 @@ const DictionaryLogPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        로딩 중...
+      <div className="flex justify-center items-center min-h-[400px]">
+        <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { Viewer } from "@toast-ui/react-editor";
 import { useEffect, useRef, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { BsBook, BsChevronDown, BsChevronUp, BsEyeSlash } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatKoreanDateTime } from "../utils/dateUtils";
@@ -59,7 +60,11 @@ const DictionaryViewPage = () => {
   }, [id]);
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
+      </div>
+    );
   }
 
   if (!dictionary) {
