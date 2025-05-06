@@ -76,7 +76,17 @@ const DictionaryViewPage = () => {
           </h2>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
-          <button className="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+          <button
+            className={`w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              dictionary.status === "HIDDEN"
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+            disabled={dictionary.status === "HIDDEN"}
+            onClick={() =>
+              navigate(`/dictionary/${dictionary.dictionaryId}/log`)
+            }
+          >
             편집로그
           </button>
           <button

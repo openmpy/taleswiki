@@ -7,6 +7,7 @@ import Header from "./layouts/Header";
 import Sidebar from "./layouts/Sidebar";
 import DictionaryCategoryPage from "./pages/DictionaryCategoryPage";
 import DictionaryEditPage from "./pages/DictionaryEditPage";
+import DictionaryLogPage from "./pages/DictionaryLogPage";
 import DictionaryViewPage from "./pages/DictionaryViewPage";
 import DictionaryWritePage from "./pages/DictionaryWritePage";
 import HomePage from "./pages/HomePage";
@@ -44,6 +45,10 @@ function App() {
                   <Route
                     path="/dictionary/:id/edit"
                     element={<DictionaryEditPage />}
+                  />
+                  <Route
+                    path="/dictionary/:id/log"
+                    element={<DictionaryLogPage />}
                   />
                 </Routes>
               </main>

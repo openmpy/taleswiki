@@ -93,7 +93,7 @@ const DictionaryEditPage = () => {
               htmlFor="author"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              작성자
+              편집자
             </label>
             <input
               type="text"
@@ -101,7 +101,7 @@ const DictionaryEditPage = () => {
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400"
-              placeholder="작성자를 입력하세요"
+              placeholder="편집자를 입력하세요"
             />
           </div>
         </div>
