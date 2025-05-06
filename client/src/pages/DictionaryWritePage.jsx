@@ -32,7 +32,15 @@ const DictionaryWritePage = () => {
         navigate(-1);
       }
     } catch (error) {
-      console.error("사전 작성 중 오류가 발생했습니다:", error);
+      if (error.response.status === 400) {
+        alert(
+          error.response.data.message.replace(
+            "제목",
+            isRunnerDictionary ? "닉네임" : "길드명"
+          )
+        );
+        return;
+      }
     }
   };
 

@@ -1,5 +1,6 @@
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { Viewer } from "@toast-ui/react-editor";
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BsBook, BsChevronDown, BsChevronUp, BsEyeSlash } from "react-icons/bs";
@@ -33,10 +34,10 @@ const DictionaryViewPage = () => {
       setIsLoading(true);
 
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `http://localhost:8080/api/v1/dictionaries/histories/${id}`
         );
-        const data = await response.json();
+        const data = response.data;
         setDictionary(data);
 
         // 목차 생성
@@ -50,7 +51,7 @@ const DictionaryViewPage = () => {
           setToc(tocItems);
         }
       } catch (error) {
-        console.error("사전 정보를 가져오는데 실패했습니다:", error);
+        console.error("사전 정보를 불러오는데 실패했습니다:", error);
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +69,13 @@ const DictionaryViewPage = () => {
   }
 
   if (!dictionary) {
-    return <div>사전 정보를 찾을 수 없습니다.</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-gray-500 font-medium">
+          사전 정보를 찾을 수 없습니다.
+        </div>
+      </div>
+    );
   }
 
   return (

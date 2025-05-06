@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
@@ -13,10 +14,9 @@ const DictionaryLogPage = () => {
   useEffect(() => {
     const fetchDictionaryHistory = async () => {
       try {
-        const response = await fetch(
+        const { data } = await axios.get(
           `http://localhost:8080/api/v1/dictionaries/${id}/history`
         );
-        const data = await response.json();
         setDictionary(data);
       } catch (error) {
         console.error("사전 편집 로그를 불러오는데 실패했습니다:", error);
@@ -32,6 +32,16 @@ const DictionaryLogPage = () => {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
+      </div>
+    );
+  }
+
+  if (!dictionary) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-gray-500 font-medium">
+          사전 편집 로그 정보를 찾을 수 없습니다.
+        </div>
       </div>
     );
   }

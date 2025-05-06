@@ -54,7 +54,10 @@ const DictionaryEditPage = () => {
         navigate(`/dictionary/${response.data.dictionaryHistoryId}`);
       }
     } catch (error) {
-      console.error("사전 편집 중 오류가 발생했습니다:", error);
+      if (error.response.status === 400) {
+        alert(error.response.data.message.replace("작성자", "편집자"));
+        return;
+      }
     }
   };
 
