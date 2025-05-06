@@ -1,5 +1,8 @@
 package com.openmpy.taleswiki.admin.application;
 
+import com.openmpy.taleswiki.admin.domain.entity.Blacklist;
+import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
+import com.openmpy.taleswiki.admin.dto.request.AdminBlacklistSaveRequest;
 import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
@@ -18,6 +21,7 @@ public class AdminCommandService {
     private final AdminQueryService adminQueryService;
     private final DictionaryQueryService dictionaryQueryService;
     private final DictionaryRepository dictionaryRepository;
+    private final BlacklistRepository blacklistRepository;
     private final AdminProperties adminProperties;
 
     @Transactional
@@ -56,5 +60,17 @@ public class AdminCommandService {
         final DictionaryHistory dictionaryHistory = dictionaryQueryService.getDictionaryHistory(dictionaryHistoriesId);
 
         dictionaryHistory.changeStatus(status);
+    }
+
+    @Transactional
+    public void saveBlacklist(final String token, final AdminBlacklistSaveRequest request) {
+        adminQueryService.validateToken(token);
+
+        if (blacklistRepository.existsByIp_Value(request.ip())) {
+            throw new CustomException("이미 등록된 IP입니다.");
+        }
+
+        final Blacklist blacklist = Blacklist.create(request.ip(), request.reason());
+        blacklistRepository.save(blacklist);
     }
 }

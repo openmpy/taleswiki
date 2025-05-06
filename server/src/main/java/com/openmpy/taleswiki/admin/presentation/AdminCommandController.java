@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.admin.presentation;
 
 import com.openmpy.taleswiki.admin.application.AdminCommandService;
+import com.openmpy.taleswiki.admin.dto.request.AdminBlacklistSaveRequest;
 import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
 import com.openmpy.taleswiki.common.properties.CookieProperties;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,15 @@ public class AdminCommandController {
             @RequestParam(value = "status") final String status
     ) {
         adminCommandService.changeDictionaryHistoryStatus(token, dictionaryHistoriesId, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/blacklist")
+    public ResponseEntity<Void> saveBlacklist(
+            @CookieValue("admin_token") final String token,
+            @RequestBody final AdminBlacklistSaveRequest request
+    ) {
+        adminCommandService.saveBlacklist(token, request);
         return ResponseEntity.noContent().build();
     }
 
