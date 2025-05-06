@@ -104,7 +104,7 @@ const DictionaryLogPage = () => {
                     {formatKoreanDateTime(history.createdAt)}
                   </td>
                   <td className="px-3 sm:px-6 py-4 text-sm text-gray-500 text-center whitespace-nowrap">
-                    {history.size}KB
+                    {(history.size / 1024).toFixed(2)}KB
                   </td>
                   <td className="px-3 sm:px-6 py-4 text-sm text-gray-500 text-center whitespace-nowrap">
                     {history.author}

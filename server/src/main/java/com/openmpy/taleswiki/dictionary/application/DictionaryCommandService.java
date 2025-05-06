@@ -30,7 +30,7 @@ public class DictionaryCommandService {
             throw new CustomException("이미 작성된 사전입니다.");
         }
 
-        final long contentLength = servletRequest.getContentLengthLong();
+        final long contentLength = request.content().getBytes().length;
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
 
         final Dictionary dictionary = Dictionary.create(request.title(), category);
@@ -52,7 +52,7 @@ public class DictionaryCommandService {
             throw new CustomException("수정할 수 없는 사전입니다.");
         }
 
-        final long contentLength = servletRequest.getContentLengthLong();
+        final long contentLength = request.content().getBytes().length;
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final long version = dictionary.getCurrentHistory().getVersion() + 1;
 
