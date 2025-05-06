@@ -1,5 +1,8 @@
 package com.openmpy.taleswiki.admin.application;
 
+import com.openmpy.taleswiki.admin.domain.entity.Blacklist;
+import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
+import com.openmpy.taleswiki.admin.dto.response.AdminGetBlacklistResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
@@ -22,6 +25,7 @@ public class AdminQueryService {
 
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
+    private final BlacklistRepository blacklistRepository;
     private final AdminProperties adminProperties;
 
     @Transactional(readOnly = true)
@@ -63,6 +67,21 @@ public class AdminQueryService {
                         it.getDictionary().getCategory().getValue(),
                         it.getStatus().name()
                 ));
+
+        return PaginatedResponse.of(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<AdminGetBlacklistResponse> getBlacklist(
+            final String token, final int page, final int size
+    ) {
+        validateToken(token);
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final Page<Blacklist> blacklist = blacklistRepository.findAll(pageRequest);
+        final Page<AdminGetBlacklistResponse> responses = blacklist.map(it ->
+                new AdminGetBlacklistResponse(it.getId(), it.getIp(), it.getReason(), it.getCreatedAt())
+        );
 
         return PaginatedResponse.of(responses);
     }
