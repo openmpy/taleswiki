@@ -71,6 +71,9 @@ const DictionaryEditPage = () => {
         <BiPencil className="text-2xl text-gray-700" />
         사전 편집
       </h2>
+      <p className="text-sm font-bold text-red-500 mb-4">
+        * 부정 이용 방지를 위해 IP 정보가 수집됩니다.
+      </p>
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:flex-1">
@@ -131,7 +134,7 @@ const DictionaryEditPage = () => {
               onClick={handleSubmit}
               className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
-              수정하기
+              편집하기
             </button>
           </div>
         </div>

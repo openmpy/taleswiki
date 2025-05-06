@@ -42,6 +42,9 @@ const DictionaryWritePage = () => {
         <BiPencil className="text-2xl text-gray-700" />
         {isRunnerDictionary ? "런너 사전 작성" : "길드 사전 작성"}
       </h2>
+      <p className="text-sm font-bold text-red-500 mb-4">
+        * 부정 이용 방지를 위해 IP 정보가 수집됩니다.
+      </p>
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:flex-1">
