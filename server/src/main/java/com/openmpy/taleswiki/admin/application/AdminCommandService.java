@@ -19,6 +19,6 @@ public class AdminCommandService {
                 !adminProperties.password().equals(request.password())) {
             throw new CustomException("닉네임 또는 패스워드를 다시 한번 확인해주시길 바랍니다.");
         }
-        return "success";
+        return adminProperties.token();
     }
 }
