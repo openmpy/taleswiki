@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.admin.presentation;
 
 import com.openmpy.taleswiki.admin.application.AdminQueryService;
+import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,17 @@ public class AdminQueryController {
         final PaginatedResponse<AdminGetDictionariesResponse> response = adminQueryService.getDictionaries(
                 token, page, size
         );
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/dictionaries/histories")
+    public ResponseEntity<PaginatedResponse<AdminGetDictionariesHistoriesResponse>> getDictionariesHistories(
+            @CookieValue("admin_token") final String token,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        final PaginatedResponse<AdminGetDictionariesHistoriesResponse> response =
+                adminQueryService.getDictionariesHistories(token, page, size);
         return ResponseEntity.ok(response);
     }
 }

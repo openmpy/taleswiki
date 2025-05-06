@@ -1,10 +1,13 @@
 package com.openmpy.taleswiki.admin.application;
 
+import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
+import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryHistoryRepository;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminQueryService {
 
     private final DictionaryRepository dictionaryRepository;
+    private final DictionaryHistoryRepository dictionaryHistoryRepository;
     private final AdminProperties adminProperties;
 
     @Transactional(readOnly = true)
@@ -39,6 +43,25 @@ public class AdminQueryService {
                 it.getCategory().getValue(),
                 it.getStatus().name()
         ));
+
+        return PaginatedResponse.of(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<AdminGetDictionariesHistoriesResponse> getDictionariesHistories(
+            final String token, final int page, final int size
+    ) {
+        validateToken(token);
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final Page<DictionaryHistory> dictionaryHistories = dictionaryHistoryRepository.findAll(pageRequest);
+        final Page<AdminGetDictionariesHistoriesResponse> responses = dictionaryHistories.map(
+                it -> new AdminGetDictionariesHistoriesResponse(
+                        it.getId(),
+                        it.getDictionary().getTitle(),
+                        it.getDictionary().getCategory().getValue(),
+                        it.getStatus().name()
+                ));
 
         return PaginatedResponse.of(responses);
     }
