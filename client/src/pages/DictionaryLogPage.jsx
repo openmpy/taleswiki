@@ -111,7 +111,7 @@ const DictionaryLogPage = () => {
                   </td>
                   <td className="px-3 sm:px-6 py-4 text-center whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
                       ${
                         history.dictionaryHistoryStatus === "ALL_ACTIVE"
                           ? "bg-green-100 text-green-800"
