@@ -80,7 +80,10 @@ const DictionaryLogPage = () => {
               {dictionary?.histories.map((history) => (
                 <tr
                   key={history.dictionaryHistoryId}
-                  className="hover:bg-gray-50"
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() =>
+                    navigate(`/dictionary/${history.dictionaryHistoryId}`)
+                  }
                 >
                   <td className="px-3 sm:px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                     {history.version}
