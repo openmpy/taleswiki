@@ -8,6 +8,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class DictionaryCommandService {
     }
 
     @Transactional
-    public void update(
+    public DictionaryUpdateResponse update(
             final Long dictionaryId, final HttpServletRequest servletRequest, final DictionaryUpdateRequest request
     ) {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
@@ -59,7 +60,8 @@ public class DictionaryCommandService {
         );
 
         dictionary.addHistory(dictionaryHistory);
-        dictionaryRepository.save(dictionary);
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+        return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
     }
 
     @Transactional

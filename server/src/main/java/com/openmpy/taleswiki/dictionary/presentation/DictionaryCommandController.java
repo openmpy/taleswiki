@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.presentation;
 import com.openmpy.taleswiki.dictionary.application.DictionaryCommandService;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,15 @@ public class DictionaryCommandController {
     }
 
     @PutMapping("/{dictionaryId}")
-    public ResponseEntity<Void> update(
+    public ResponseEntity<DictionaryUpdateResponse> update(
             @PathVariable final Long dictionaryId,
             final HttpServletRequest servletRequest,
             @RequestBody final DictionaryUpdateRequest request
     ) {
-        dictionaryCommandService.update(dictionaryId, servletRequest, request);
-        return ResponseEntity.noContent().build();
+        final DictionaryUpdateResponse response = dictionaryCommandService.update(
+                dictionaryId, servletRequest, request
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{dictionaryId}")
