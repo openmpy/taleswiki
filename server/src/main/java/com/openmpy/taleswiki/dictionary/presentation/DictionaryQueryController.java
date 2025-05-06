@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.dictionary.presentation;
 
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,12 @@ public class DictionaryQueryController {
     @GetMapping("/histories/{dictionaryHistoryId}")
     public ResponseEntity<DictionaryHistoryResponse> get(@PathVariable final Long dictionaryHistoryId) {
         final DictionaryHistoryResponse response = dictionaryQueryService.get(dictionaryHistoryId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{dictionaryId}/history")
+    public ResponseEntity<DictionaryGetHistoriesResponse> getHistories(@PathVariable final Long dictionaryId) {
+        DictionaryGetHistoriesResponse response = dictionaryQueryService.getHistories(dictionaryId);
         return ResponseEntity.ok(response);
     }
 }

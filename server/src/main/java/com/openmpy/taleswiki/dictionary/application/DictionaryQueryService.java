@@ -1,12 +1,14 @@
 package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryHistoryRepository;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.DictionaryGetGroupItemsResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import java.util.List;
@@ -40,6 +42,18 @@ public class DictionaryQueryService {
     public DictionaryHistoryResponse get(final Long dictionaryHistoryId) {
         final DictionaryHistory dictionaryHistory = getDictionaryHistory(dictionaryHistoryId);
         return DictionaryHistoryResponse.of(dictionaryHistory);
+    }
+
+    @Transactional(readOnly = true)
+    public DictionaryGetHistoriesResponse getHistories(final Long dictionaryId) {
+        final Dictionary dictionary = getDictionary(dictionaryId);
+
+        if (dictionary.getStatus() == DictionaryStatus.HIDDEN) {
+            throw new IllegalArgumentException("숨김 처리된 사전입니다.");
+        }
+
+        final List<DictionaryHistory> histories = dictionary.getHistories();
+        return DictionaryGetHistoriesResponse.of(dictionary.getTitle(), histories);
     }
 
     public Dictionary getDictionary(final Long dictionaryId) {
