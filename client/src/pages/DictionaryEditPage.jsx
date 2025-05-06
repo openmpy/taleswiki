@@ -114,8 +114,9 @@ const DictionaryEditPage = () => {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
             내용
+            <span className="text-gray-500 text-xs">(마크다운 문법 지원)</span>
           </label>
           <div>
             <Editor

@@ -1,5 +1,10 @@
 import React from "react";
-import { FaStar } from "react-icons/fa";
+import {
+  FaExclamationTriangle,
+  FaLightbulb,
+  FaQuestionCircle,
+  FaStar,
+} from "react-icons/fa";
 
 function HomePage() {
   return (
@@ -9,7 +14,7 @@ function HomePage() {
         테일즈위키
       </h2>
 
-      <div className="bg-white p-8 rounded-xl border border-gray-200">
+      <div className="bg-white p-8 rounded-xl border border-gray-200 mb-6">
         <h3 className="text-xl font-semibold mb-6 text-gray-800">
           커뮤니티 규칙
         </h3>
@@ -32,6 +37,47 @@ function HomePage() {
           위 규칙을 위반할 경우 관리자의 판단 하에 경고 또는 제재가 가해질 수
           있습니다.
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <FaExclamationTriangle className="text-2xl text-red-500" />
+            <h3 className="text-lg font-semibold text-gray-800">신고하기</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            규칙을 위반하는 게시물을 발견하셨나요?
+          </p>
+          <button className="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+            신고하기
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <FaQuestionCircle className="text-2xl text-blue-500" />
+            <h3 className="text-lg font-semibold text-gray-800">문의하기</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            서비스 이용 중 궁금한 점이 있으신가요?
+          </p>
+          <button className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            문의하기
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <FaLightbulb className="text-2xl text-yellow-500" />
+            <h3 className="text-lg font-semibold text-gray-800">건의하기</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            서비스 개선을 위한 아이디어가 있으신가요?
+          </p>
+          <button className="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+            건의하기
+          </button>
+        </div>
       </div>
     </>
   );
