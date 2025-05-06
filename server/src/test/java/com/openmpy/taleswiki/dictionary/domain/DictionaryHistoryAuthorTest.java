@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +30,7 @@ class DictionaryHistoryAuthorTest {
     void 예외_dictionary_history_author_test_01(final String value) {
         // when & then
         assertThatThrownBy(() -> new DictionaryHistoryAuthor(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("작성자가 공백일 수 없습니다.");
     }
 
@@ -41,7 +42,7 @@ class DictionaryHistoryAuthorTest {
 
         // when & then
         assertThatThrownBy(() -> new DictionaryHistoryAuthor(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("작성자명이 8자를 넘어갈 수 없습니다.");
     }
 }

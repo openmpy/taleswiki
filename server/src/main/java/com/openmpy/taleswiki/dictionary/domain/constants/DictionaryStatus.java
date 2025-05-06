@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain.constants;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import java.util.Arrays;
 
 public enum DictionaryStatus {
@@ -10,6 +11,6 @@ public enum DictionaryStatus {
         return Arrays.stream(DictionaryStatus.values())
                 .filter(it -> it.name().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 상태입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 상태입니다."));
     }
 }

@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
@@ -160,7 +161,7 @@ class DictionaryCommandServiceTest {
 
         // when & then
         assertThatThrownBy(() -> dictionaryCommandService.save(mockHttpServletRequest, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("이미 작성된 사전입니다.");
     }
 
@@ -184,7 +185,7 @@ class DictionaryCommandServiceTest {
         // when & then
         assertThatThrownBy(() ->
                 dictionaryCommandService.update(savedDictionary.getId(), mockHttpServletRequest, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("수정할 수 없는 사전입니다.");
     }
 

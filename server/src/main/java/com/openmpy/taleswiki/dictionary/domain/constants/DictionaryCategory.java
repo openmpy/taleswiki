@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain.constants;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import java.util.Arrays;
 import lombok.Getter;
 
@@ -18,6 +19,6 @@ public enum DictionaryCategory {
         return Arrays.stream(DictionaryCategory.values())
                 .filter(it -> it.name().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 카테고리입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 카테고리입니다."));
     }
 }

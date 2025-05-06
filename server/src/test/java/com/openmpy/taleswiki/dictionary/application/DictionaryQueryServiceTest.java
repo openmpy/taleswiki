@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
@@ -121,7 +122,7 @@ class DictionaryQueryServiceTest {
     void 예외_dictionary_query_service_test_01() {
         // when & then
         assertThatThrownBy(() -> dictionaryQueryService.getDictionary(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("찾을 수 없는 사전 번호입니다.");
     }
 }

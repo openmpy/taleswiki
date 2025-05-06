@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +30,7 @@ class DictionaryHistoryVersionTest {
     void 예외_dictionary_history_version_test_01(final long value) {
         // when & then
         assertThatThrownBy(() -> new DictionaryHistoryVersion(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("버전 값이 0 또는 음수일 수 없습니다.");
     }
 }

@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +30,7 @@ class DictionaryTitleTest {
     void 예외_dictionary_title_test_01(final String value) {
         // when & then
         assertThatThrownBy(() -> new DictionaryTitle(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("제목에 공백이 들어갈 수 없습니다.");
     }
 
@@ -41,7 +42,7 @@ class DictionaryTitleTest {
 
         // when & then
         assertThatThrownBy(() -> new DictionaryTitle(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("제목 길이가 12자를 넘길 수 없습니다.");
     }
 
@@ -53,7 +54,7 @@ class DictionaryTitleTest {
 
         // when & then
         assertThatThrownBy(() -> new DictionaryTitle(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("제목이 올바르지 않습니다.");
     }
 }
