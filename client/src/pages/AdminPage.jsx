@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { FaUserShield } from "react-icons/fa";
 import AdminLogin from "../components/admin/AdminLogin";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
@@ -229,8 +230,8 @@ function AdminPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center items-center min-h-[400px]">
+          <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
         </div>
       ) : (
         <>

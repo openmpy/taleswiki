@@ -23,6 +23,9 @@ function DictionaryHistoryTable({ histories, onStatusChange }) {
               카테고리
             </th>
             <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              IP
+            </th>
+            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               상태
             </th>
             <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -61,6 +64,9 @@ function DictionaryHistoryTable({ histories, onStatusChange }) {
                 >
                   {history.category}
                 </span>
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-center">
+                {history.ip}
               </td>
               <td
                 className="px-4 py-2 whitespace-nowrap text-center cursor-pointer"

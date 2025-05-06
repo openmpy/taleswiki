@@ -59,6 +59,7 @@ public class AdminQueryService {
                 it -> new AdminGetDictionariesHistoriesResponse(
                         it.getId(),
                         it.getDictionary().getTitle(),
+                        it.getIp(),
                         it.getDictionary().getCategory().getValue(),
                         it.getStatus().name()
                 ));
