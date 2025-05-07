@@ -5,6 +5,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 
 const DictionaryEditPage = () => {
@@ -95,27 +96,54 @@ const DictionaryEditPage = () => {
   }
 
   if (!dictionary) {
-    return <div>사전 정보를 찾을 수 없습니다.</div>;
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-gray-500 font-medium">
+          문서 정보를 찾을 수 없습니다.
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <BiPencil className="text-2xl text-gray-700" />
-        사전 편집
-      </h2>
-      <p className="text-sm font-bold text-red-500 mb-4">
-        * 부정 이용 방지를 위해 IP 정보가 수집됩니다.
-      </p>
+    <main>
+      <SEO
+        title={"문서 편집"}
+        description={"누구나 문서를 편집할 수 있습니다."}
+      />
+      <header>
+        <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <BiPencil className="text-2xl text-gray-700" aria-hidden="true" />
+          문서 편집
+        </h1>
+        <p className="text-sm font-bold text-red-500 mb-4">
+          * 부정 이용 방지를 위해 IP 정보가 수집됩니다.
+        </p>
+      </header>
+
       {isUploading && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50"
+          role="alert"
+          aria-busy="true"
+        >
           <div className="bg-white/80 backdrop-blur-md p-8 rounded-lg border border-gray-200 flex flex-col items-center gap-4">
-            <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
+            <AiOutlineLoading
+              className="animate-spin text-4xl text-gray-700"
+              aria-hidden="true"
+            />
             <p className="text-base text-gray-700">이미지 업로드 중...</p>
           </div>
         </div>
       )}
-      <div className="space-y-4">
+
+      <form
+        className="space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:flex-1">
             <label
@@ -130,6 +158,7 @@ const DictionaryEditPage = () => {
               value={dictionary.title}
               disabled
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+              aria-label="문서 제목 (읽기 전용)"
             />
           </div>
           <div className="w-full md:w-1/3">
@@ -146,6 +175,8 @@ const DictionaryEditPage = () => {
               onChange={(e) => setAuthor(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400"
               placeholder="편집자를 입력하세요"
+              required
+              aria-required="true"
             />
           </div>
         </div>
@@ -173,23 +204,24 @@ const DictionaryEditPage = () => {
               }}
             />
           </div>
-          <div className="flex flex-col md:flex-row justify-end gap-2 mt-8">
+          <nav className="flex flex-col md:flex-row justify-end gap-2 mt-8">
             <button
+              type="button"
               onClick={() => navigate(-1)}
               className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
               뒤로가기
             </button>
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
               편집하기
             </button>
-          </div>
+          </nav>
         </div>
-      </div>
-    </div>
+      </form>
+    </main>
   );
 };
 

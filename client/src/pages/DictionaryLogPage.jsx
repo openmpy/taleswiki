@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BsClockHistory } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime } from "../utils/dateUtils";
 
@@ -19,7 +20,7 @@ const DictionaryLogPage = () => {
         );
         setDictionary(data);
       } catch (error) {
-        console.error("사전 편집 로그를 불러오는데 실패했습니다:", error);
+        console.error("문서 편집 로그를 불러오는데 실패했습니다:", error);
       } finally {
         setLoading(false);
       }
@@ -34,52 +35,75 @@ const DictionaryLogPage = () => {
 
   if (!dictionary) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
+      <main className="flex justify-center items-center min-h-[400px]">
         <div className="text-gray-500 font-medium">
-          사전 편집 로그 정보를 찾을 수 없습니다.
+          문서 편집 로그 정보를 찾을 수 없습니다.
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+    <main>
+      <SEO
+        title={`${dictionary.title}`}
+        description={`${dictionary.title} 문서의 편집 이력을 확인하세요. 문서의 변경 사항과 편집자를 확인할 수 있습니다.`}
+      />
+      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <BsClockHistory className="text-2xl text-gray-700" />
+          <h1 className="text-xl font-semibold flex items-center gap-2">
+            <BsClockHistory
+              className="text-2xl text-gray-700"
+              aria-hidden="true"
+            />
             편집로그
-          </h2>
+          </h1>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+        <nav className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
           <button
             className={`w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200`}
             onClick={() => navigate(-1)}
+            aria-label="이전 페이지로 돌아가기"
           >
             뒤로가기
           </button>
-        </div>
-      </div>
+        </nav>
+      </header>
 
-      <div>
-        <h3 className="text-lg font-semibold mb-4">{dictionary?.title}</h3>
+      <section>
+        <h2 className="text-lg font-semibold mb-4">{dictionary?.title}</h2>
         <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full border-collapse">
+          <table className="min-w-full border-collapse" role="grid">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th
+                  scope="col"
+                  className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                >
                   버전
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th
+                  scope="col"
+                  className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                >
                   생성일자
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th
+                  scope="col"
+                  className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                >
                   문서크기
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th
+                  scope="col"
+                  className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                >
                   편집자
                 </th>
-                <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th
+                  scope="col"
+                  className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                >
                   상태
                 </th>
               </tr>
@@ -92,6 +116,13 @@ const DictionaryLogPage = () => {
                   onClick={() =>
                     navigate(`/dictionary/${history.dictionaryHistoryId}`)
                   }
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      navigate(`/dictionary/${history.dictionaryHistoryId}`);
+                    }
+                  }}
                 >
                   <td className="px-3 sm:px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                     {history.version}
@@ -132,8 +163,8 @@ const DictionaryLogPage = () => {
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BiBook } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 import {
   classifyByInitial,
@@ -58,14 +59,20 @@ function DictionaryCategoryPage({ type }) {
     return <LoadingSpinner />;
   }
 
+  const pageTitle = isRunnerDictionary ? "런너 사전" : "길드 사전";
+
   return (
-    <>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+    <main>
+      <SEO
+        title={pageTitle}
+        description={"누구나 문서를 조회, 작성, 편집할 수 있습니다."}
+      />
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <BiBook className="text-2xl text-gray-700" />
-            {isRunnerDictionary ? "런너 사전" : "길드 사전"}
-          </h2>
+          <h1 className="text-xl font-semibold flex items-center gap-2">
+            <BiBook className="text-2xl text-gray-700" aria-hidden="true" />
+            {pageTitle}
+          </h1>
         </div>
         <button
           onClick={() =>
@@ -76,21 +83,25 @@ function DictionaryCategoryPage({ type }) {
             )
           }
           className="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
+          aria-label={`${pageTitle} 작성하기`}
         >
           작성하기
         </button>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <section
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+        aria-label="문서 목록"
+      >
         {/* 한글 그룹 */}
         {dictionaryGroups.slice(0, koreanInitials.length).map((group) => (
-          <div
+          <article
             key={group.initial}
             className="border border-gray-200 rounded-lg p-4 bg-white"
           >
-            <h3 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
+            <h2 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
               {group.initial}
-            </h3>
+            </h2>
             <ul className="space-y-0.5">
               {group.dictionaries.map((dict) => {
                 const statusInfo = getStatusInfo(dict.status);
@@ -102,11 +113,13 @@ function DictionaryCategoryPage({ type }) {
                     <Link
                       to={`/dictionary/${dict.currentHistoryId}`}
                       className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
+                      aria-label={`${dict.title} ${statusInfo.text}`}
                     >
                       {dict.title}
                     </Link>
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
+                      aria-hidden="true"
                     >
                       {statusInfo.text}
                     </span>
@@ -114,11 +127,14 @@ function DictionaryCategoryPage({ type }) {
                 );
               })}
             </ul>
-          </div>
+          </article>
         ))}
 
         {/* 구분선 */}
-        <div className="col-span-full border-t border-gray-200 my-6"></div>
+        <div
+          className="col-span-full border-t border-gray-200 my-6"
+          aria-hidden="true"
+        ></div>
 
         {/* 영문 그룹 */}
         {dictionaryGroups
@@ -127,13 +143,13 @@ function DictionaryCategoryPage({ type }) {
             koreanInitials.length + englishInitials.length
           )
           .map((group) => (
-            <div
+            <article
               key={group.initial}
               className="border border-gray-200 rounded-lg p-4 bg-white"
             >
-              <h3 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
+              <h2 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
                 {group.initial}
-              </h3>
+              </h2>
               <ul className="space-y-0.5">
                 {group.dictionaries.map((dict) => {
                   const statusInfo = getStatusInfo(dict.status);
@@ -145,11 +161,13 @@ function DictionaryCategoryPage({ type }) {
                       <Link
                         to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
+                        aria-label={`${dict.title} ${statusInfo.text}`}
                       >
                         {dict.title}
                       </Link>
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
+                        aria-hidden="true"
                       >
                         {statusInfo.text}
                       </span>
@@ -157,23 +175,26 @@ function DictionaryCategoryPage({ type }) {
                   );
                 })}
               </ul>
-            </div>
+            </article>
           ))}
 
         {/* 구분선 */}
-        <div className="col-span-full border-t border-gray-200 my-6"></div>
+        <div
+          className="col-span-full border-t border-gray-200 my-6"
+          aria-hidden="true"
+        ></div>
 
         {/* 숫자 그룹 */}
         {dictionaryGroups
           .slice(koreanInitials.length + englishInitials.length)
           .map((group) => (
-            <div
+            <article
               key={group.initial}
               className="border border-gray-200 rounded-lg p-4 bg-white"
             >
-              <h3 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
+              <h2 className="text-sm font-bold mb-1 border-b pb-0.5 bg-gray-700 text-white -mx-4 -mt-4 px-4 pt-1.5 rounded-t-lg">
                 {group.initial}
-              </h3>
+              </h2>
               <ul className="space-y-0.5">
                 {group.dictionaries.map((dict) => {
                   const statusInfo = getStatusInfo(dict.status);
@@ -185,11 +206,13 @@ function DictionaryCategoryPage({ type }) {
                       <Link
                         to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
+                        aria-label={`${dict.title} ${statusInfo.text}`}
                       >
                         {dict.title}
                       </Link>
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${statusInfo.className}`}
+                        aria-hidden="true"
                       >
                         {statusInfo.text}
                       </span>
@@ -197,10 +220,10 @@ function DictionaryCategoryPage({ type }) {
                   );
                 })}
               </ul>
-            </div>
+            </article>
           ))}
-      </div>
-    </>
+      </section>
+    </main>
   );
 }
 

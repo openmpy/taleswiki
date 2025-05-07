@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { BsBook, BsChevronDown, BsChevronUp, BsEyeSlash } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime } from "../utils/dateUtils";
 
@@ -74,19 +75,31 @@ const DictionaryViewPage = () => {
     );
   }
 
+  // SEO를 위한 설명 생성
+  const getDescription = () => {
+    if (dictionary.content === null) {
+      return "이 문서는 현재 숨김 상태입니다.";
+    }
+    // 마크다운 컨텐츠에서 첫 번째 문단 추출
+    const firstParagraph = dictionary.content.split("\n\n")[0];
+    return firstParagraph.replace(/[#*`]/g, "").substring(0, 160);
+  };
+
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+    <main>
+      <SEO title={dictionary.title} description={getDescription()} />
+      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <BsBook className="text-2xl text-gray-700" />
+          <h1 className="text-xl font-semibold flex items-center gap-2">
+            <BsBook className="text-2xl text-gray-700" aria-hidden="true" />
             {dictionary.title}
-          </h2>
+          </h1>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+        <nav className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
           <button
             className="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
             onClick={() => navigate(-1)}
+            aria-label="이전 페이지로 돌아가기"
           >
             뒤로가기
           </button>
@@ -100,6 +113,7 @@ const DictionaryViewPage = () => {
             onClick={() =>
               navigate(`/dictionary/${dictionary.dictionaryId}/log`)
             }
+            aria-label="편집 로그 보기"
           >
             편집로그
           </button>
@@ -111,31 +125,38 @@ const DictionaryViewPage = () => {
             }`}
             disabled={dictionary.status !== "ALL_ACTIVE"}
             onClick={() => navigate(`/dictionary/${id}/edit`)}
+            aria-label="문서 편집하기"
           >
             편집하기
           </button>
-        </div>
-      </div>
+        </nav>
+      </header>
+
       {toc.length > 0 && (
-        <div className="mb-6">
+        <nav className="mb-6" aria-label="목차">
           <button
             onClick={() => setIsTocOpen(!isTocOpen)}
             className="text-gray-600 hover:text-gray-900 mb-2 flex items-center gap-1"
+            aria-expanded={isTocOpen}
+            aria-controls="table-of-contents"
           >
             {isTocOpen ? (
               <>
                 <span>목차</span>
-                <BsChevronUp className="text-lg" />
+                <BsChevronUp className="text-lg" aria-hidden="true" />
               </>
             ) : (
               <>
                 <span>목차</span>
-                <BsChevronDown className="text-lg" />
+                <BsChevronDown className="text-lg" aria-hidden="true" />
               </>
             )}
           </button>
           {isTocOpen && (
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div
+              id="table-of-contents"
+              className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+            >
               <ul className="space-y-1">
                 {toc.map((item, index) => (
                   <li
@@ -150,12 +171,16 @@ const DictionaryViewPage = () => {
               </ul>
             </div>
           )}
-        </div>
+        </nav>
       )}
-      <div>
+
+      <article>
         {dictionary.content === null ? (
           <div className="flex flex-col items-center justify-center py-8 px-4 bg-gray-50 rounded-lg border border-gray-200">
-            <BsEyeSlash className="text-4xl text-gray-400 mb-3" />
+            <BsEyeSlash
+              className="text-4xl text-gray-400 mb-3"
+              aria-hidden="true"
+            />
             <div className="text-gray-500 font-medium">
               이 문서는 현재 숨김 상태입니다.
             </div>
@@ -165,14 +190,17 @@ const DictionaryViewPage = () => {
             <Viewer initialValue={dictionary.content} />
           </div>
         )}
-      </div>
-      <div className="mt-4 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+      </article>
+
+      <footer className="mt-4 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
         <p className="flex items-center gap-2">
           <span className="font-medium">마지막 편집:</span>
-          <span>{formatKoreanDateTime(dictionary.createdAt)}</span>
+          <time dateTime={dictionary.createdAt}>
+            {formatKoreanDateTime(dictionary.createdAt)}
+          </time>
         </p>
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 };
 
