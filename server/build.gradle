@@ -32,6 +32,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // webp
+    implementation "com.sksamuel.scrimage:scrimage-core:4.3.1"
+    implementation "com.sksamuel.scrimage:scrimage-webp:4.3.1"
+
     // faker
     implementation 'net.datafaker:datafaker:2.4.2'
 }

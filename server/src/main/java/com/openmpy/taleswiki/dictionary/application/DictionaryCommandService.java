@@ -1,6 +1,8 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.common.application.ImageService;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
@@ -11,6 +13,9 @@ import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DictionaryCommandService {
 
+    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(http://localhost:8080/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
+
     private final DictionaryQueryService dictionaryQueryService;
+    private final ImageService imageService;
     private final DictionaryRepository dictionaryRepository;
 
     @Transactional
@@ -30,12 +38,13 @@ public class DictionaryCommandService {
             throw new CustomException("이미 작성된 사전입니다.");
         }
 
-        final long contentLength = request.content().getBytes().length;
+        final String content = processImageReferences(request.content());
+        final long contentLength = content.getBytes().length;
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
 
         final Dictionary dictionary = Dictionary.create(request.title(), category);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
-                request.author(), request.content(), contentLength, clientIp, dictionary
+                request.author(), content, contentLength, clientIp, dictionary
         );
 
         dictionary.addHistory(dictionaryHistory);
@@ -52,16 +61,28 @@ public class DictionaryCommandService {
             throw new CustomException("수정할 수 없는 사전입니다.");
         }
 
-        final long contentLength = request.content().getBytes().length;
+        final String content = processImageReferences(request.content());
+        final long contentLength = content.getBytes().length;
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final long version = dictionary.getCurrentHistory().getVersion() + 1;
 
         final DictionaryHistory dictionaryHistory = DictionaryHistory.update(
-                request.author(), request.content(), version, contentLength, clientIp, dictionary
+                request.author(), content, version, contentLength, clientIp, dictionary
         );
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
+    }
+
+    private String processImageReferences(final String content) {
+        final List<String> fileNames = FileLoaderUtil.extractImageFileNames(content);
+        for (final String fileName : fileNames) {
+            imageService.moveToBaseDirectory(fileName);
+        }
+
+        final Pattern pattern = Pattern.compile(IMAGE_URL_PATTERN);
+        final Matcher matcher = pattern.matcher(content);
+        return matcher.replaceAll("$1/$2");
     }
 }
