@@ -1,0 +1,27 @@
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: openmpy
+      MYSQL_DATABASE: taleswiki
+      MYSQL_USER: suhwan
+      MYSQL_PASSWORD: openmpy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+
+  redis:
+    container_name: redis
+    image: redis:7.4.2
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+
+volumes:
+  mysql:
+  redis:
