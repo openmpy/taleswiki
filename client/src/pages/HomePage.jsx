@@ -71,7 +71,7 @@ function HomePage() {
             규칙을 위반하는 게시물을 발견하셨나요?
           </p>
           <button
-            className="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             aria-label="규칙 위반 게시물 신고하기"
           >
             신고하기
@@ -90,7 +90,7 @@ function HomePage() {
             커뮤니티 이용 중 궁금한 점이 있으신가요?
           </p>
           <button
-            className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             aria-label="커뮤니티 이용 문의하기"
           >
             문의하기
@@ -100,7 +100,7 @@ function HomePage() {
         <article className="bg-white p-6 rounded-xl border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <FaLightbulb
-              className="text-2xl text-yellow-500"
+              className="text-2xl text-green-500"
               aria-hidden="true"
             />
             <h2 className="text-lg font-semibold text-gray-800">건의하기</h2>
@@ -109,7 +109,7 @@ function HomePage() {
             커뮤니티 개선을 위한 아이디어가 있으신가요?
           </p>
           <button
-            className="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+            className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             aria-label="커뮤니티 개선 건의하기"
           >
             건의하기
