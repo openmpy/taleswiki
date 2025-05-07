@@ -15,6 +15,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,10 @@ public class DictionaryQueryService {
     @Transactional(readOnly = true)
     public DictionaryGetTop10Response getTop20Dictionaries() {
         final List<String> statuses = List.of("ALL_ACTIVE", "READ_ONLY");
-        final List<Dictionary> dictionaries = dictionaryRepository.findTop20ByStatusInOrderByUpdatedAtDesc(statuses);
+        final PageRequest pageRequest = PageRequest.of(0, 20);
+        final List<Dictionary> dictionaries = dictionaryRepository.findDictionariesByStatusOrderByUpdatedAtDesc(
+                statuses, pageRequest
+        );
         return DictionaryGetTop10Response.of(dictionaries);
     }
 
