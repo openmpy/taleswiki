@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.common.application.ImageService;
+import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
@@ -25,9 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DictionaryCommandService {
 
     private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(http://localhost:8080/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
+    private static final int REDIS_LOCK_EXPIRATION_DURATION = 60 * 1000;
 
     private final DictionaryQueryService dictionaryQueryService;
     private final ImageService imageService;
+    private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
 
     @Transactional
@@ -38,9 +41,15 @@ public class DictionaryCommandService {
             throw new CustomException("이미 작성된 사전입니다.");
         }
 
+        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
+        final String key = String.format("save-dictionary:%s", clientIp);
+
+        if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
+            throw new CustomException("1분 후에 사전을 작성할 수 있습니다.");
+        }
+
         final String content = processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
-        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
 
         final Dictionary dictionary = Dictionary.create(request.title(), category);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
@@ -58,12 +67,18 @@ public class DictionaryCommandService {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         if (dictionary.getStatus() != DictionaryStatus.ALL_ACTIVE) {
-            throw new CustomException("수정할 수 없는 사전입니다.");
+            throw new CustomException("편집할 수 없는 사전입니다.");
+        }
+
+        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
+        final String key = String.format("update-dictionary:%s", clientIp);
+
+        if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
+            throw new CustomException("1분 후에 사전을 편집할 수 있습니다.");
         }
 
         final String content = processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
-        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final long version = dictionary.getCurrentHistory().getVersion() + 1;
 
         final DictionaryHistory dictionaryHistory = DictionaryHistory.update(
