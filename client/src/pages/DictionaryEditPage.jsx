@@ -1,6 +1,7 @@
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
 import React, { useEffect, useRef, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -14,6 +15,33 @@ const DictionaryEditPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [author, setAuthor] = useState("");
   const [dictionaryId, setDictionaryId] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (file) => {
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await axiosInstance.post(
+        "/api/v1/images/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const imageUrl = `${axiosInstance.defaults.baseURL}/images/tmp/${response.data.fileName}`;
+      return imageUrl;
+    } catch (error) {
+      console.error("이미지 업로드 실패:", error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDictionary = async () => {
@@ -78,6 +106,14 @@ const DictionaryEditPage = () => {
       <p className="text-sm font-bold text-red-500 mb-4">
         * 부정 이용 방지를 위해 IP 정보가 수집됩니다.
       </p>
+      {isUploading && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
+          <div className="bg-white/80 backdrop-blur-md p-8 rounded-lg border border-gray-200 flex flex-col items-center gap-4">
+            <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
+            <p className="text-base text-gray-700">이미지 업로드 중...</p>
+          </div>
+        </div>
+      )}
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:flex-1">
@@ -126,6 +162,14 @@ const DictionaryEditPage = () => {
               initialEditType="markdown"
               useCommandShortcut={true}
               language="ko-KR"
+              hooks={{
+                addImageBlobHook: async (blob, callback) => {
+                  const url = await handleImageUpload(blob);
+                  if (url) {
+                    callback(url);
+                  }
+                },
+              }}
             />
           </div>
           <div className="flex flex-col md:flex-row justify-end gap-2 mt-8">
