@@ -10,17 +10,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 public class ImageService {
 
     private static final String IMAGE_TMP_DIR = System.getProperty("user.home") + "/taleswiki/images/tmp";
     private static final String IMAGE_BASE_DIR = System.getProperty("user.home") + "/taleswiki/images/base";
+    private static final long IMAGE_DELETE_HOURS = 6;
 
     @PostConstruct
     public void initDirectory() {
@@ -78,5 +86,29 @@ public class ImageService {
 
     public Resource getImageResource(final String fileName) {
         return new FileSystemResource(IMAGE_BASE_DIR + "/" + fileName);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteTmpImages() {
+        final Path imageTmpPath = Paths.get(IMAGE_TMP_DIR);
+
+        try (final Stream<Path> paths = Files.list(imageTmpPath)) {
+            final Instant now = Instant.now();
+
+            paths.filter(Files::isRegularFile).forEach(path -> {
+                try {
+                    final FileTime lastModifiedTime = Files.getLastModifiedTime(path);
+                    final long minutesBetween = ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), now);
+
+                    if (minutesBetween > IMAGE_DELETE_HOURS) {
+                        Files.delete(path);
+                    }
+                } catch (final IOException e) {
+                    log.warn("이미지 파일 삭제에 실패했습니다. {}", e.getMessage());
+                }
+            });
+        } catch (final IOException e) {
+            throw new IllegalArgumentException("이미지 임시 파일 삭제중 오류가 발생했습니다.", e);
+        }
     }
 }
