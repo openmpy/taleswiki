@@ -1,9 +1,9 @@
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
 import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
 
 const DictionaryEditPage = () => {
@@ -62,11 +62,7 @@ const DictionaryEditPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!dictionary) {

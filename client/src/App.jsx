@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import LoadingSpinner from "./components/LoadingSpinner";
 import ScrollButtons from "./components/ScrollButtons";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./layouts/Footer";
@@ -40,7 +41,7 @@ function App() {
                   <div className="flex-1 px-0 py-4 md:px-4">
                     <div className="flex flex-col md:flex-row md:items-start gap-4">
                       <main className="w-full md:flex-1 bg-white md:p-6 md:rounded-lg p-4 rounded-none border border-gray-200">
-                        <Suspense fallback={<div>로딩 중...</div>}>
+                        <Suspense fallback={<LoadingSpinner />}>
                           <Routes>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/admin" element={<AdminPage />} />

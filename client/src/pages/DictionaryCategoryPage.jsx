@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
 import { BiBook } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
 import {
   classifyByInitial,
@@ -55,11 +55,7 @@ function DictionaryCategoryPage({ type }) {
   }, [isRunnerDictionary]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <AiOutlineLoading className="animate-spin text-4xl text-gray-700" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
