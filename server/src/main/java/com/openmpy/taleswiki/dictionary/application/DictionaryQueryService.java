@@ -13,7 +13,6 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesRespo
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
-import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -62,13 +61,6 @@ public class DictionaryQueryService {
 
         final List<DictionaryHistory> histories = dictionary.getHistories();
         return DictionaryGetHistoriesResponse.of(dictionary.getTitle(), histories);
-    }
-
-    @Transactional(readOnly = true)
-    public DictionarySearchDictionariesResponse searchDictionaries(final String title) {
-        final List<Dictionary> dictionaries = dictionaryRepository
-                .findAllByTitle_ValueContainingAndStatusIsNotOrderByUpdatedAtDesc(title, DictionaryStatus.HIDDEN);
-        return DictionarySearchDictionariesResponse.of(dictionaries);
     }
 
     @Transactional(readOnly = true)

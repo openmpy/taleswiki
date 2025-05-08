@@ -2,9 +2,13 @@ package com.openmpy.taleswiki.common.dummy;
 
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
+import com.openmpy.taleswiki.dictionary.domain.document.DictionaryDocument;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionarySearchRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -22,12 +26,18 @@ public class DummyData {
     @Profile("dev")
     @Bean
     private CommandLineRunner init(
-            final DictionaryRepository dictionaryRepository
+            final DictionaryRepository dictionaryRepository,
+            final DictionarySearchRepository dictionarySearchRepository
     ) {
-        return (args -> saveDictionaries(dictionaryRepository));
+        return (args -> saveDictionaries(dictionaryRepository, dictionarySearchRepository));
     }
 
-    private void saveDictionaries(final DictionaryRepository dictionaryRepository) {
+    private void saveDictionaries(
+            final DictionaryRepository dictionaryRepository,
+            final DictionarySearchRepository dictionarySearchRepository
+    ) {
+        final List<DictionaryDocument> dictionaryDocuments = new ArrayList<>();
+
         for (int i = 1; i <= 1000; i++) {
             Dictionary dictionary;
             String title;
@@ -60,8 +70,12 @@ public class DummyData {
             );
 
             dictionary.addHistory(dictionaryHistory);
-            dictionaryRepository.save(dictionary);
+            final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+
+            final DictionaryDocument dictionaryDocument = DictionaryDocument.of(savedDictionary);
+            dictionaryDocuments.add(dictionaryDocument);
         }
+        dictionarySearchRepository.saveAll(dictionaryDocuments);
 
         log.info("사전 더미 데이터 {}개 생성", dictionaryRepository.count());
     }

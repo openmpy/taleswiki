@@ -29,6 +29,7 @@ public class DictionaryCommandService {
     private static final int REDIS_LOCK_EXPIRATION_DURATION = 60 * 1000;
 
     private final DictionaryQueryService dictionaryQueryService;
+    private final DictionarySearchService dictionarySearchService;
     private final ImageService imageService;
     private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
@@ -58,6 +59,7 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         dictionaryRepository.save(dictionary);
+        dictionarySearchService.save(dictionary);
     }
 
     @Transactional
@@ -87,6 +89,7 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+        dictionarySearchService.save(savedDictionary);
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
     }
 

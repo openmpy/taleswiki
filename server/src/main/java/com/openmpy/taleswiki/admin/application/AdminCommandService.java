@@ -7,6 +7,8 @@ import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
+import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
@@ -20,6 +22,7 @@ public class AdminCommandService {
 
     private final AdminQueryService adminQueryService;
     private final DictionaryQueryService dictionaryQueryService;
+    private final DictionarySearchService dictionarySearchService;
     private final DictionaryRepository dictionaryRepository;
     private final BlacklistRepository blacklistRepository;
     private final AdminProperties adminProperties;
@@ -38,8 +41,14 @@ public class AdminCommandService {
         adminQueryService.validateToken(token);
 
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
-
         dictionary.changeStatus(status);
+
+        if (dictionary.getStatus() == DictionaryStatus.HIDDEN) {
+            dictionarySearchService.delete(dictionary.getId());
+            return;
+        }
+
+        dictionarySearchService.save(dictionary);
     }
 
     @Transactional
@@ -48,6 +57,7 @@ public class AdminCommandService {
 
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
+        dictionarySearchService.delete(dictionary.getId());
         dictionaryRepository.delete(dictionary);
     }
 

@@ -25,8 +25,8 @@ public class CharacterUtil {
         final char c = text.charAt(0);
 
         if (c >= '가' && c <= '힣') {
-            final int uniVal = c - '가';
-            final int choIndex = uniVal / (21 * 28);
+            final int unicode = c - '가';
+            final int choIndex = unicode / (21 * 28);
             char cho = CHO_SUNG[choIndex];
 
             cho = CHO_SUNG_NORMALIZATION.getOrDefault(cho, cho);
@@ -36,5 +36,30 @@ public class CharacterUtil {
             return Character.toUpperCase(c);
         }
         return c;
+    }
+
+    public static String extractChosung(final String text) {
+        if (text == null || text.isEmpty()) {
+            throw new IllegalArgumentException("문자열이 빈 값일 수 없습니다.");
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        for (final char ch : text.toCharArray()) {
+            if (ch >= '가' && ch <= '힣') {
+                final int unicode = ch - '가';
+                final int choIndex = unicode / (21 * 28);
+
+                sb.append(CHO_SUNG[choIndex]);
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static boolean isChosungOnly(final String text) {
+        final String regex = "^[ㄱ-ㅎ]+$";
+        return text.matches(regex);
     }
 }

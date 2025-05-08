@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.dictionary.presentation;
 
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
+import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DictionaryQueryController {
 
     private final DictionaryQueryService dictionaryQueryService;
+    private final DictionarySearchService dictionarySearchService;
 
     @GetMapping("/latest-modified")
     public ResponseEntity<DictionaryGetTop10Response> getTop20Dictionaries() {
@@ -50,7 +52,7 @@ public class DictionaryQueryController {
     public ResponseEntity<DictionarySearchDictionariesResponse> searchDictionaries(
             @RequestParam(value = "title") final String title
     ) {
-        final DictionarySearchDictionariesResponse response = dictionaryQueryService.searchDictionaries(title);
+        final DictionarySearchDictionariesResponse response = dictionarySearchService.searchByTitle(title);
         return ResponseEntity.ok(response);
     }
 
