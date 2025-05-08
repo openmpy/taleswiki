@@ -10,10 +10,12 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.DictionaryGetGroupItemsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -55,7 +57,7 @@ public class DictionaryQueryService {
         final Dictionary dictionary = getDictionary(dictionaryId);
 
         if (dictionary.getStatus() == DictionaryStatus.HIDDEN) {
-            throw new CustomException("숨김 처리된 사전입니다.");
+            throw new CustomException("숨김 처리된 문서입니다.");
         }
 
         final List<DictionaryHistory> histories = dictionary.getHistories();
@@ -69,13 +71,29 @@ public class DictionaryQueryService {
         return DictionarySearchDictionariesResponse.of(dictionaries);
     }
 
+    @Transactional(readOnly = true)
+    public DictionaryGetRandomResponse getRandomDictionary() {
+        final long count = dictionaryRepository.count();
+        final long randomOffset = ThreadLocalRandom.current().nextLong(1, count + 1);
+        final PageRequest pageRequest = PageRequest.of(0, 1);
+
+        final List<Dictionary> dictionaries = dictionaryRepository.findFirstByIdGreaterThanEqualOrderByIdAsc(
+                randomOffset, pageRequest
+        );
+
+        if (dictionaries.isEmpty()) {
+            throw new CustomException("문서를 찾지 못했습니다.");
+        }
+        return new DictionaryGetRandomResponse(dictionaries.getFirst().getCurrentHistory().getId());
+    }
+
     public Dictionary getDictionary(final Long dictionaryId) {
         return dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new CustomException("찾을 수 없는 사전 번호입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 문서 번호입니다."));
     }
 
     public DictionaryHistory getDictionaryHistory(final Long dictionaryHistoryId) {
         return dictionaryHistoryRepository.findById(dictionaryHistoryId)
-                .orElseThrow(() -> new CustomException("찾을 수 없는 사전 기록 번호입니다."));
+                .orElseThrow(() -> new CustomException("찾을 수 없는 문서 기록 번호입니다."));
     }
 }

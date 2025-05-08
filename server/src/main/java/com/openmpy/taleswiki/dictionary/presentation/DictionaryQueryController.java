@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.presentation;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
@@ -50,6 +51,12 @@ public class DictionaryQueryController {
             @RequestParam(value = "title") final String title
     ) {
         final DictionarySearchDictionariesResponse response = dictionaryQueryService.searchDictionaries(title);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<DictionaryGetRandomResponse> getRandomDictionary() {
+        final DictionaryGetRandomResponse response = dictionaryQueryService.getRandomDictionary();
         return ResponseEntity.ok(response);
     }
 }

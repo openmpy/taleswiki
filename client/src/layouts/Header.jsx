@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { BsShuffle } from "react-icons/bs";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
@@ -60,6 +61,17 @@ function Header() {
     navigate(`/dictionary/${dictionary.currentHistoryId}`);
   };
 
+  const handleShuffle = async () => {
+    try {
+      const response = await axiosInstance.get("/api/v1/dictionaries/random");
+      if (response.data && response.data.currentHistoryId) {
+        navigate(`/dictionary/${response.data.currentHistoryId}`);
+      }
+    } catch (error) {
+      console.error("랜덤 사전 조회 중 오류 발생:", error);
+    }
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setIsMobileSearchOpen(false);
@@ -86,46 +98,56 @@ function Header() {
           ref={searchRef}
         >
           <div className="relative">
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="검색 하실 사전 제목을 입력해주세요"
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
-            />
-            {searchTerm && (
-              <button
-                onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              >
-                <IoClose size={20} />
-              </button>
-            )}
-            {/* 검색 결과 드롭다운 */}
-            {searchResults.length > 0 && (
-              <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
-                {searchResults.map((result) => (
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="검색 하실 사전 제목을 입력해주세요"
+                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
+                />
+                {searchTerm && (
                   <button
-                    key={result.currentHistoryId}
-                    onClick={() => handleResultClick(result)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
-                          result.category === "런너"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-purple-100 text-purple-800"
-                        }`}
-                      >
-                        {result.category}
-                      </span>
-                      <span className="text-gray-200">{result.title}</span>
-                    </div>
+                    <IoClose size={20} />
                   </button>
-                ))}
+                )}
+                {/* 검색 결과 드롭다운 */}
+                {searchResults.length > 0 && (
+                  <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                    {searchResults.map((result) => (
+                      <button
+                        key={result.currentHistoryId}
+                        onClick={() => handleResultClick(result)}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
+                              result.category === "런너"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {result.category}
+                          </span>
+                          <span className="text-gray-200">{result.title}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+              <button
+                className="p-2 rounded-lg bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                onClick={handleShuffle}
+              >
+                <BsShuffle size={20} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -155,6 +177,12 @@ function Header() {
           </button>
           <button
             className="text-white hover:text-blue-400 transition-colors"
+            onClick={handleShuffle}
+          >
+            <BsShuffle size={24} />
+          </button>
+          <button
+            className="text-white hover:text-blue-400 transition-colors"
             onClick={toggleMobileMenu}
           >
             <FiMenu size={24} />
@@ -166,46 +194,50 @@ function Header() {
       {isMobileSearchOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 px-4 pt-2 pb-4 z-50">
           <div className="relative" ref={searchRef}>
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="검색 하실 사전 제목을 입력해주세요"
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
-            />
-            {searchTerm && (
-              <button
-                onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              >
-                <IoClose size={20} />
-              </button>
-            )}
-            {/* 모바일 검색 결과 */}
-            {searchResults.length > 0 && (
-              <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
-                {searchResults.map((result) => (
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="검색 하실 사전 제목을 입력해주세요"
+                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 [&::-webkit-search-cancel-button]:hidden"
+                />
+                {searchTerm && (
                   <button
-                    key={result.currentHistoryId}
-                    onClick={() => handleResultClick(result)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
-                          result.category === "런너"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-purple-100 text-purple-800"
-                        }`}
-                      >
-                        {result.category}
-                      </span>
-                      <span className="text-gray-200">{result.title}</span>
-                    </div>
+                    <IoClose size={20} />
                   </button>
-                ))}
+                )}
+                {/* 모바일 검색 결과 */}
+                {searchResults.length > 0 && (
+                  <div className="absolute w-full mt-1 bg-gray-700 rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                    {searchResults.map((result) => (
+                      <button
+                        key={result.currentHistoryId}
+                        onClick={() => handleResultClick(result)}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${
+                              result.category === "런너"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {result.category}
+                          </span>
+                          <span className="text-gray-200">{result.title}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}

@@ -38,14 +38,14 @@ public class DictionaryCommandService {
         final DictionaryCategory category = DictionaryCategory.fromName(request.category());
 
         if (dictionaryRepository.existsByTitle_ValueAndCategory(request.title(), category)) {
-            throw new CustomException("이미 작성된 사전입니다.");
+            throw new CustomException("이미 작성된 문서입니다.");
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final String key = String.format("save-dictionary:%s", clientIp);
 
         if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
-            throw new CustomException("1분 후에 사전을 작성할 수 있습니다.");
+            throw new CustomException("1분 후에 문서를 작성할 수 있습니다.");
         }
 
         final String content = processImageReferences(request.content());
@@ -67,14 +67,14 @@ public class DictionaryCommandService {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
 
         if (dictionary.getStatus() != DictionaryStatus.ALL_ACTIVE) {
-            throw new CustomException("편집할 수 없는 사전입니다.");
+            throw new CustomException("편집할 수 없는 문서입니다.");
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final String key = String.format("update-dictionary:%s", clientIp);
 
         if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
-            throw new CustomException("1분 후에 사전을 편집할 수 있습니다.");
+            throw new CustomException("1분 후에 문서를 편집할 수 있습니다.");
         }
 
         final String content = processImageReferences(request.content());
