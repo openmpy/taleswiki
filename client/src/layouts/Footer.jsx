@@ -1,5 +1,6 @@
 import React from "react";
 import { FaDiscord, FaEnvelope } from "react-icons/fa";
+import { SiKakaotalk } from "react-icons/si";
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -18,6 +19,15 @@ function Footer() {
           aria-label="Discord 서버로 이동"
         >
           <FaDiscord size={18} />
+        </a>
+        <a
+          href="https://open.kakao.com/o/gbPFwsvh"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-blue-400"
+          aria-label="카카오톡 오픈채팅으로 이동"
+        >
+          <SiKakaotalk size={18} />
         </a>
         <a
           href="mailto:taleswiki@proton.me"
