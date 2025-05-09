@@ -1,5 +1,5 @@
 import React from "react";
-import { FaDiscord, FaEnvelope, FaGithub } from "react-icons/fa";
+import { FaDiscord, FaEnvelope } from "react-icons/fa";
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -20,16 +20,7 @@ function Footer() {
           <FaDiscord size={18} />
         </a>
         <a
-          href="https://github.com/openmpy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-blue-400"
-          aria-label="GitHub 프로필로 이동"
-        >
-          <FaGithub size={18} />
-        </a>
-        <a
-          href="mailto:suhwan@example.com"
+          href="mailto:taleswiki@proton.me"
           className="hover:text-blue-400"
           aria-label="이메일 보내기"
         >

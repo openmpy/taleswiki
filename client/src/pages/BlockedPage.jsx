@@ -8,7 +8,7 @@ const BlockedPage = () => {
         <p className="text-gray-600 mb-6">
           현재 귀하의 IP는 접근이 차단되었습니다.
           <br />
-          문의: test@test.com
+          문의: taleswiki@proton.me
         </p>
       </div>
     </div>
