@@ -7,10 +7,7 @@ function Footer() {
 
   return (
     <footer className="bg-gray-800 text-white p-3 text-center mt-auto border-t border-gray-700 text-sm">
-      <p className="mb-2">
-        &copy; {currentYear} 테일즈위키. All rights reserved.
-      </p>
-      <div className="flex justify-center items-center space-x-3">
+      <div className="flex justify-center items-center space-x-3 mb-2">
         <a
           href="https://discord.gg/eXEtzDEk"
           target="_blank"
@@ -37,6 +34,7 @@ function Footer() {
           <FaEnvelope size={18} />
         </a>
       </div>
+      <p>&copy; {currentYear} 테일즈위키. All rights reserved.</p>
     </footer>
   );
 }
