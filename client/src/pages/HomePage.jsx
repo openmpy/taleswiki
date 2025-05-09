@@ -73,6 +73,9 @@ function HomePage() {
           <button
             className="w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             aria-label="규칙 위반 게시물 신고하기"
+            onClick={() =>
+              window.open("https://forms.gle/a17rFUFizVgpEN6m8", "_blank")
+            }
           >
             신고하기
           </button>
@@ -92,6 +95,9 @@ function HomePage() {
           <button
             className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             aria-label="커뮤니티 이용 문의하기"
+            onClick={() =>
+              window.open("https://forms.gle/qae3XzuUprUVThwt5", "_blank")
+            }
           >
             문의하기
           </button>
@@ -111,6 +117,9 @@ function HomePage() {
           <button
             className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             aria-label="커뮤니티 개선 건의하기"
+            onClick={() =>
+              window.open("https://forms.gle/58VQgZJEGbBwDz9L6", "_blank")
+            }
           >
             건의하기
           </button>
