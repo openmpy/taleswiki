@@ -18,7 +18,7 @@ public class FileLoaderUtil {
     private static final Set<String> VALID_FILE_EXTENSIONS = Set.of(
             "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg"
     );
-    private static final String IMAGE_UPLOAD_PATTERN = "!\\[.*?]\\(http://localhost:8080/(images/tmp/\\S+)\\)";
+    private static final String IMAGE_UPLOAD_PATTERN = "!\\[.*?]\\(%s/(images/tmp/\\S+)\\)";
 
     public static String getExtension(final MultipartFile file) {
         final String filename = file.getOriginalFilename();
@@ -48,10 +48,11 @@ public class FileLoaderUtil {
         }
     }
 
-    public static List<String> extractImageFileNames(final String content) {
+    public static List<String> extractImageFileNames(final String baseUrl, final String content) {
         final List<String> imagePaths = new ArrayList<>();
 
-        final Pattern pattern = Pattern.compile(IMAGE_UPLOAD_PATTERN);
+        final String imageFileRegex = String.format(IMAGE_UPLOAD_PATTERN, baseUrl);
+        final Pattern pattern = Pattern.compile(imageFileRegex);
         final Matcher matcher = pattern.matcher(content);
 
         while (matcher.find()) {

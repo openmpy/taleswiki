@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.application;
 import com.openmpy.taleswiki.common.application.ImageService;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.common.properties.ImageProperties;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DictionaryCommandService {
 
-    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(http://localhost:8080/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
+    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
     private static final int REDIS_LOCK_EXPIRATION_DURATION = 60 * 1000;
 
     private final DictionaryQueryService dictionaryQueryService;
@@ -33,6 +34,7 @@ public class DictionaryCommandService {
     private final ImageService imageService;
     private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
+    private final ImageProperties imageProperties;
 
     @Transactional
     public void save(final HttpServletRequest servletRequest, final DictionarySaveRequest request) {
@@ -94,12 +96,13 @@ public class DictionaryCommandService {
     }
 
     private String processImageReferences(final String content) {
-        final List<String> fileNames = FileLoaderUtil.extractImageFileNames(content);
+        final List<String> fileNames = FileLoaderUtil.extractImageFileNames(imageProperties.uploadPath(), content);
         for (final String fileName : fileNames) {
             imageService.moveToBaseDirectory(fileName);
         }
 
-        final Pattern pattern = Pattern.compile(IMAGE_URL_PATTERN);
+        final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());
+        final Pattern pattern = Pattern.compile(imageUrlRegex);
         final Matcher matcher = pattern.matcher(content);
         return matcher.replaceAll("$1/$2");
     }
