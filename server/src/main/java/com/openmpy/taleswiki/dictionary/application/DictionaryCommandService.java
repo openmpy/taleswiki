@@ -13,6 +13,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -37,7 +38,7 @@ public class DictionaryCommandService {
     private final ImageProperties imageProperties;
 
     @Transactional
-    public void save(final HttpServletRequest servletRequest, final DictionarySaveRequest request) {
+    public DictionarySaveResponse save(final HttpServletRequest servletRequest, final DictionarySaveRequest request) {
         final DictionaryCategory category = DictionaryCategory.fromName(request.category());
 
         if (dictionaryRepository.existsByTitle_ValueAndCategory(request.title(), category)) {
@@ -60,8 +61,9 @@ public class DictionaryCommandService {
         );
 
         dictionary.addHistory(dictionaryHistory);
-        dictionaryRepository.save(dictionary);
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
         dictionarySearchService.save(dictionary);
+        return new DictionarySaveResponse(savedDictionary.getCurrentHistory().getId());
     }
 
     @Transactional

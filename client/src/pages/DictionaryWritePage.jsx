@@ -55,8 +55,8 @@ const DictionaryWritePage = () => {
         content,
       });
 
-      if (response.status === 204) {
-        navigate(-1);
+      if (response.status === 200) {
+        navigate(`/dictionary/${response.data.dictionaryHistoryId}`);
       }
     } catch (error) {
       if (error.response.status === 400) {

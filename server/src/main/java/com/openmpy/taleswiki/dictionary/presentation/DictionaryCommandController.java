@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.dictionary.presentation;
 import com.openmpy.taleswiki.dictionary.application.DictionaryCommandService;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,11 @@ public class DictionaryCommandController {
     private final DictionaryCommandService dictionaryCommandService;
 
     @PostMapping
-    public ResponseEntity<Void> save(
+    public ResponseEntity<DictionarySaveResponse> save(
             final HttpServletRequest servletRequest, @RequestBody final DictionarySaveRequest request
     ) {
-        dictionaryCommandService.save(servletRequest, request);
-        return ResponseEntity.noContent().build();
+        final DictionarySaveResponse response = dictionaryCommandService.save(servletRequest, request);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{dictionaryId}")
