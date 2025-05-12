@@ -48,7 +48,7 @@ public class DictionaryCommandService {
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final String key = String.format("dictionary-save:%s", clientIp);
 
-        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(10L))) {
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
             throw new CustomException("1분 후에 문서를 작성할 수 있습니다.");
         }
 
@@ -79,7 +79,7 @@ public class DictionaryCommandService {
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final String key = String.format("dictionary-update:%s", clientIp);
 
-        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(10L))) {
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
             throw new CustomException("1분 후에 문서를 편집할 수 있습니다.");
         }
 
