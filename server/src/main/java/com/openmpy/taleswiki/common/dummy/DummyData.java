@@ -23,7 +23,7 @@ public class DummyData {
 
     private static final Faker FAKER = new Faker(new Locale("ko"));
 
-    @Profile("dev")
+    @Profile({"dev", "local"})
     @Bean
     private CommandLineRunner init(
             final DictionaryRepository dictionaryRepository,
