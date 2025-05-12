@@ -17,7 +17,7 @@ public class DictionarySearchService {
 
     private final DictionarySearchRepository dictionarySearchRepository;
 
-    @Profile("dev")
+    @Profile({"dev", "local"})
     @PostConstruct
     public void destroyAllSearchDocuments() {
         dictionarySearchRepository.deleteAll();
