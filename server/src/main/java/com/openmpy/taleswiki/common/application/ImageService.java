@@ -4,6 +4,7 @@ import com.openmpy.taleswiki.common.dto.ImageUploadResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,12 +26,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class ImageService {
 
     private static final String IMAGE_TMP_DIR = System.getProperty("user.home") + "/taleswiki/images/tmp";
     private static final String IMAGE_BASE_DIR = System.getProperty("user.home") + "/taleswiki/images/base";
     private static final long IMAGE_DELETE_HOURS = 6;
+
+    private final Environment environment;
 
     @PostConstruct
     public void initDirectory() {
@@ -41,6 +47,15 @@ public class ImageService {
         if (!baseImageDir.exists() && !baseImageDir.mkdirs()) {
             throw new CustomException("이미지 기본 폴더 생성에 실패했습니다.");
         }
+    }
+
+    @PreDestroy
+    public void destroyDirectory() {
+        final File tmpImageDir = new File(IMAGE_TMP_DIR);
+        final File baseImageDir = new File(IMAGE_BASE_DIR);
+
+        cleanDirectory(tmpImageDir);
+        cleanDirectory(baseImageDir);
     }
 
     public ImageUploadResponse upload(final MultipartFile file) {
@@ -109,6 +124,18 @@ public class ImageService {
             });
         } catch (final IOException e) {
             throw new IllegalArgumentException("이미지 임시 파일 삭제중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private void cleanDirectory(final File directory) {
+        final File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (final File file : files) {
+                if (!file.delete()) {
+                    log.error("파일 삭제에 실패했습니다. {}", file.getAbsolutePath());
+                }
+            }
         }
     }
 }

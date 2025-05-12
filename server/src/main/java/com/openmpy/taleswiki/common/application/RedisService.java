@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.common.application;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,12 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+
+    @PostConstruct
+    public void destroyAllKeys() {
+        final Set<String> keys = redisTemplate.keys("*");
+        redisTemplate.delete(keys);
+    }
 
     public Object get(final String key) {
         return redisTemplate.opsForValue().get(key);
