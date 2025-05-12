@@ -80,7 +80,7 @@ function App() {
                           </Suspense>
                         </main>
                         <div className="w-full md:w-64">
-                          <Sidebar className="w-full md:p-6 md:rounded-lg p-4 rounded-none" />
+                          <Sidebar className="w-full md:rounded-lg rounded-none" />
                         </div>
                       </div>
                     </div>

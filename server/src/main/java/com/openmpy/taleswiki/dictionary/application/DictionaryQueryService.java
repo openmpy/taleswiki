@@ -12,15 +12,21 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.DictionaryGetGroupItemsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DictionaryQueryService {
 
     private final RedisService redisService;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
 
@@ -53,13 +60,16 @@ public class DictionaryQueryService {
     @Transactional(readOnly = true)
     public DictionaryHistoryResponse get(final HttpServletRequest request, final Long dictionaryHistoryId) {
         final DictionaryHistory dictionaryHistory = getDictionaryHistory(dictionaryHistoryId);
-        final Long dictionaryId = dictionaryHistory.getDictionary().getId();
+        final Dictionary dictionary = dictionaryHistory.getDictionary();
+        final Long dictionaryId = dictionary.getId();
 
         final String clientIp = IpAddressUtil.getClientIp(request);
         final String key = String.format("dictionary-view:%d:%s", dictionaryId, clientIp);
 
         if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
             final String viewKey = String.format("dictionary-view:%d", dictionaryId);
+
+            redisTemplate.opsForZSet().incrementScore("popular_dictionaries", dictionaryId, 1.0);
             redisService.increment(viewKey);
         }
         return DictionaryHistoryResponse.of(dictionaryHistory);
@@ -91,6 +101,22 @@ public class DictionaryQueryService {
             throw new CustomException("문서를 찾지 못했습니다.");
         }
         return new DictionaryGetRandomResponse(dictionaries.getFirst().getCurrentHistory().getId());
+    }
+
+    @Transactional(readOnly = true)
+    public DictionaryGetPopularResponse getPopular() {
+        final Set<TypedTuple<Object>> popularDocs = redisTemplate.opsForZSet()
+                .reverseRangeWithScores("popular_dictionaries", 0, 9);
+
+        final List<Long> popularDictionaryIds = Objects.requireNonNull(popularDocs).stream()
+                .map(doc -> Long.parseLong(Objects.requireNonNull(doc.getValue()).toString()))
+                .toList();
+
+        final List<Dictionary> dictionaries = dictionaryRepository.findAllById(popularDictionaryIds).stream()
+                .sorted(Comparator.comparingInt(o -> popularDictionaryIds.indexOf(o.getId())))
+                .toList();
+
+        return DictionaryGetPopularResponse.of(dictionaries);
     }
 
     public Dictionary getDictionary(final Long dictionaryId) {

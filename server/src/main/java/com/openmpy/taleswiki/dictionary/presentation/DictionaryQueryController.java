@@ -4,6 +4,7 @@ import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
@@ -63,6 +64,12 @@ public class DictionaryQueryController {
     @GetMapping("/random")
     public ResponseEntity<DictionaryGetRandomResponse> getRandomDictionary() {
         final DictionaryGetRandomResponse response = dictionaryQueryService.getRandomDictionary();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<DictionaryGetPopularResponse> getPopular() {
+        DictionaryGetPopularResponse response = dictionaryQueryService.getPopular();
         return ResponseEntity.ok(response);
     }
 }
