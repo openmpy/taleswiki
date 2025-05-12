@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.common.application;
 
 import java.time.Duration;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,24 @@ public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public boolean acquireLock(final String key, final String value, long timeoutInMillis) {
-        final Boolean success = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofMillis(timeoutInMillis));
+    public Object get(final String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public Set<String> getKeys(final String pattern) {
+        return redisTemplate.keys(pattern);
+    }
+
+    public void increment(final String key) {
+        redisTemplate.opsForValue().increment(key);
+    }
+
+    public void delete(final String key) {
+        redisTemplate.delete(key);
+    }
+
+    public boolean setIfAbsent(final String key, final String value, final Duration duration) {
+        final Boolean success = redisTemplate.opsForValue().setIfAbsent(key, value, duration);
         return Boolean.TRUE.equals(success);
     }
 }

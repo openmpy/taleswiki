@@ -1,6 +1,8 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
@@ -13,6 +15,8 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesRespo
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DictionaryQueryService {
 
+    private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
 
@@ -46,8 +51,17 @@ public class DictionaryQueryService {
     }
 
     @Transactional(readOnly = true)
-    public DictionaryHistoryResponse get(final Long dictionaryHistoryId) {
+    public DictionaryHistoryResponse get(final HttpServletRequest request, final Long dictionaryHistoryId) {
         final DictionaryHistory dictionaryHistory = getDictionaryHistory(dictionaryHistoryId);
+        final Long dictionaryId = dictionaryHistory.getDictionary().getId();
+
+        final String clientIp = IpAddressUtil.getClientIp(request);
+        final String key = String.format("dictionary-view:%d:%s", dictionaryId, clientIp);
+
+        if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
+            final String viewKey = String.format("dictionary-view:%d", dictionaryId);
+            redisService.increment(viewKey);
+        }
         return DictionaryHistoryResponse.of(dictionaryHistory);
     }
 

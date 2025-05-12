@@ -16,6 +16,7 @@ import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DictionaryCommandService {
 
     private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
-    private static final int REDIS_LOCK_EXPIRATION_DURATION = 60 * 1000;
 
     private final DictionaryQueryService dictionaryQueryService;
     private final DictionarySearchService dictionarySearchService;
@@ -46,9 +46,9 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String key = String.format("save-dictionary:%s", clientIp);
+        final String key = String.format("dictionary-save:%s", clientIp);
 
-        if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(10L))) {
             throw new CustomException("1분 후에 문서를 작성할 수 있습니다.");
         }
 
@@ -77,9 +77,9 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String key = String.format("update-dictionary:%s", clientIp);
+        final String key = String.format("dictionary-update:%s", clientIp);
 
-        if (!redisService.acquireLock(key, clientIp, REDIS_LOCK_EXPIRATION_DURATION)) {
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(10L))) {
             throw new CustomException("1분 후에 문서를 편집할 수 있습니다.");
         }
 
@@ -95,6 +95,12 @@ public class DictionaryCommandService {
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
         dictionarySearchService.save(savedDictionary);
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
+    }
+
+    @Transactional
+    public void incrementViews(final Long dictionaryId, final Long count) {
+        final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
+        dictionary.incrementViews(count);
     }
 
     private String processImageReferences(final String content) {

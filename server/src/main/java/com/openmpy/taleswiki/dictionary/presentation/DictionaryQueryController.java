@@ -8,6 +8,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +38,11 @@ public class DictionaryQueryController {
     }
 
     @GetMapping("/histories/{dictionaryHistoryId}")
-    public ResponseEntity<DictionaryHistoryResponse> get(@PathVariable final Long dictionaryHistoryId) {
-        final DictionaryHistoryResponse response = dictionaryQueryService.get(dictionaryHistoryId);
+    public ResponseEntity<DictionaryHistoryResponse> get(
+            final HttpServletRequest servletRequest,
+            @PathVariable final Long dictionaryHistoryId
+    ) {
+        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest, dictionaryHistoryId);
         return ResponseEntity.ok(response);
     }
 

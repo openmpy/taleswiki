@@ -4,6 +4,7 @@ import static com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus
 
 import com.openmpy.taleswiki.common.domain.entity.BaseEntity;
 import com.openmpy.taleswiki.dictionary.domain.DictionaryTitle;
+import com.openmpy.taleswiki.dictionary.domain.DictionaryView;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import jakarta.persistence.AttributeOverride;
@@ -48,6 +49,10 @@ public class Dictionary extends BaseEntity {
     @Column(nullable = false)
     private DictionaryStatus status;
 
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "view", nullable = false))
+    private DictionaryView view;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_hitsory_id")
     private DictionaryHistory currentHistory;
@@ -56,10 +61,16 @@ public class Dictionary extends BaseEntity {
     private final List<DictionaryHistory> histories = new ArrayList<>();
 
     @Builder
-    public Dictionary(final String title, final DictionaryCategory category, final DictionaryStatus status) {
+    public Dictionary(
+            final String title,
+            final DictionaryCategory category,
+            final DictionaryStatus status,
+            final Long view
+    ) {
         this.title = new DictionaryTitle(title);
         this.category = category;
         this.status = status;
+        this.view = new DictionaryView(view);
     }
 
     public static Dictionary create(final String title, final DictionaryCategory category) {
@@ -67,6 +78,7 @@ public class Dictionary extends BaseEntity {
                 .title(title)
                 .category(category)
                 .status(ALL_ACTIVE)
+                .view(0L)
                 .build();
     }
 
@@ -79,7 +91,15 @@ public class Dictionary extends BaseEntity {
         this.histories.add(history);
     }
 
+    public void incrementViews(final Long count) {
+        this.view.increment(count);
+    }
+
     public String getTitle() {
         return title.getValue();
+    }
+
+    public Long getView() {
+        return view.getValue();
     }
 }
