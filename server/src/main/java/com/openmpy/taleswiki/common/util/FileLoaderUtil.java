@@ -2,6 +2,10 @@ package com.openmpy.taleswiki.common.util;
 
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.nio.AnimatedGif;
+import com.sksamuel.scrimage.nio.AnimatedGifReader;
+import com.sksamuel.scrimage.nio.ImageSource;
+import com.sksamuel.scrimage.webp.Gif2WebpWriter;
 import com.sksamuel.scrimage.webp.WebpWriter;
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +42,13 @@ public class FileLoaderUtil {
     public static File convertWebp(final String fileName, final File file) {
         try {
             final String webpFileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".webp";
+            final String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
             final File outputWebpFile = new File(file.getParentFile(), webpFileName);
+
+            if (extension.equalsIgnoreCase("gif")) {
+                final AnimatedGif animatedGif = AnimatedGifReader.read(ImageSource.of(file));
+                return animatedGif.output(Gif2WebpWriter.DEFAULT, outputWebpFile);
+            }
 
             return ImmutableImage.loader()
                     .fromFile(file)
