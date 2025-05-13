@@ -69,15 +69,17 @@
         </encoder>
     </appender>
 
-    <springProfile name="local">
+    <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
-    <springProfile name="dev">
+    <springProfile name="local">
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="INFO-ROLLING"/>
+            <appender-ref ref="WARN-ROLLING"/>
+            <appender-ref ref="ERROR-ROLLING"/>
         </root>
     </springProfile>
 
