@@ -69,7 +69,7 @@ public class DictionaryQueryService {
         if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
             final String viewKey = String.format("dictionary-view:%d", dictionaryId);
 
-            redisTemplate.opsForZSet().incrementScore("popular_dictionaries", dictionaryId, 1.0);
+            redisService.incrementScore("popular_dictionaries", dictionaryId, 1.0);
             redisService.increment(viewKey);
         }
         return DictionaryHistoryResponse.of(dictionaryHistory);
@@ -90,23 +90,22 @@ public class DictionaryQueryService {
     @Transactional(readOnly = true)
     public DictionaryGetRandomResponse getRandomDictionary() {
         final long count = dictionaryRepository.count();
+
+        if (count == 0L) {
+            throw new CustomException("문서를 찾지 못했습니다.");
+        }
+
         final long randomOffset = ThreadLocalRandom.current().nextLong(1, count + 1);
         final PageRequest pageRequest = PageRequest.of(0, 1);
-
         final List<Dictionary> dictionaries = dictionaryRepository.findFirstByIdGreaterThanEqualOrderByIdAsc(
                 randomOffset, pageRequest
         );
-
-        if (dictionaries.isEmpty()) {
-            throw new CustomException("문서를 찾지 못했습니다.");
-        }
         return new DictionaryGetRandomResponse(dictionaries.getFirst().getCurrentHistory().getId());
     }
 
     @Transactional(readOnly = true)
     public DictionaryGetPopularResponse getPopular() {
-        final Set<TypedTuple<Object>> popularDocs = redisTemplate.opsForZSet()
-                .reverseRangeWithScores("popular_dictionaries", 0, 9);
+        final Set<TypedTuple<Object>> popularDocs = redisService.reverseRangeWithScores("popular_dictionaries", 0, 9);
 
         final List<Long> popularDictionaryIds = Objects.requireNonNull(popularDocs).stream()
                 .map(doc -> Long.parseLong(Objects.requireNonNull(doc.getValue()).toString()))

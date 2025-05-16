@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -38,5 +39,13 @@ public class RedisService {
     public boolean setIfAbsent(final String key, final String value, final Duration duration) {
         final Boolean success = redisTemplate.opsForValue().setIfAbsent(key, value, duration);
         return Boolean.TRUE.equals(success);
+    }
+
+    public Set<TypedTuple<Object>> reverseRangeWithScores(final String key, final long start, final long end) {
+        return redisTemplate.opsForZSet().reverseRangeWithScores(key, start, end);
+    }
+
+    public Double incrementScore(final String key, final Object value, final double delta) {
+        return redisTemplate.opsForZSet().incrementScore(key, value, delta);
     }
 }
