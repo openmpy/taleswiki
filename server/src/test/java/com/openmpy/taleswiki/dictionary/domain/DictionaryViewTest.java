@@ -19,7 +19,7 @@ class DictionaryViewTest {
         final DictionaryView view = new DictionaryView(value);
 
         // then
-        assertThat(view.getValue()).isEqualTo(value);
+        assertThat(view.getValue()).isEqualTo(100L);
     }
 
     @DisplayName("[통과] 사전 조회수가 +1 증가한다.")
