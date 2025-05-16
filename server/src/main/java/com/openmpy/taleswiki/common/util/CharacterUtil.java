@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.common.util;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import java.util.Map;
 
 public class CharacterUtil {
@@ -17,10 +18,8 @@ public class CharacterUtil {
             'ㅉ', 'ㅈ'
     );
 
-    public static Character getInitialGroup(final String text) {
-        if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("문자열이 빈 값일 수 없습니다.");
-        }
+    public static Character getInitial(final String text) {
+        validateBlank(text);
 
         final char c = text.charAt(0);
 
@@ -39,9 +38,7 @@ public class CharacterUtil {
     }
 
     public static String extractChosung(final String text) {
-        if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("문자열이 빈 값일 수 없습니다.");
-        }
+        validateBlank(text);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -61,5 +58,11 @@ public class CharacterUtil {
     public static boolean isChosungOnly(final String text) {
         final String regex = "^[ㄱ-ㅎ]+$";
         return text.matches(regex);
+    }
+
+    private static void validateBlank(final String text) {
+        if (text == null || text.isEmpty()) {
+            throw new CustomException("문자열이 빈 값일 수 없습니다.");
+        }
     }
 }

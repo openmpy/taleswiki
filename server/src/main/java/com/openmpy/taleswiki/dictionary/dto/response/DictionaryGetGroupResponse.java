@@ -21,7 +21,7 @@ public record DictionaryGetGroupResponse(List<DictionaryGetGroupItemsResponse> g
                             it.getStatus().name()
                     ))
                     .collect(Collectors.groupingBy(it ->
-                            CharacterUtil.getInitialGroup(it.title())
+                            CharacterUtil.getInitial(it.title())
                     ));
 
             return groupedDictionaries.entrySet().stream()
