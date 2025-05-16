@@ -3,6 +3,8 @@ package com.openmpy.taleswiki.helper;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 public class Fixture {
 
@@ -14,10 +16,16 @@ public class Fixture {
     public static Dictionary createDictionary() {
         final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
-                "작성자", "내용", 10L, "127.0.0.1", DICTIONARY_01
+                "작성자", "내용", 10L, "127.0.0.1", dictionary
         );
 
         dictionary.addHistory(dictionaryHistory);
         return dictionary;
+    }
+
+    public static HttpServletRequest createMockHttpServletRequest() {
+        final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        servletRequest.addHeader("X-Forwarded-For", "127.0.0.1");
+        return servletRequest;
     }
 }

@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 40MB
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+cors:
+  path-pattern: /**
+  origins: http://localhost:5173
+  methods: POST, GET, PUT, PATCH, DELETE, OPTIONS
+  headers: "*"
+  allow-credentials: true
+  max-age: 3600
+
+cookie:
+  http-only: true
+  secure: true
+  domain: localhost
+  path: /
+  same-site: none
+  max-age: 7D
+
+admin:
+  nickname: openmpy
+  password: 9898
+  token: success
+
+image:
+  upload-path: http://localhost:8080
