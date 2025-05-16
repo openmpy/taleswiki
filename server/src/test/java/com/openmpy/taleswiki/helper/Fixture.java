@@ -10,4 +10,14 @@ public class Fixture {
     public static final DictionaryHistory DICTIONARY_HISTORY_01 = DictionaryHistory.create(
             "작성자", "내용", 10L, "127.0.0.1", DICTIONARY_01
     );
+
+    public static Dictionary createDictionary() {
+        final Dictionary dictionary = Dictionary.create("제목", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", DICTIONARY_01
+        );
+
+        dictionary.addHistory(dictionaryHistory);
+        return dictionary;
+    }
 }
