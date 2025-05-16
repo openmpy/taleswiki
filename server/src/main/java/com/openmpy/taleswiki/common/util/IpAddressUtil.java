@@ -16,7 +16,7 @@ public class IpAddressUtil {
         for (final String header : headers) {
             final String ip = request.getHeader(header);
 
-            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            if (ip != null && !ip.isBlank()) {
                 return ip;
             }
         }
