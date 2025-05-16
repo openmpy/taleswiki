@@ -12,13 +12,23 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class ClientIp {
 
-    private static final String INVALID_IP_V4_PATTERN = "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$";
+    private static final String IP_V4_PATTERN = "^(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)){3}$";
+    private static final String IP_V6_PATTERN = "^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,7}:$" +
+            "|^:(:[0-9a-fA-F]{1,4}){1,7}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}$" +
+            "|^(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}$" +
+            "|^[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}$" +
+            "|^:(?::[0-9a-fA-F]{1,4}){1,7}$";
 
     private String value;
 
     public ClientIp(final String value) {
         validateBlank(value);
-//        validateIp(value);
+        validateIp(value);
 
         this.value = value;
     }
@@ -30,12 +40,16 @@ public class ClientIp {
     }
 
     private void validateIp(final String value) {
-        if (!isValidIpV4(value)) {
+        if (!isValidIpV4(value) && !isValidIpV6(value)) {
             throw new CustomException("IP 값이 올바르지 않습니다.");
         }
     }
 
     private boolean isValidIpV4(final String value) {
-        return Pattern.matches(INVALID_IP_V4_PATTERN, value);
+        return Pattern.matches(IP_V4_PATTERN, value);
+    }
+
+    private boolean isValidIpV6(final String value) {
+        return Pattern.matches(IP_V6_PATTERN, value);
     }
 }
