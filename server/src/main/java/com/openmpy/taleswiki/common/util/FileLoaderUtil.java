@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileLoaderUtil {
 
-    private static final Set<String> VALID_FILE_EXTENSIONS = Set.of(
+    private static final Set<String> VALID_IMAGE_FILE_EXTENSIONS = Set.of(
             "jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "svg"
     );
     private static final String IMAGE_UPLOAD_PATTERN = "!\\[.*?]\\(%s/(images/tmp/\\S+)\\)";
@@ -27,14 +27,12 @@ public class FileLoaderUtil {
     public static String getExtension(final MultipartFile file) {
         final String filename = file.getOriginalFilename();
 
-        if (filename == null || !filename.contains(".")) {
-            throw new CustomException("파일에서 확장자명을 추출할 수 없습니다.");
-        }
+        validateExtension(filename);
         return filename.substring(filename.lastIndexOf(".") + 1);
     }
 
-    public static void validateFileExtension(final String extension) {
-        if (!VALID_FILE_EXTENSIONS.contains(extension)) {
+    public static void validateImageFileExtension(final String extension) {
+        if (!VALID_IMAGE_FILE_EXTENSIONS.contains(extension)) {
             throw new CustomException("이미지 파일 확장자가 올바르지 않습니다.");
         }
     }
@@ -59,7 +57,7 @@ public class FileLoaderUtil {
     }
 
     public static List<String> extractImageFileNames(final String baseUrl, final String content) {
-        final List<String> imagePaths = new ArrayList<>();
+        final List<String> fileNames = new ArrayList<>();
 
         final String imageFileRegex = String.format(IMAGE_UPLOAD_PATTERN, baseUrl);
         final Pattern pattern = Pattern.compile(imageFileRegex);
@@ -67,8 +65,14 @@ public class FileLoaderUtil {
 
         while (matcher.find()) {
             final String imagePath = matcher.group(1);
-            imagePaths.add(Paths.get(imagePath).getFileName().toString());
+            fileNames.add(Paths.get(imagePath).getFileName().toString());
         }
-        return imagePaths;
+        return fileNames;
+    }
+
+    private static void validateExtension(final String filename) {
+        if (!filename.contains(".")) {
+            throw new CustomException("파일에서 확장자명을 추출할 수 없습니다.");
+        }
     }
 }

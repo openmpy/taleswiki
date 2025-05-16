@@ -60,7 +60,7 @@ public class ImageService {
 
     public ImageUploadResponse upload(final MultipartFile file) {
         final String extension = FileLoaderUtil.getExtension(file);
-        FileLoaderUtil.validateFileExtension(extension);
+        FileLoaderUtil.validateImageFileExtension(extension);
 
         try {
             final String fileName = UUID.randomUUID() + "." + extension;
