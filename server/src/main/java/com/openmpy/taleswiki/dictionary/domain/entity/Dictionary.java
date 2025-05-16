@@ -86,13 +86,13 @@ public class Dictionary extends BaseEntity {
         this.status = DictionaryStatus.fromName(status);
     }
 
+    public void incrementViews(final Long count) {
+        this.view.increment(count);
+    }
+
     public void addHistory(final DictionaryHistory history) {
         this.currentHistory = history;
         this.histories.add(history);
-    }
-
-    public void incrementViews(final Long count) {
-        this.view.increment(count);
     }
 
     public String getTitle() {
