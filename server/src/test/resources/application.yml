@@ -56,8 +56,8 @@ cookie:
   max-age: 7D
 
 admin:
-  nickname: openmpy
-  password: 9898
+  nickname: admin
+  password: test
   token: success
 
 image:
