@@ -47,7 +47,7 @@ public class DictionaryScheduler {
 
             if (newScore <= 0) {
                 redisService.remove("popular_dictionaries", dictionary);
-                break;
+                continue;
             }
 
             redisService.add("popular_dictionaries", dictionary, newScore);
