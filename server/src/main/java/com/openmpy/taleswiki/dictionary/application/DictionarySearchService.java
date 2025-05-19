@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.dictionary.application;
 
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.CharacterUtil;
 import com.openmpy.taleswiki.dictionary.domain.document.DictionaryDocument;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
@@ -29,7 +30,8 @@ public class DictionarySearchService {
     }
 
     public void delete(final Long id) {
-        dictionarySearchRepository.deleteById(id);
+        final DictionaryDocument dictionaryDocument = getDictionaryDocument(id);
+        dictionarySearchRepository.delete(dictionaryDocument);
     }
 
     public DictionarySearchDictionariesResponse searchByTitle(final String keyword) {
@@ -41,5 +43,10 @@ public class DictionarySearchService {
             dictionaryDocuments = dictionarySearchRepository.findByTitleStartingWith(keyword);
         }
         return DictionarySearchDictionariesResponse.of(dictionaryDocuments);
+    }
+
+    private DictionaryDocument getDictionaryDocument(final Long id) {
+        return dictionarySearchRepository.findById(id)
+                .orElseThrow(() -> new CustomException("사전 검색 ID를 찾을 수 없습니다."));
     }
 }
