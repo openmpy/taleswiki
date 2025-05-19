@@ -33,10 +33,10 @@ public class DictionaryScheduler {
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void decayPopularDictionaryScores() {
-        final Set<Object> dictionaries = redisTemplate.opsForZSet().range("popular_dictionaries", 0, -1);
+        final Set<Object> dictionaries = redisService.range("popular_dictionaries", 0, -1);
 
         for (final Object dictionary : dictionaries) {
-            final Double score = redisTemplate.opsForZSet().score("popular_dictionaries", dictionary);
+            final Double score = redisService.score("popular_dictionaries", dictionary);
 
             if (score == null) {
                 continue;
@@ -46,11 +46,11 @@ public class DictionaryScheduler {
             final double newScore = score - decayAmount;
 
             if (newScore <= 0) {
-                redisTemplate.opsForZSet().remove("popular_dictionaries", dictionary);
+                redisService.remove("popular_dictionaries", dictionary);
                 break;
             }
 
-            redisTemplate.opsForZSet().add("popular_dictionaries", dictionary, newScore);
+            redisService.add("popular_dictionaries", dictionary, newScore);
         }
     }
 }

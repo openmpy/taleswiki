@@ -48,4 +48,20 @@ public class RedisService {
     public Double incrementScore(final String key, final Object value, final double delta) {
         return redisTemplate.opsForZSet().incrementScore(key, value, delta);
     }
+
+    public Set<Object> range(final String key, final long start, final long end) {
+        return redisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    public Double score(final String key, final Object object) {
+        return redisTemplate.opsForZSet().score(key, object);
+    }
+
+    public Long remove(final String key, final Object object) {
+        return redisTemplate.opsForZSet().remove(key, object);
+    }
+
+    public Boolean add(final String key, final Object value, final double score) {
+        return redisTemplate.opsForZSet().add(key, value, score);
+    }
 }
