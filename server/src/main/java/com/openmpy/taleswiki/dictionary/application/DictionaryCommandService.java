@@ -46,12 +46,6 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String key = String.format("dictionary-save:%s", clientIp);
-
-        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
-            throw new CustomException("1분 후에 문서를 작성할 수 있습니다.");
-        }
-
         final String content = processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
 
@@ -59,6 +53,8 @@ public class DictionaryCommandService {
         final DictionaryHistory dictionaryHistory = DictionaryHistory.create(
                 request.author(), content, contentLength, clientIp, dictionary
         );
+
+        validateDictionarySubmission(clientIp);
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
@@ -77,12 +73,6 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String key = String.format("dictionary-update:%s", clientIp);
-
-        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
-            throw new CustomException("1분 후에 문서를 편집할 수 있습니다.");
-        }
-
         final String content = processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
         final long version = dictionary.getCurrentHistory().getVersion() + 1;
@@ -90,6 +80,8 @@ public class DictionaryCommandService {
         final DictionaryHistory dictionaryHistory = DictionaryHistory.update(
                 request.author(), content, version, contentLength, clientIp, dictionary
         );
+
+        validateEditPermission(clientIp);
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
@@ -113,5 +105,21 @@ public class DictionaryCommandService {
         final Pattern pattern = Pattern.compile(imageUrlRegex);
         final Matcher matcher = pattern.matcher(content);
         return matcher.replaceAll("$1/$2");
+    }
+
+    private void validateDictionarySubmission(final String clientIp) {
+        final String key = String.format("dictionary-save:%s", clientIp);
+
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
+            throw new CustomException("1분 후에 문서를 작성할 수 있습니다.");
+        }
+    }
+
+    private void validateEditPermission(final String clientIp) {
+        final String key = String.format("dictionary-update:%s", clientIp);
+
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
+            throw new CustomException("1분 후에 문서를 편집할 수 있습니다.");
+        }
     }
 }
