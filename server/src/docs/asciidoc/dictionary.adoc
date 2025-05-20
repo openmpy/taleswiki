@@ -1,0 +1,9 @@
+== 사전
+
+=== 사전 작성 API
+
+operation::dictionary-save[snippets="http-request,request-body,request-fields,http-response,response-fields"]
+
+=== 사전 수정 API
+
+operation::dictionary-update[snippets="http-request,request-body,request-fields,http-response,response-fields"]

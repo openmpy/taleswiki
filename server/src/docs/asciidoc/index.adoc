@@ -1,0 +1,8 @@
+= 테일즈위키 API 문서
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+include::dictionary.adoc[]
