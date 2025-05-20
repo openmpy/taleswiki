@@ -3,12 +3,14 @@ package com.openmpy.taleswiki.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openmpy.taleswiki.admin.application.AdminCommandService;
 import com.openmpy.taleswiki.admin.presentation.AdminCommandController;
+import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryCommandService;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
 import com.openmpy.taleswiki.dictionary.presentation.DictionaryCommandController;
 import com.openmpy.taleswiki.dictionary.presentation.DictionaryQueryController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @AutoConfigureRestDocs
+@EnableConfigurationProperties(CookieProperties.class)
 @WebMvcTest(
         controllers = {
                 DictionaryCommandController.class,

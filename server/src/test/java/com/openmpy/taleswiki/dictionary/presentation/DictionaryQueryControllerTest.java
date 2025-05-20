@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -74,6 +75,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-getTop20Dictionaries",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 responseFields(
                                         fieldWithPath("dictionaries[].currentHistoryId").description("최신 사전 기록 ID"),
@@ -126,6 +128,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-getGroupDictionaries",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
                                         parameterWithName("categoryName").description("카테고리")
@@ -171,6 +174,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-get",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
                                         parameterWithName("dictionaryHistoryId").description("사전 기록 ID")
@@ -227,6 +231,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-getHistories",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 pathParameters(
                                         parameterWithName("dictionaryId").description("사전 ID")
@@ -267,7 +272,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
         // then
         mockMvc.perform(get("/api/v1/dictionaries/search")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("title", "apple")
+                        .queryParam("title", "apple")
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -278,6 +283,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-searchByTitle",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 queryParameters(
                                         parameterWithName("title").description("검색할 게시글 제목")
@@ -311,6 +317,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-getRandomDictionary",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 responseFields(
                                         fieldWithPath("currentHistoryId").description("최근 사전 기록 ID")
@@ -350,6 +357,7 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 .andDo(
                         document(
                                 "dictionary-getPopular",
+                                preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 responseFields(
                                         fieldWithPath("dictionaries[].currentHistoryId").description("최근 사전 기록 ID"),

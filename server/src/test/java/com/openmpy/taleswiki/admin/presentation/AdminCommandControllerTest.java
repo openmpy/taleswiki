@@ -29,12 +29,10 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 
-@EnableConfigurationProperties(CookieProperties.class)
 class AdminCommandControllerTest extends ControllerTestSupport {
 
     @Autowired
