@@ -6,3 +6,4 @@
 :seclinks:
 
 include::dictionary.adoc[]
+include::admin.adoc[]
