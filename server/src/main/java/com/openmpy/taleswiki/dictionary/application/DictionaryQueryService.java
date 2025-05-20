@@ -14,7 +14,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse.
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
-import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
@@ -40,13 +40,13 @@ public class DictionaryQueryService {
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
 
     @Transactional(readOnly = true)
-    public DictionaryGetTop10Response getTop20Dictionaries() {
+    public DictionaryGetTop20Response getTop20Dictionaries() {
         final List<String> statuses = List.of("ALL_ACTIVE", "READ_ONLY");
         final PageRequest pageRequest = PageRequest.of(0, 20);
         final List<Dictionary> dictionaries = dictionaryRepository.findDictionariesByStatusOrderByUpdatedAtDesc(
                 statuses, pageRequest
         );
-        return DictionaryGetTop10Response.of(dictionaries);
+        return DictionaryGetTop20Response.of(dictionaries);
     }
 
     @Transactional(readOnly = true)

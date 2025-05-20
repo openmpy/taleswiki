@@ -21,8 +21,8 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesRespo
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse.DictionaryGetPopularItemResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
-import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response;
-import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop10Response.DictionaryGetTop10ItemResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response.DictionaryGetTop20ItemResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.Fixture;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,10 +67,10 @@ class DictionaryQueryServiceTest {
         }
 
         // when
-        final DictionaryGetTop10Response response = dictionaryQueryService.getTop20Dictionaries();
+        final DictionaryGetTop20Response response = dictionaryQueryService.getTop20Dictionaries();
 
         // then
-        final List<DictionaryGetTop10ItemResponse> dictionaries = response.dictionaries();
+        final List<DictionaryGetTop20ItemResponse> dictionaries = response.dictionaries();
 
         assertThat(dictionaries).hasSize(20);
         assertThat(dictionaries.getFirst().title()).isEqualTo("제목20");

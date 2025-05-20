@@ -4,16 +4,16 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record DictionaryGetTop10Response(List<DictionaryGetTop10ItemResponse> dictionaries) {
+public record DictionaryGetTop20Response(List<DictionaryGetTop20ItemResponse> dictionaries) {
 
-    public record DictionaryGetTop10ItemResponse(
+    public record DictionaryGetTop20ItemResponse(
             Long currentHistoryId, String title, String category, LocalDateTime createdAt
     ) {
     }
 
-    public static DictionaryGetTop10Response of(final List<Dictionary> dictionaries) {
-        final List<DictionaryGetTop10ItemResponse> responses = dictionaries.stream()
-                .map(it -> new DictionaryGetTop10ItemResponse(
+    public static DictionaryGetTop20Response of(final List<Dictionary> dictionaries) {
+        final List<DictionaryGetTop20ItemResponse> responses = dictionaries.stream()
+                .map(it -> new DictionaryGetTop20ItemResponse(
                         it.getCurrentHistory().getId(),
                         it.getTitle(),
                         it.getCategory().getValue(),
@@ -21,6 +21,6 @@ public record DictionaryGetTop10Response(List<DictionaryGetTop10ItemResponse> di
                 ))
                 .toList();
 
-        return new DictionaryGetTop10Response(responses);
+        return new DictionaryGetTop20Response(responses);
     }
 }
