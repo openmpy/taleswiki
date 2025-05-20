@@ -1,0 +1,26 @@
+== 관리자
+
+=== 로그인 API
+
+operation::admin-signin[snippets="http-request,request-body,request-fields,http-response"]
+
+=== 사전 상태 변경 API
+
+operation::admin-changeDictionaryStatus[snippets="path-parameters,query-parameters,http-request,http-response"]
+
+=== 사전 삭제 API
+
+operation::admin-delete[snippets="path-parameters,http-request,http-response"]
+
+=== 사전 기록 상태 변경 API
+
+operation::admin-changeDictionaryHistoryStatus[snippets="path-parameters,query-parameters,http-request,http-response"]
+
+=== 블랙리스트 등록 API
+
+operation::admin-saveBlacklist[snippets="http-request,request-body,request-fields,http-response"]
+
+=== 블랙리스트 삭제 API
+
+operation::admin-deleteBlacklist[snippets="path-parameters,http-request,http-response"]
+

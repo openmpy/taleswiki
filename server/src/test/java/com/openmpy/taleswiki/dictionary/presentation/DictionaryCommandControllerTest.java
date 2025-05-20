@@ -63,7 +63,8 @@ class DictionaryCommandControllerTest extends ControllerTestSupport {
                                         fieldWithPath("dictionaryHistoryId").description("사전 기록 ID")
                                 )
                         )
-                );
+                )
+        ;
     }
 
     @DisplayName("[통과] 사전을 수정한다.")
@@ -101,6 +102,7 @@ class DictionaryCommandControllerTest extends ControllerTestSupport {
                                         fieldWithPath("dictionaryHistoryId").description("업데이트 된 사전 기록 ID")
                                 )
                         )
-                );
+                )
+        ;
     }
 }
