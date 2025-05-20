@@ -2,8 +2,11 @@ package com.openmpy.taleswiki.common.application;
 
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Service;
@@ -13,11 +16,16 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final Environment environment;
 
     @PostConstruct
-    public void destroyAllKeys() {
-        final Set<String> keys = redisTemplate.keys("*");
-        redisTemplate.delete(keys);
+    private void init() {
+        final List<String> activeProfiles = Arrays.asList(environment.getActiveProfiles());
+
+        if (activeProfiles.contains("dev") || activeProfiles.contains("local")) {
+            Set<String> keys = redisTemplate.keys("*");
+            redisTemplate.delete(keys);
+        }
     }
 
     public Object get(final String key) {

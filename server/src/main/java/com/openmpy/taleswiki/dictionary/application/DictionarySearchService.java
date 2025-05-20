@@ -7,9 +7,10 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionarySearchRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import jakarta.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -17,11 +18,15 @@ import org.springframework.stereotype.Service;
 public class DictionarySearchService {
 
     private final DictionarySearchRepository dictionarySearchRepository;
+    private final Environment environment;
 
-    @Profile({"dev", "local"})
     @PostConstruct
-    public void destroyAllSearchDocuments() {
-        dictionarySearchRepository.deleteAll();
+    private void destroyAllSearchDocuments() {
+        final List<String> activeProfiles = Arrays.asList(environment.getActiveProfiles());
+
+        if (activeProfiles.contains("dev") || activeProfiles.contains("local")) {
+            dictionarySearchRepository.deleteAll();
+        }
     }
 
     public void save(final Dictionary dictionary) {

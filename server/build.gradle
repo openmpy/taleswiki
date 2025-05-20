@@ -51,6 +51,10 @@ dependencies {
 
     // faker
     implementation 'net.datafaker:datafaker:2.4.2'
+
+    // testcontainers
+    testImplementation 'org.testcontainers:testcontainers:1.21.0'
+    testImplementation 'org.testcontainers:junit-jupiter:1.21.0'
 }
 
 ext {
