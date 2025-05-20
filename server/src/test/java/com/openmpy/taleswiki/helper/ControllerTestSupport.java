@@ -2,7 +2,9 @@ package com.openmpy.taleswiki.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openmpy.taleswiki.admin.application.AdminCommandService;
+import com.openmpy.taleswiki.admin.application.AdminQueryService;
 import com.openmpy.taleswiki.admin.presentation.AdminCommandController;
+import com.openmpy.taleswiki.admin.presentation.AdminQueryController;
 import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryCommandService;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
@@ -25,7 +27,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         controllers = {
                 DictionaryCommandController.class,
                 DictionaryQueryController.class,
-                AdminCommandController.class
+                AdminCommandController.class,
+                AdminQueryController.class
         },
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
                 WebMvcConfigurer.class
@@ -50,4 +53,7 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected AdminCommandService adminCommandService;
+
+    @MockitoBean
+    protected AdminQueryService adminQueryService;
 }
