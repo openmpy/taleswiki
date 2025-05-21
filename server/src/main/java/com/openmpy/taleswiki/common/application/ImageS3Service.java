@@ -3,7 +3,9 @@ package com.openmpy.taleswiki.common.application;
 import com.openmpy.taleswiki.common.dto.ImageUploadResponse;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,33 +48,42 @@ public class ImageS3Service {
             final Path uploadPath = Paths.get(IMAGE_TMP_DIR);
             final Path filePath = uploadPath.resolve(fileName);
 
+            // 파일 저장
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
             final File originalFile = filePath.toFile();
+
+            // webp 변환 처리
             final File resultFile;
 
             if (extension.equalsIgnoreCase("webp")) {
                 resultFile = originalFile;
             } else {
                 resultFile = FileLoaderUtil.convertWebp(fileName, originalFile);
-                Files.delete(filePath);
+                Files.deleteIfExists(filePath); // 원본 삭제
             }
 
+            // S3 업로드 경로 및 파일 정보
             final String key = String.format("images/tmp/%s", resultFile.getName());
+            final long contentLength = resultFile.length();
+
             final PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(BUCKET_NAME)
                     .key(key)
                     .contentType("image/webp")
+                    .contentLength(contentLength)
                     .build();
 
-            s3Client.putObject(objectRequest, RequestBody.fromFile(resultFile.toPath()));
-            Files.delete(resultFile.toPath());
+            try (final InputStream inputStream = new FileInputStream(resultFile)) {
+                s3Client.putObject(objectRequest, RequestBody.fromInputStream(inputStream, contentLength));
+            }
 
+            Files.deleteIfExists(resultFile.toPath());
             return new ImageUploadResponse(resultFile.getName());
         } catch (final IOException e) {
-            throw new IllegalArgumentException("이미지 업로드중 오류가 발생했습니다.", e);
+            throw new IllegalArgumentException("이미지 업로드 중 오류가 발생했습니다.", e);
         }
     }
+
 
     public void moveToBaseDirectory(final String fileName) {
         final CopyObjectRequest copyObjectRequest = CopyObjectRequest.builder()

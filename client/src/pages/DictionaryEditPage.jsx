@@ -17,6 +17,7 @@ const DictionaryEditPage = () => {
   const [author, setAuthor] = useState("");
   const [dictionaryId, setDictionaryId] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUpload = async (file) => {
     try {
@@ -73,6 +74,7 @@ const DictionaryEditPage = () => {
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
       const content = editorRef.current.getInstance().getMarkdown();
       const response = await axiosInstance.put(
         `/api/v1/dictionaries/${dictionaryId}`,
@@ -90,6 +92,8 @@ const DictionaryEditPage = () => {
         alert(error.response.data.message.replace("작성자", "편집자"));
         return;
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -123,7 +127,7 @@ const DictionaryEditPage = () => {
         </p>
       </header>
 
-      {isUploading && (
+      {(isUploading || isSubmitting) && (
         <div
           className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50"
           role="alert"
@@ -134,7 +138,9 @@ const DictionaryEditPage = () => {
               className="animate-spin text-4xl text-gray-700"
               aria-hidden="true"
             />
-            <p className="text-base text-gray-700">이미지 업로드 중...</p>
+            <p className="text-base text-gray-700">
+              {isUploading ? "이미지 업로드 중..." : "문서 편집 중..."}
+            </p>
           </div>
         </div>
       )}
