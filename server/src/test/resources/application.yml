@@ -61,4 +61,10 @@ admin:
   token: success
 
 image:
-  upload-path: http://localhost:8080
+  upload-path: https://r2.taleswiki.shop
+
+s3:
+  endpoint: endpoint
+  access-key: access-key
+  secret-key: secret-key
+  region: auto

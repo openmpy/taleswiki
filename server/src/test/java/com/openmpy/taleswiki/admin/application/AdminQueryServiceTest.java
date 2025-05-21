@@ -15,7 +15,7 @@ import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
-import com.openmpy.taleswiki.helper.TestcontainerSupport;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class AdminQueryServiceTest extends TestcontainerSupport {
+class AdminQueryServiceTest extends ServiceTestSupport {
 
     @Autowired
     private AdminQueryService adminQueryService;

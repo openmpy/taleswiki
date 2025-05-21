@@ -13,7 +13,7 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionarySearchReposi
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse.DictionarySearchDictionariesItemResponse;
 import com.openmpy.taleswiki.helper.Fixture;
-import com.openmpy.taleswiki.helper.TestcontainerSupport;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionarySearchServiceTest extends TestcontainerSupport {
+class DictionarySearchServiceTest extends ServiceTestSupport {
 
     @Autowired
     private DictionarySearchService dictionarySearchService;

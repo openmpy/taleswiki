@@ -2,14 +2,19 @@ package com.openmpy.taleswiki.helper;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Testcontainers
-public abstract class TestcontainerSupport {
+public abstract class ServiceTestSupport {
+
+    @MockitoBean
+    private S3Client s3Client;
 
     @Container
     static final GenericContainer<?> REDIS_CONTAINER = new GenericContainer<>(DockerImageName.parse("redis:7.4.2"))

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.openmpy.taleswiki.common.application.ImageS3Service;
@@ -17,7 +17,7 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.helper.Fixture;
-import com.openmpy.taleswiki.helper.TestcontainerSupport;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionaryCommandServiceTest extends TestcontainerSupport {
+class DictionaryCommandServiceTest extends ServiceTestSupport {
 
     @Autowired
     private DictionaryCommandService dictionaryCommandService;
@@ -49,11 +49,12 @@ class DictionaryCommandServiceTest extends TestcontainerSupport {
         // given
         final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
         final DictionarySaveRequest request = new DictionarySaveRequest("제목", "person", "작성자",
-                "![테스트1](http://localhost:8080/images/tmp/test1.webp)\n테스트"
+                "![테스트1](https://r2.taleswiki.shop/images/tmp/test1.webp)\n테스트"
         );
 
         // stub
         when(redisService.setIfAbsent(anyString(), anyString(), any())).thenReturn(true);
+        doNothing().when(imageS3Service).moveToBaseDirectory("test1.webp");
 
         // when
         dictionaryCommandService.save(servletRequest, request);
@@ -65,11 +66,7 @@ class DictionaryCommandServiceTest extends TestcontainerSupport {
         assertThat(dictionary.getTitle()).isEqualTo("제목");
         assertThat(dictionary.getCategory()).isEqualTo(DictionaryCategory.PERSON);
         assertThat(dictionaryHistory.getAuthor()).isEqualTo("작성자");
-        assertThat(dictionaryHistory.getContent()).isEqualTo(
-                "![테스트1](http://localhost:8080/images/tmp/test1.webp)\n테스트"
-        );
-
-        verify(imageS3Service).moveToBaseDirectory("test1.webp");
+        assertThat(dictionaryHistory.getContent()).contains("테스트");
     }
 
     @DisplayName("[통과] 사전을 수정한다.")

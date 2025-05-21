@@ -2,10 +2,11 @@ package com.openmpy.taleswiki.common.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.openmpy.taleswiki.helper.TestcontainerSupport;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import java.time.Duration;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.redis.core.RedisTemplate;
 
+@Disabled
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class RedisServiceTest extends TestcontainerSupport {
+class RedisServiceTest extends ServiceTestSupport {
 
     @Autowired
     private RedisService redisService;

@@ -25,7 +25,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response.DictionaryGetTop20ItemResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.Fixture;
-import com.openmpy.taleswiki.helper.TestcontainerSupport;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionaryQueryServiceTest extends TestcontainerSupport {
+class DictionaryQueryServiceTest extends ServiceTestSupport {
 
     @Autowired
     private DictionaryQueryService dictionaryQueryService;
