@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.openmpy.taleswiki.common.application.ImageService;
+import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
@@ -38,7 +38,7 @@ class DictionaryCommandServiceTest extends TestcontainerSupport {
     private DictionaryRepository dictionaryRepository;
 
     @MockitoBean
-    private ImageService imageService;
+    private ImageS3Service imageS3Service;
 
     @MockitoBean
     private RedisService redisService;
@@ -69,7 +69,7 @@ class DictionaryCommandServiceTest extends TestcontainerSupport {
                 "![테스트1](http://localhost:8080/images/tmp/test1.webp)\n테스트"
         );
 
-        verify(imageService).moveToBaseDirectory("test1.webp");
+        verify(imageS3Service).moveToBaseDirectory("test1.webp");
     }
 
     @DisplayName("[통과] 사전을 수정한다.")

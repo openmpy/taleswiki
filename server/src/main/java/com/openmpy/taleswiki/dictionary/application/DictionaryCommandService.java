@@ -1,6 +1,6 @@
 package com.openmpy.taleswiki.dictionary.application;
 
-import com.openmpy.taleswiki.common.application.ImageService;
+import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.ImageProperties;
@@ -32,7 +32,7 @@ public class DictionaryCommandService {
 
     private final DictionaryQueryService dictionaryQueryService;
     private final DictionarySearchService dictionarySearchService;
-    private final ImageService imageService;
+    private final ImageS3Service imageS3Service;
     private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
     private final ImageProperties imageProperties;
@@ -98,7 +98,7 @@ public class DictionaryCommandService {
     private String processImageReferences(final String content) {
         final List<String> fileNames = FileLoaderUtil.extractImageFileNames(imageProperties.uploadPath(), content);
         for (final String fileName : fileNames) {
-            imageService.moveToBaseDirectory(fileName);
+            imageS3Service.moveToBaseDirectory(fileName);
         }
 
         final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());

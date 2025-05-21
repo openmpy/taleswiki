@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class Testcontainer extends TestcontainerSupport {
+class RedisServiceTest extends TestcontainerSupport {
 
     @Autowired
     private RedisService redisService;

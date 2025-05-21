@@ -34,7 +34,9 @@ const DictionaryEditPage = () => {
         }
       );
 
-      const imageUrl = `${axiosInstance.defaults.baseURL}/images/tmp/${response.data.fileName}`;
+      const imageUrl = `${import.meta.env.VITE_R2_API_URL}/images/tmp/${
+        response.data.fileName
+      }`;
       return imageUrl;
     } catch (error) {
       console.error("이미지 업로드 실패:", error);
