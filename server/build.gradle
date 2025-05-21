@@ -55,6 +55,7 @@ dependencies {
     // testcontainers
     testImplementation 'org.testcontainers:testcontainers:1.21.0'
     testImplementation 'org.testcontainers:junit-jupiter:1.21.0'
+    testImplementation 'org.testcontainers:elasticsearch:1.21.0'
 }
 
 ext {

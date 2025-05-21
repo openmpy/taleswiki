@@ -17,6 +17,7 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.helper.Fixture;
+import com.openmpy.taleswiki.helper.TestcontainerSupport;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionaryCommandServiceTest {
+class DictionaryCommandServiceTest extends TestcontainerSupport {
 
     @Autowired
     private DictionaryCommandService dictionaryCommandService;

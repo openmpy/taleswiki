@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.openmpy.taleswiki.common.application.RedisService;
+import com.openmpy.taleswiki.helper.TestcontainerSupport;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionarySchedulerTest {
+class DictionarySchedulerTest extends TestcontainerSupport {
 
     @Autowired
     private DictionaryScheduler dictionaryScheduler;

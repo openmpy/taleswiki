@@ -2,7 +2,7 @@ package com.openmpy.taleswiki.common.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.openmpy.taleswiki.helper.RedisTestSupport;
+import com.openmpy.taleswiki.helper.TestcontainerSupport;
 import java.time.Duration;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class RedisServiceTest extends RedisTestSupport {
+class Testcontainer extends TestcontainerSupport {
 
     @Autowired
     private RedisService redisService;
