@@ -10,10 +10,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ImageS3Service {
@@ -84,7 +88,6 @@ public class ImageS3Service {
         }
     }
 
-
     public void moveToBaseDirectory(final String fileName) {
         final CopyObjectRequest copyObjectRequest = CopyObjectRequest.builder()
                 .bucket(BUCKET_NAME)
@@ -103,7 +106,7 @@ public class ImageS3Service {
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void deleteTmpImages() {
+    public void deleteS3TmpImages() {
         final ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
                 .bucket(BUCKET_NAME)
                 .prefix(R2_IMAGE_TMP_DIR)
@@ -124,6 +127,29 @@ public class ImageS3Service {
 
                 s3Client.deleteObject(deleteRequest);
             }
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteLocalTmpImages() {
+        final Path imageTmpPath = Paths.get(IMAGE_TMP_DIR);
+
+        try (final Stream<Path> paths = Files.list(imageTmpPath)) {
+            final Instant now = Instant.now();
+
+            paths.filter(Files::isRegularFile).forEach(path -> {
+                try {
+                    final FileTime lastModifiedTime = Files.getLastModifiedTime(path);
+
+                    if (ChronoUnit.HOURS.between(lastModifiedTime.toInstant(), now) > 1) {
+                        Files.delete(path);
+                    }
+                } catch (final IOException e) {
+                    log.warn("이미지 파일 삭제에 실패했습니다. {}", e.getMessage());
+                }
+            });
+        } catch (final IOException e) {
+            throw new IllegalArgumentException("이미지 임시 파일 삭제중 오류가 발생했습니다.", e);
         }
     }
 }
