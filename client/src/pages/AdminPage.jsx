@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { FaUserShield } from "react-icons/fa";
+import { FaSync, FaUserShield } from "react-icons/fa";
 import AdminLogin from "../components/admin/AdminLogin";
 import BlacklistTable from "../components/admin/BlacklistTable";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
@@ -16,6 +16,7 @@ function AdminPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", or "blacklists"
   const [newBlacklist, setNewBlacklist] = useState({ ip: "", reason: "" });
 
@@ -188,6 +189,23 @@ function AdminPage() {
     }
   };
 
+  const handleSyncSearchHistory = async () => {
+    if (!window.confirm("검색 기록을 동기화하시겠습니까?")) {
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      await axiosInstance.post("/api/v1/admin/sync/dictionary-search");
+      alert("검색 기록 동기화가 완료되었습니다.");
+    } catch (error) {
+      console.error("검색 기록 동기화 중 오류 발생:", error);
+      alert("검색 기록 동기화에 실패했습니다.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   if (!isAuthenticated) {
     return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
@@ -199,36 +217,50 @@ function AdminPage() {
         관리자 페이지
       </h2>
 
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between items-center">
+        <div>
+          <button
+            className={`px-3 py-1.5 mr-2 text-sm rounded ${
+              activeTab === "dictionaries"
+                ? "bg-gray-600 text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("dictionaries")}
+          >
+            사전 목록
+          </button>
+          <button
+            className={`px-3 py-1.5 mr-2 text-sm rounded ${
+              activeTab === "histories"
+                ? "bg-gray-600 text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("histories")}
+          >
+            사전 기록
+          </button>
+          <button
+            className={`px-3 py-1.5 text-sm rounded ${
+              activeTab === "blacklists"
+                ? "bg-gray-600 text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("blacklists")}
+          >
+            블랙리스트
+          </button>
+        </div>
         <button
-          className={`px-3 py-1.5 mr-2 text-sm rounded ${
-            activeTab === "dictionaries"
-              ? "bg-gray-600 text-white"
-              : "bg-gray-100 text-gray-600"
-          }`}
-          onClick={() => setActiveTab("dictionaries")}
+          onClick={handleSyncSearchHistory}
+          disabled={isSyncing}
+          className={`px-3 py-1.5 text-sm rounded flex items-center gap-2 ${
+            isSyncing
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gray-600 hover:bg-gray-700"
+          } text-white`}
         >
-          사전 목록
-        </button>
-        <button
-          className={`px-3 py-1.5 mr-2 text-sm rounded ${
-            activeTab === "histories"
-              ? "bg-gray-600 text-white"
-              : "bg-gray-100 text-gray-600"
-          }`}
-          onClick={() => setActiveTab("histories")}
-        >
-          사전 기록
-        </button>
-        <button
-          className={`px-3 py-1.5 text-sm rounded ${
-            activeTab === "blacklists"
-              ? "bg-gray-600 text-white"
-              : "bg-gray-100 text-gray-600"
-          }`}
-          onClick={() => setActiveTab("blacklists")}
-        >
-          블랙리스트
+          <FaSync className={isSyncing ? "animate-spin" : ""} />
+          {isSyncing ? "동기화 중..." : "검색 기록 동기화"}
         </button>
       </div>
 
