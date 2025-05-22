@@ -9,9 +9,13 @@ import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
 import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
+import com.openmpy.taleswiki.dictionary.domain.document.DictionaryDocument;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionarySearchRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,7 @@ public class AdminCommandService {
     private final DictionarySearchService dictionarySearchService;
     private final DictionaryRepository dictionaryRepository;
     private final BlacklistRepository blacklistRepository;
+    private final DictionarySearchRepository dictionarySearchRepository;
     private final AdminProperties adminProperties;
 
     @Transactional
@@ -92,5 +97,21 @@ public class AdminCommandService {
                 .orElseThrow(() -> new CustomException("찾을 수 없는 블랙리스트 번호입니다."));
 
         blacklistRepository.delete(blacklist);
+    }
+
+    public void syncDictionarySearch(final String token) {
+        adminQueryService.validateToken(token);
+        dictionarySearchRepository.deleteAll();
+
+        final List<Dictionary> dictionaries = dictionaryRepository.findAll();
+        final List<DictionaryDocument> dictionaryDocuments = new ArrayList<>();
+
+        for (final Dictionary dictionary : dictionaries) {
+            if (dictionary.getStatus() != DictionaryStatus.HIDDEN) {
+                dictionaryDocuments.add(DictionaryDocument.of(dictionary));
+            }
+        }
+
+        dictionarySearchRepository.saveAll(dictionaryDocuments);
     }
 }

@@ -80,6 +80,12 @@ public class AdminCommandController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/sync/dictionary-search")
+    public ResponseEntity<Void> syncDictionarySearch(@CookieValue("admin_token") final String token) {
+        adminCommandService.syncDictionarySearch(token);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseCookie createCookie(final String token) {
         return ResponseCookie.from("admin_token", token)
                 .httpOnly(cookieProperties.httpOnly())
