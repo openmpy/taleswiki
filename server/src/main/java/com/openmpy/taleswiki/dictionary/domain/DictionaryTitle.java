@@ -27,7 +27,7 @@ public class DictionaryTitle {
 
     private void validateBlank(final String value) {
         if (value == null || value.isBlank()) {
-            throw new CustomException("제목에 공백이 들어갈 수 없습니다.");
+            throw new CustomException("제목이 공백일 수 없습니다.");
         }
     }
 
