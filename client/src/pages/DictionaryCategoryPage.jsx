@@ -114,6 +114,7 @@ function DictionaryCategoryPage({ type }) {
                       to={`/dictionary/${dict.currentHistoryId}`}
                       className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                       aria-label={`${dict.title} ${statusInfo.text}`}
+                      title={dict.title}
                     >
                       {dict.title}
                     </Link>
@@ -162,6 +163,7 @@ function DictionaryCategoryPage({ type }) {
                         to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                         aria-label={`${dict.title} ${statusInfo.text}`}
+                        title={dict.title}
                       >
                         {dict.title}
                       </Link>
@@ -207,6 +209,7 @@ function DictionaryCategoryPage({ type }) {
                         to={`/dictionary/${dict.currentHistoryId}`}
                         className="flex-1 text-gray-700 font-medium text-xs hover:underline truncate"
                         aria-label={`${dict.title} ${statusInfo.text}`}
+                        title={dict.title}
                       >
                         {dict.title}
                       </Link>

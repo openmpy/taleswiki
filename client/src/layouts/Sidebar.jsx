@@ -42,7 +42,7 @@ function Sidebar({ className }) {
   return (
     <div className={`${className} space-y-4`}>
       {/* 인기 문서 섹션 */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white md:rounded-lg rounded-none border border-gray-200 p-4">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700">
           <HiOutlineFire className="text-gray-600" />
           인기 문서
@@ -61,6 +61,7 @@ function Sidebar({ className }) {
                 <Link
                   to={`/dictionary/${item.currentHistoryId}`}
                   className="block group"
+                  title={item.title}
                 >
                   <div className="flex items-center gap-2">
                     <span
@@ -97,7 +98,7 @@ function Sidebar({ className }) {
       </div>
 
       {/* 최근 편집 섹션 */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white md:rounded-lg rounded-none border border-gray-200 p-4">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700">
           <HiOutlineClock className="text-gray-600" />
           최근 편집
@@ -116,6 +117,7 @@ function Sidebar({ className }) {
                 <Link
                   to={`/dictionary/${item.currentHistoryId}`}
                   className="block group"
+                  title={item.title}
                 >
                   <div className="flex items-center gap-2">
                     <span
