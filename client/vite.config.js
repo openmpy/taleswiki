@@ -8,4 +8,7 @@ export default defineConfig({
   server: {
     allowedHosts: ["taleswiki.shop", "localhost"],
   },
+  define: {
+    global: "window",
+  },
 });

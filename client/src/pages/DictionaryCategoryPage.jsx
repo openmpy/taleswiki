@@ -90,7 +90,7 @@ function DictionaryCategoryPage({ type }) {
       </header>
 
       <section
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
         aria-label="문서 목록"
       >
         {/* 한글 그룹 */}

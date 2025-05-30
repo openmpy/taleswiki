@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
+import ChatRoom from "./components/ChatRoom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import ScrollButtons from "./components/ScrollButtons";
@@ -42,6 +43,9 @@ function App() {
                     <Header />
                     <div className="flex-1 px-0 py-4 md:px-4">
                       <div className="flex flex-col md:flex-row md:items-start gap-4">
+                        <div className="w-full md:w-96">
+                          <ChatRoom className="w-full md:rounded-lg rounded-none" />
+                        </div>
                         <main className="w-full md:flex-1 bg-white md:p-6 md:rounded-lg p-4 rounded-none border border-gray-200">
                           <Suspense fallback={<LoadingSpinner />}>
                             <Routes>
