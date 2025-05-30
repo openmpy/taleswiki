@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
 import { HelmetProvider } from "react-helmet-async";
+import { HiOutlineChat } from "react-icons/hi";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import ChatRoom from "./components/ChatRoom";
@@ -28,6 +29,10 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const queryClient = new QueryClient();
 
 function App() {
+  const [isChatExpanded, setIsChatExpanded] = useState(
+    window.innerWidth >= 768
+  );
+
   return (
     <ErrorBoundary>
       <HelmetProvider>
@@ -43,10 +48,29 @@ function App() {
                     <Header />
                     <div className="flex-1 px-0 py-4 md:px-4">
                       <div className="flex flex-col md:flex-row md:items-start gap-4">
-                        <div className="w-full md:w-96">
-                          <ChatRoom className="w-full" />
-                        </div>
-                        <main className="w-full md:flex-1 bg-white md:p-6 md:rounded-lg p-4 rounded-none border border-gray-200">
+                        {isChatExpanded || window.innerWidth < 768 ? (
+                          <div className="w-full md:w-96">
+                            <ChatRoom
+                              className="w-full"
+                              onExpandChange={setIsChatExpanded}
+                            />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setIsChatExpanded(true)}
+                            className="fixed bottom-8 left-8 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded shadow-lg transition-colors duration-200 flex items-center gap-2"
+                          >
+                            <HiOutlineChat size={20} />
+                            <span className="hidden md:inline">
+                              채팅창 열기
+                            </span>
+                          </button>
+                        )}
+                        <main
+                          className={`w-full ${
+                            isChatExpanded ? "md:flex-1" : "md:flex-1 md:ml-0"
+                          } bg-white md:p-6 md:rounded-lg p-4 rounded-none border border-gray-200`}
+                        >
                           <Suspense fallback={<LoadingSpinner />}>
                             <Routes>
                               <Route path="/" element={<HomePage />} />
