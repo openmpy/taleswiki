@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @RequiredArgsConstructor
-public class BlacklistInterceptor implements HandlerInterceptor {
+public class CustomHandlerInterceptor implements HandlerInterceptor {
 
     private final BlacklistRepository blacklistRepository;
 

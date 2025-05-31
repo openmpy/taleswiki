@@ -7,7 +7,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-public class ChatHandshakeInterceptor implements HandshakeInterceptor {
+public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(

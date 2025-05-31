@@ -76,6 +76,11 @@ const ChatRoom = ({ onExpandChange }) => {
           const receivedMessage = JSON.parse(message.body);
           setMessages((prev) => [...prev, receivedMessage]);
         });
+
+        client.subscribe("/user/queue/errors", (errorFrame) => {
+          const error = JSON.parse(errorFrame.body);
+          alert(`${error.message || "알 수 없는 에러가 발생했습니다."}`);
+        });
       },
       onDisconnect: () => {
         setIsConnected(false);

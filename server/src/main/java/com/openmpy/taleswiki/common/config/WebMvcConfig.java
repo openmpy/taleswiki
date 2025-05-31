@@ -1,7 +1,7 @@
 package com.openmpy.taleswiki.common.config;
 
 import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
-import com.openmpy.taleswiki.common.infrastructure.BlacklistInterceptor;
+import com.openmpy.taleswiki.common.infrastructure.CustomHandlerInterceptor;
 import com.openmpy.taleswiki.common.properties.CorsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public BlacklistInterceptor blacklistInterceptor() {
-        return new BlacklistInterceptor(blacklistRepository);
+    public CustomHandlerInterceptor blacklistInterceptor() {
+        return new CustomHandlerInterceptor(blacklistRepository);
     }
 }

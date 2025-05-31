@@ -1,6 +1,6 @@
 package com.openmpy.taleswiki.common.config;
 
-import com.openmpy.taleswiki.common.infrastructure.ChatHandshakeInterceptor;
+import com.openmpy.taleswiki.common.infrastructure.CustomHandshakeInterceptor;
 import com.openmpy.taleswiki.common.properties.CorsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .addInterceptors(new ChatHandshakeInterceptor())
+                .addInterceptors(new CustomHandshakeInterceptor())
                 .setAllowedOrigins(corsProperties.origins())
                 .withSockJS();
     }
