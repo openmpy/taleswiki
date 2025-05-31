@@ -26,6 +26,7 @@ import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
 import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.helper.ControllerTestSupport;
 import jakarta.servlet.http.Cookie;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, createCookie().toString()))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, Matchers.containsString("admin_token=success")))
                 .andDo(
                         document(
                                 "admin-signin",

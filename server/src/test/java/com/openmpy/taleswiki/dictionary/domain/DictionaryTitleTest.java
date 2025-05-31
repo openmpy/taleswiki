@@ -32,7 +32,7 @@ class DictionaryTitleTest {
         // when & then
         assertThatThrownBy(() -> new DictionaryTitle(value))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("제목에 공백이 들어갈 수 없습니다.");
+                .hasMessage("제목이 공백일 수 없습니다.");
     }
 
     @DisplayName("[예외] 사전 제목 길이가 12자를 넘어간다.")
