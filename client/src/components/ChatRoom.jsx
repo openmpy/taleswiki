@@ -127,6 +127,17 @@ const ChatRoom = ({ onExpandChange }) => {
     setIsComposing(false);
   };
 
+  const handleNicknameChange = () => {
+    const newNickname = prompt(
+      "새로운 닉네임을 입력해주세요:",
+      nickname.current
+    );
+    if (newNickname && newNickname.trim()) {
+      nickname.current = newNickname.trim();
+      localStorage.setItem("chat-nickname", newNickname.trim());
+    }
+  };
+
   return (
     <div
       className={`bg-white md:rounded-lg rounded-none border border-gray-200 p-4 ${
@@ -138,15 +149,23 @@ const ChatRoom = ({ onExpandChange }) => {
       } flex flex-col`}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-700">
-          <HiOutlineChat className="text-gray-600" />
-          채팅방
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isConnected ? "bg-green-500" : "bg-red-500"
-            }`}
-          />
-        </h3>
+        <div className="flex items-center gap-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-700">
+            <HiOutlineChat className="text-gray-600" />
+            채팅방
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isConnected ? "bg-green-500" : "bg-red-500"
+              }`}
+            />
+          </h3>
+          <button
+            onClick={handleNicknameChange}
+            className="text-sm text-gray-600 hover:text-gray-800 transition-colors bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded"
+          >
+            닉네임 변경하기
+          </button>
+        </div>
         <button
           onClick={() => {
             setIsManuallyExpanded(true);
@@ -191,7 +210,7 @@ const ChatRoom = ({ onExpandChange }) => {
                             : "text-gray-500"
                         }`}
                       >
-                        {msg.nickname}
+                        {`${msg.nickname} (${msg.sessionId.substring(0, 4)})`}
                       </span>
                       <div
                         className={`flex items-end gap-1 ${
