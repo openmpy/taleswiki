@@ -5,4 +5,4 @@ Disallow: /admin
 Disallow: /dictionary/write
 Disallow: /dictionary/*/edit
 
-Sitemap: https://taleswiki.shop/sitemap.xml 
+Sitemap: https://taleswiki.com/sitemap.xml 
