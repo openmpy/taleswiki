@@ -6,7 +6,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ["taleswiki.shop", "localhost"],
+    allowedHosts: ["taleswiki.com", "localhost"],
   },
   define: {
     global: "window",

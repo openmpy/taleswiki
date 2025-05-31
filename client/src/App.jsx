@@ -58,12 +58,9 @@ function App() {
                         ) : (
                           <button
                             onClick={() => setIsChatExpanded(true)}
-                            className="fixed bottom-8 left-8 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded shadow-lg transition-colors duration-200 flex items-center gap-2"
+                            className="fixed bottom-8 border-gray-600 border-1 left-8 bg-gray-800 hover:bg-gray-700 text-white px-3 py-3 rounded shadow-lg transition-colors duration-200 flex items-center gap-2"
                           >
                             <HiOutlineChat size={20} />
-                            <span className="hidden md:inline">
-                              채팅창 열기
-                            </span>
                           </button>
                         )}
                         <main
