@@ -3,8 +3,11 @@ package com.openmpy.taleswiki.admin.application;
 import com.openmpy.taleswiki.admin.domain.entity.Blacklist;
 import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetBlacklistResponse;
+import com.openmpy.taleswiki.admin.dto.response.AdminGetChatsResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
+import com.openmpy.taleswiki.chat.domain.entity.ChatMessage;
+import com.openmpy.taleswiki.chat.domain.repository.ChatMessageRepository;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
@@ -26,6 +29,7 @@ public class AdminQueryService {
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
     private final BlacklistRepository blacklistRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final AdminProperties adminProperties;
 
     @Transactional(readOnly = true)
@@ -82,6 +86,19 @@ public class AdminQueryService {
         final Page<AdminGetBlacklistResponse> responses = blacklist.map(it ->
                 new AdminGetBlacklistResponse(it.getId(), it.getIp(), it.getReason(), it.getCreatedAt())
         );
+
+        return PaginatedResponse.of(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<AdminGetChatsResponse> getChats(final String token, final int page, final int size) {
+        validateToken(token);
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final Page<ChatMessage> chatMessages = chatMessageRepository.findAll(pageRequest);
+        final Page<AdminGetChatsResponse> responses = chatMessages.map(it -> new AdminGetChatsResponse(
+                it.getId(), it.getSender(), it.getContent(), it.getNickname(), it.getCreatedAt()
+        ));
 
         return PaginatedResponse.of(responses);
     }

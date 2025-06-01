@@ -4,6 +4,8 @@ import com.openmpy.taleswiki.admin.domain.entity.Blacklist;
 import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
 import com.openmpy.taleswiki.admin.dto.request.AdminBlacklistSaveRequest;
 import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
+import com.openmpy.taleswiki.chat.domain.entity.ChatMessage;
+import com.openmpy.taleswiki.chat.domain.repository.ChatMessageRepository;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
@@ -30,6 +32,7 @@ public class AdminCommandService {
     private final DictionaryRepository dictionaryRepository;
     private final BlacklistRepository blacklistRepository;
     private final DictionarySearchRepository dictionarySearchRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final AdminProperties adminProperties;
 
     @Transactional
@@ -113,5 +116,15 @@ public class AdminCommandService {
         }
 
         dictionarySearchRepository.saveAll(dictionaryDocuments);
+    }
+
+    @Transactional
+    public void deleteChat(final String token, final Long chatId) {
+        adminQueryService.validateToken(token);
+
+        final ChatMessage chatMessage = chatMessageRepository.findById(chatId)
+                .orElseThrow(() -> new CustomException("찾을 수 없는 채팅 메세지 번호입니다."));
+
+        chatMessageRepository.delete(chatMessage);
     }
 }

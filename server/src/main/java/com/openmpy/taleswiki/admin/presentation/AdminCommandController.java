@@ -86,6 +86,15 @@ public class AdminCommandController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/chats/{chatId}")
+    public ResponseEntity<Void> deleteChat(
+            @CookieValue("admin_token") final String token,
+            @PathVariable final Long chatId
+    ) {
+        adminCommandService.deleteChat(token, chatId);
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseCookie createCookie(final String token) {
         return ResponseCookie.from("admin_token", token)
                 .httpOnly(cookieProperties.httpOnly())

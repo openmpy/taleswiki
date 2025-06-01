@@ -3,6 +3,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { FaSync, FaUserShield } from "react-icons/fa";
 import AdminLogin from "../components/admin/AdminLogin";
 import BlacklistTable from "../components/admin/BlacklistTable";
+import ChatTable from "../components/admin/ChatTable";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
 import DictionaryTable from "../components/admin/DictionaryTable";
 import Pagination from "../components/admin/Pagination";
@@ -13,11 +14,12 @@ function AdminPage() {
   const [dictionaries, setDictionaries] = useState([]);
   const [histories, setHistories] = useState([]);
   const [blacklists, setBlacklists] = useState([]);
+  const [chats, setChats] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", or "blacklists"
+  const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", "blacklists", or "chats"
   const [newBlacklist, setNewBlacklist] = useState({ ip: "", reason: "" });
 
   useEffect(() => {
@@ -103,6 +105,29 @@ function AdminPage() {
     }
   }, [isAuthenticated, currentPage, activeTab]);
 
+  useEffect(() => {
+    const fetchChats = async () => {
+      if (!isAuthenticated) return;
+
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get(
+          `/api/v1/admin/chats?page=${currentPage}&size=100`
+        );
+        setChats(response.data.content);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("채팅 기록을 가져오는 중 오류 발생:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (activeTab === "chats") {
+      fetchChats();
+    }
+  }, [isAuthenticated, currentPage, activeTab]);
+
   const handleStatusChange = async (dictionaryId, newStatus) => {
     try {
       await axiosInstance.patch(
@@ -173,6 +198,20 @@ function AdminPage() {
     }
   };
 
+  const handleChatDelete = async (chatId) => {
+    try {
+      await axiosInstance.delete(`/api/v1/admin/chats/${chatId}`);
+
+      const response = await axiosInstance.get(
+        `/api/v1/admin/chats?page=${currentPage}&size=100`
+      );
+      setChats(response.data.content);
+    } catch (error) {
+      console.error("채팅 삭제 중 오류 발생:", error);
+      alert("채팅 삭제에 실패했습니다.");
+    }
+  };
+
   const handleAddBlacklist = async (e) => {
     e.preventDefault();
 
@@ -240,7 +279,7 @@ function AdminPage() {
             사전 기록
           </button>
           <button
-            className={`px-3 py-1.5 text-sm rounded ${
+            className={`px-3 py-1.5 mr-2 text-sm rounded ${
               activeTab === "blacklists"
                 ? "bg-gray-600 text-white"
                 : "bg-gray-100 text-gray-600"
@@ -248,6 +287,16 @@ function AdminPage() {
             onClick={() => setActiveTab("blacklists")}
           >
             블랙리스트
+          </button>
+          <button
+            className={`px-3 py-1.5 text-sm rounded ${
+              activeTab === "chats"
+                ? "bg-gray-600 text-white"
+                : "bg-gray-100 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("chats")}
+          >
+            채팅 기록
           </button>
         </div>
         <button
@@ -281,7 +330,7 @@ function AdminPage() {
               histories={histories}
               onStatusChange={handleHistoryStatusChange}
             />
-          ) : (
+          ) : activeTab === "blacklists" ? (
             <>
               <form onSubmit={handleAddBlacklist} className="mb-4">
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -319,6 +368,8 @@ function AdminPage() {
                 onDelete={handleBlacklistDelete}
               />
             </>
+          ) : (
+            <ChatTable chats={chats} onDelete={handleChatDelete} />
           )}
           <Pagination
             currentPage={currentPage}

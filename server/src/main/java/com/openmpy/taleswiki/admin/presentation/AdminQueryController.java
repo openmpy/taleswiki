@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.admin.presentation;
 
 import com.openmpy.taleswiki.admin.application.AdminQueryService;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetBlacklistResponse;
+import com.openmpy.taleswiki.admin.dto.response.AdminGetChatsResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
@@ -56,6 +57,16 @@ public class AdminQueryController {
             @RequestParam(defaultValue = "10") final int size
     ) {
         final PaginatedResponse<AdminGetBlacklistResponse> response = adminQueryService.getBlacklist(token, page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/chats")
+    public ResponseEntity<PaginatedResponse<AdminGetChatsResponse>> getChats(
+            @CookieValue("admin_token") final String token,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        PaginatedResponse<AdminGetChatsResponse> response = adminQueryService.getChats(token, page, size);
         return ResponseEntity.ok(response);
     }
 }
