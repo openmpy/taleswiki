@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component {
                 오류가 발생했습니다.
               </h1>
               <a
-                href="http://localhost:5173"
+                href="/"
                 className="inline-block mt-4 px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
               >
                 돌아가기
