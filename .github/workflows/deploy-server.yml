@@ -50,15 +50,18 @@ jobs:
           build-args: |
             JAR_FILE=build/libs/app.jar
 
-      - name: Copy compose.yml to server
+      - name: Copy compose-related files
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PASSWORD }}
-          source: "server/compose.yml"
+          source: |
+            server/compose.yml
+            server/monitoring
+            server/logs
           target: "/home/taleswiki"
-          strip_components: 0
+          strip_components: 1
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
