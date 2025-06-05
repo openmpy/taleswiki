@@ -53,32 +53,14 @@ jobs:
           build-args: |
             JAR_FILE=build/libs/app.jar
 
-      - name: Prepare files for deployment
-        run: |
-          cd ./server
-          tar -czf deploy.tar.gz compose.yml monitoring/
-          cd ..
-
       - name: Copy files to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PASSWORD }}
-          source: "server/deploy.tar.gz"
-          target: "/home/taleswiki"
-          strip_components: 1
-
-      - name: Extract files on EC2
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_SSH_USER }}
-          key: ${{ secrets.EC2_SSH_PASSWORD }}
-          script: |
-            cd /home/taleswiki
-            tar -xzf deploy.tar.gz
-            rm deploy.tar.gz
+          source: "server/compose.yml"
+          target: "/home/taleswiki/server"
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
@@ -87,8 +69,7 @@ jobs:
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
-            cd /home/taleswiki
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-server:latest || exit 1
+            cd /home/taleswiki/server
             docker compose down || true
             docker compose up -d || exit 1
             docker image prune -f

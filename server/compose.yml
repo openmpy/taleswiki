@@ -11,7 +11,6 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - monitoring
 
   redis:
     container_name: redis
@@ -44,61 +43,9 @@ services:
     networks:
       - default
 
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
-    environment:
-      - GF_SECURITY_ADMIN_USER=openmpy
-      - GF_SECURITY_ADMIN_PASSWORD=9898
-    depends_on:
-      - prometheus
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  loki:
-    container_name: loki
-    image: grafana/loki:latest
-    ports:
-      - "3100:3100"
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  promtail:
-    container_name: promtail
-    image: grafana/promtail:latest
-    volumes:
-      - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/config.yaml
-      - ./logs:/logs
-    command: -config.file=/etc/promtail/config.yaml
-    networks:
-      - monitoring
-    depends_on:
-      - loki
-    restart: unless-stopped
-
 volumes:
   redis:
   es:
 
 networks:
-  monitoring:
   default:
