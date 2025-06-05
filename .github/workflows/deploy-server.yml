@@ -54,7 +54,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
-          password: ${{ secrets.EC2_SSH_PASSWORD }}
+          key: ${{ secrets.EC2_SSH_PASSWORD }}
           source: "server/compose.yml"
           target: "/home/taleswiki/server"
           strip_components: 0
@@ -64,7 +64,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
-          password: ${{ secrets.EC2_SSH_PASSWORD }}
+          key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
             cd /home/taleswiki/server
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-server:latest
