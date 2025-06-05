@@ -53,6 +53,11 @@ jobs:
           build-args: |
             JAR_FILE=build/libs/app.jar
 
+      - name: Create .env file
+        run: |
+          echo "GF_USER=${{ secrets.GF_USER }}" >> ./server/.env
+          echo "GF_PASSWORD=${{ secrets.GF_PASSWORD }}" >> ./server/.env
+
       - name: Copy compose-related files
         uses: appleboy/scp-action@v1
         with:
@@ -61,6 +66,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           source: |
             server/compose.yml
+            server/.env
           target: "/home/taleswiki"
           strip_components: 1
 

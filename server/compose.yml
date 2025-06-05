@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${DOCKERHUB_USERNAME}/taleswiki-server:latest
+    image: openmpy/taleswiki-server:latest
     container_name: taleswiki
     ports:
       - "8080:8080"
