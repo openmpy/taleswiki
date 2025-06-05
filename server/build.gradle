@@ -92,3 +92,7 @@ tasks.named('jar') {
 build {
     dependsOn copyDocument
 }
+
+bootJar {
+    archiveFileName = 'app.jar'
+}
