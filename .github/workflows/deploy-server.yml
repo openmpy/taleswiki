@@ -61,6 +61,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           source: |
             server/compose.yml
+            server/monitoring
           target: "/home/taleswiki"
           strip_components: 1
 
