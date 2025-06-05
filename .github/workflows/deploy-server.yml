@@ -23,7 +23,7 @@ deploy:
     - name: Build and push Docker image
       uses: docker/build-push-action@v6
       with:
-        context: .
+        context: ./server
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-server:latest
         build-args: |
@@ -35,7 +35,7 @@ deploy:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_SSH_USER }}
         password: ${{ secrets.EC2_SSH_PASSWORD }}
-        source: "compose.yml"
+        source: "server/compose.yml"
         target: "/home/taleswiki/server"
         strip_components: 0
 
