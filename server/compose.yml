@@ -1,10 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: build/app.jar
+    image: ${DOCKERHUB_USERNAME}/taleswiki-server:latest
     container_name: taleswiki
     ports:
       - "8080:8080"
