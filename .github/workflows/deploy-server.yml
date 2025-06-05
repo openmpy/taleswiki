@@ -61,8 +61,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           source: |
             server/compose.yml
-            server/monitoring
-            server/logs
+            server/monitoring/prometheus/prometheus.yml
+            server/monitoring/grafana/provisioning/datasources
+            server/monitoring/grafana/provisioning/dashboards
+            server/monitoring/grafana/dashboards
+            server/monitoring/promtail/promtail-config.yaml
           target: "/home/taleswiki"
           strip_components: 1
 
