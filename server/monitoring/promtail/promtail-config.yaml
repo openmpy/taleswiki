@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: springboot
-          __path__: /var/log/spring-boot-application-*.log
+          __path__: /logs/spring-boot-application-*.log
 
     pipeline_stages:
       - multiline:
