@@ -53,17 +53,32 @@ jobs:
           build-args: |
             JAR_FILE=build/libs/app.jar
 
-      - name: Copy compose-related files
+      - name: Prepare files for deployment
+        run: |
+          cd ./server
+          tar -czf deploy.tar.gz compose.yml monitoring/
+          cd ..
+
+      - name: Copy files to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PASSWORD }}
-          source: |
-            server/compose.yml
-            server/monitoring
+          source: "server/deploy.tar.gz"
           target: "/home/taleswiki"
           strip_components: 1
+
+      - name: Extract files on EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_SSH_USER }}
+          key: ${{ secrets.EC2_SSH_PASSWORD }}
+          script: |
+            cd /home/taleswiki
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
