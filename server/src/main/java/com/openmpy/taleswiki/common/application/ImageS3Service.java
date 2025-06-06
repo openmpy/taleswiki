@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.common.application;
 
 import com.openmpy.taleswiki.common.dto.ImageUploadResponse;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,6 +42,22 @@ public class ImageS3Service {
     private static final String BUCKET_NAME = "taleswiki";
 
     private final S3Client s3Client;
+
+    @PostConstruct
+    public void init() {
+        final File dir = new File(IMAGE_TMP_DIR);
+
+        if (!dir.exists()) {
+            final boolean isCreated = dir.mkdirs();
+
+            if (isCreated) {
+                log.info("이미지 임시 디렉토리를 생성했습니다: {}", IMAGE_TMP_DIR);
+                return;
+            }
+
+            log.warn("이미지 임시 디렉토리 생성에 실패했습니다: {}", IMAGE_TMP_DIR);
+        }
+    }
 
     public ImageUploadResponse upload(final MultipartFile file) {
         final String extension = FileLoaderUtil.getExtension(file);
