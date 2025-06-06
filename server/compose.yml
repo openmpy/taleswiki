@@ -1,7 +1,7 @@
 services:
   server:
     container_name: taleswiki-server
-    image: openmpy/taleswiki-server:latest
+    image: openmpy/taleswiki-server:${GITHUB_SHA}
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -52,7 +52,7 @@ jobs:
           file: ./server/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-server:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-server:${{ github.sha }}
           build-args: |
             JAR_FILE=build/libs/app.jar
 
@@ -73,6 +73,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
             cd /home/taleswiki/server
+            export GITHUB_SHA=${{ github.sha }}
             docker compose down || true
             docker compose up -d || exit 1
             docker image prune -f
