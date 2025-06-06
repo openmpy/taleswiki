@@ -1,0 +1,13 @@
+services:
+  client:
+    container_name: taleswiki-client
+    image: openmpy/taleswiki-client:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - taleswiki-network
+
+networks:
+  taleswiki-network:
+    external: true

@@ -1,5 +1,7 @@
 FROM eclipse-temurin:21-jdk-alpine
 
+WORKDIR /app
+
 ENV TZ=Asia/Seoul
 
 ARG JAR_FILE=build/libs/app.jar
