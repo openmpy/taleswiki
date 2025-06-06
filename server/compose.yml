@@ -1,16 +1,15 @@
 services:
   app:
-    image: openmpy/taleswiki-server:latest
     container_name: taleswiki
+    image: openmpy/taleswiki-server:latest
+    restart: unless-stopped
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
     volumes:
       - ./logs:/logs
-    restart: unless-stopped
-    networks:
-      - default
+    depends_on:
+      - redis
+      - elasticsearch
 
   redis:
     container_name: redis
@@ -20,12 +19,13 @@ services:
       - "6379:6379"
     volumes:
       - redis:/data
-    networks:
-      - default
 
   elasticsearch:
     container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -35,17 +35,9 @@ services:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - "9200:9200"
     volumes:
       - es:/usr/share/elasticsearch/data
-    restart: unless-stopped
-    networks:
-      - default
 
 volumes:
   redis:
   es:
-
-networks:
-  default:
