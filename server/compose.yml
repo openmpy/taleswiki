@@ -1,6 +1,6 @@
 services:
-  app:
-    container_name: taleswiki
+  server:
+    container_name: taleswiki-server
     image: openmpy/taleswiki-server:latest
     restart: unless-stopped
     ports:

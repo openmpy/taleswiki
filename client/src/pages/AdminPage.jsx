@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { FaSync, FaUserShield } from "react-icons/fa";
+import { FaUserShield } from "react-icons/fa";
 import AdminLogin from "../components/admin/AdminLogin";
 import BlacklistTable from "../components/admin/BlacklistTable";
 import ChatTable from "../components/admin/ChatTable";
@@ -18,7 +18,6 @@ function AdminPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", "blacklists", or "chats"
   const [newBlacklist, setNewBlacklist] = useState({ ip: "", reason: "" });
 
@@ -228,23 +227,6 @@ function AdminPage() {
     }
   };
 
-  const handleSyncSearchHistory = async () => {
-    if (!window.confirm("검색 기록을 동기화하시겠습니까?")) {
-      return;
-    }
-
-    setIsSyncing(true);
-    try {
-      await axiosInstance.post("/api/v1/admin/sync/dictionary-search");
-      alert("검색 기록 동기화가 완료되었습니다.");
-    } catch (error) {
-      console.error("검색 기록 동기화 중 오류 발생:", error);
-      alert("검색 기록 동기화에 실패했습니다.");
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
   if (!isAuthenticated) {
     return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
@@ -299,18 +281,6 @@ function AdminPage() {
             채팅 기록
           </button>
         </div>
-        <button
-          onClick={handleSyncSearchHistory}
-          disabled={isSyncing}
-          className={`px-3 py-1.5 text-sm rounded flex items-center gap-2 ${
-            isSyncing
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gray-600 hover:bg-gray-700"
-          } text-white`}
-        >
-          <FaSync className={isSyncing ? "animate-spin" : ""} />
-          {isSyncing ? "동기화 중..." : "검색 기록 동기화"}
-        </button>
       </div>
 
       {isLoading ? (
