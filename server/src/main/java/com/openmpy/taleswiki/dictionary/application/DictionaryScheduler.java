@@ -3,7 +3,6 @@ package com.openmpy.taleswiki.dictionary.application;
 import com.openmpy.taleswiki.common.application.RedisService;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 public class DictionaryScheduler {
 
     private final RedisService redisService;
-    private final RedisTemplate<String, Object> redisTemplate;
     private final DictionaryCommandService dictionaryCommandService;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
