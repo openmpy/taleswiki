@@ -80,12 +80,6 @@ public class AdminCommandController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/sync/dictionary-search")
-    public ResponseEntity<Void> syncDictionarySearch(@CookieValue("admin_token") final String token) {
-        adminCommandService.syncDictionarySearch(token);
-        return ResponseEntity.noContent().build();
-    }
-
     @DeleteMapping("/chats/{chatId}")
     public ResponseEntity<Void> deleteChat(
             @CookieValue("admin_token") final String token,

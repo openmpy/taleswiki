@@ -31,7 +31,6 @@ public class DictionaryCommandService {
     private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
 
     private final DictionaryQueryService dictionaryQueryService;
-    private final DictionarySearchService dictionarySearchService;
     private final ImageS3Service imageS3Service;
     private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
@@ -58,7 +57,6 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
-        dictionarySearchService.save(dictionary);
         return new DictionarySaveResponse(savedDictionary.getCurrentHistory().getId());
     }
 
@@ -85,7 +83,6 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
-        dictionarySearchService.save(savedDictionary);
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
     }
 
