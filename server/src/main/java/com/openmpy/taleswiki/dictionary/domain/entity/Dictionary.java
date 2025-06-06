@@ -21,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -52,6 +53,9 @@ public class Dictionary extends BaseEntity {
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "view", nullable = false))
     private DictionaryView view;
+
+    @Column
+    private LocalDateTime modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_hitsory_id")
@@ -93,6 +97,10 @@ public class Dictionary extends BaseEntity {
     public void addHistory(final DictionaryHistory history) {
         this.currentHistory = history;
         this.histories.add(history);
+    }
+
+    public void updateModifiedAt(final LocalDateTime modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 
     public String getTitle() {

@@ -17,6 +17,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +58,8 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+        savedDictionary.updateModifiedAt(LocalDateTime.now());
+
         return new DictionarySaveResponse(savedDictionary.getCurrentHistory().getId());
     }
 
@@ -83,6 +86,8 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+        savedDictionary.updateModifiedAt(LocalDateTime.now());
+
         return new DictionaryUpdateResponse(savedDictionary.getCurrentHistory().getId());
     }
 

@@ -41,7 +41,7 @@ public class DictionaryQueryService {
     public DictionaryGetTop20Response getTop20Dictionaries() {
         final List<String> statuses = List.of("ALL_ACTIVE", "READ_ONLY");
         final PageRequest pageRequest = PageRequest.of(0, 20);
-        final List<Dictionary> dictionaries = dictionaryRepository.findDictionariesByStatusOrderByUpdatedAtDesc(
+        final List<Dictionary> dictionaries = dictionaryRepository.findDictionariesByStatusOrderByModifiedAtDesc(
                 statuses, pageRequest
         );
         return DictionaryGetTop20Response.of(dictionaries);

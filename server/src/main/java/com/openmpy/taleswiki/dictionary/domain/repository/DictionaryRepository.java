@@ -1,7 +1,6 @@
 package com.openmpy.taleswiki.dictionary.domain.repository;
 
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
-import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import java.util.List;
 import java.util.Optional;
@@ -16,16 +15,12 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
     @Override
     Optional<Dictionary> findById(@Param("id") final Long id);
 
-    @Query("SELECT d FROM Dictionary d LEFT JOIN FETCH d.currentHistory WHERE d.status IN :statuses ORDER BY d.updatedAt DESC")
-    List<Dictionary> findDictionariesByStatusOrderByUpdatedAtDesc(
+    @Query("SELECT d FROM Dictionary d LEFT JOIN FETCH d.currentHistory WHERE d.status IN :statuses ORDER BY d.modifiedAt DESC")
+    List<Dictionary> findDictionariesByStatusOrderByModifiedAtDesc(
             @Param("statuses") final List<String> statuses, final Pageable pageable
     );
 
     List<Dictionary> findAllByCategoryOrderByTitle(final DictionaryCategory category);
-
-    List<Dictionary> findAllByTitle_ValueContainingAndStatusIsNotOrderByUpdatedAtDesc(
-            final String title, final DictionaryStatus status
-    );
 
     @Query("SELECT d FROM Dictionary d LEFT JOIN FETCH d.currentHistory WHERE d.id >= :id ORDER BY d.id ASC")
     List<Dictionary> findFirstByIdGreaterThanEqualOrderByIdAsc(
