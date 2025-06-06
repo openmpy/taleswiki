@@ -55,7 +55,7 @@ jobs:
           file: ./client/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-client:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/taleswiki-client:${{ github.sha }}
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@v1
@@ -74,6 +74,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PASSWORD }}
           script: |
             cd /home/taleswiki/client
+            export GITHUB_SHA=${{ github.sha }}
             docker compose down || true
             docker compose up -d || exit 1
             docker image prune -f
