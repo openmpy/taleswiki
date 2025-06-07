@@ -5,10 +5,15 @@ import {
   FaQuestionCircle,
   FaStar,
 } from "react-icons/fa";
+import SEO from "../components/SEO";
 
 function HomePage() {
   return (
     <main>
+      <SEO
+        title="홈"
+        description="테일즈위키의 모든 정보를 한 곳에서 확인하세요. 커뮤니티 규칙, 신고하기, 문의하기, 건의하기 등 다양한 기능을 제공합니다."
+      />
       <header>
         <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <FaStar className="text-2xl text-yellow-400" aria-hidden="true" />
