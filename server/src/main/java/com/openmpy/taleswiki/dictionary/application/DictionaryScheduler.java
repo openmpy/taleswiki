@@ -1,8 +1,11 @@
 package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.common.application.RedisService;
+import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +14,9 @@ import org.springframework.stereotype.Service;
 public class DictionaryScheduler {
 
     private final RedisService redisService;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final DictionaryCommandService dictionaryCommandService;
+    private final DictionaryRepository dictionaryRepository;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void syncViewCountsToDataBase() {
@@ -50,5 +55,12 @@ public class DictionaryScheduler {
 
             redisService.add("popular_dictionaries", dictionary, newScore);
         }
+    }
+
+    @Scheduled(fixedRate = 10 * 60 * 1000)
+    public void cacheAllDictionaryIds() {
+        final List<Long> ids = dictionaryRepository.findAllByIds();
+        redisService.delete("dictionary:ids");
+        redisTemplate.opsForSet().add("dictionary:ids", ids.toArray());
     }
 }

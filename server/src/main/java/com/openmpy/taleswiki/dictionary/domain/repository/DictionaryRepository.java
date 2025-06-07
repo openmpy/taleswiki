@@ -22,10 +22,8 @@ public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
 
     List<Dictionary> findAllByCategoryOrderByTitle(final DictionaryCategory category);
 
-    @Query("SELECT d FROM Dictionary d LEFT JOIN FETCH d.currentHistory WHERE d.id >= :id ORDER BY d.id ASC")
-    List<Dictionary> findFirstByIdGreaterThanEqualOrderByIdAsc(
-            @Param("id") final Long id, final Pageable pageable
-    );
-
     boolean existsByTitle_ValueAndCategory(final String title, final DictionaryCategory category);
+
+    @Query("SELECT d.id FROM Dictionary d")
+    List<Long> findAllByIds();
 }

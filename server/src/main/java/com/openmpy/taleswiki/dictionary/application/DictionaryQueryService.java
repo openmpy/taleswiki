@@ -22,9 +22,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DictionaryQueryService {
 
     private final RedisService redisService;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
 
@@ -87,18 +88,10 @@ public class DictionaryQueryService {
 
     @Transactional(readOnly = true)
     public DictionaryGetRandomResponse getRandomDictionary() {
-        final long count = dictionaryRepository.count();
+        final Object randomIds = redisTemplate.opsForSet().randomMember("dictionary:ids");
+        final Dictionary dictionary = getDictionary(((Number) randomIds).longValue());
 
-        if (count == 0L) {
-            throw new CustomException("문서를 찾지 못했습니다.");
-        }
-
-        final long randomOffset = ThreadLocalRandom.current().nextLong(1, count + 1);
-        final PageRequest pageRequest = PageRequest.of(0, 1);
-        final List<Dictionary> dictionaries = dictionaryRepository.findFirstByIdGreaterThanEqualOrderByIdAsc(
-                randomOffset, pageRequest
-        );
-        return new DictionaryGetRandomResponse(dictionaries.getFirst().getCurrentHistory().getId());
+        return new DictionaryGetRandomResponse(dictionary.getCurrentHistory().getId());
     }
 
     @Transactional(readOnly = true)
