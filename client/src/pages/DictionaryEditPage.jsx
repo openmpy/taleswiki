@@ -5,7 +5,6 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 
 const DictionaryEditPage = () => {
@@ -113,7 +112,7 @@ const DictionaryEditPage = () => {
 
   return (
     <main>
-      <SEO title={"문서 편집"} />
+      {/* <SEO title={"문서 편집"} /> */}
       <header>
         <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <BiPencil className="text-2xl text-gray-700" aria-hidden="true" />

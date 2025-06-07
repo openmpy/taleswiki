@@ -5,12 +5,11 @@ import {
   FaQuestionCircle,
   FaStar,
 } from "react-icons/fa";
-import SEO from "../components/SEO";
 
 function HomePage() {
   return (
     <main>
-      <SEO title="홈" />
+      {/* <SEO title="홈" /> */}
       <header>
         <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <FaStar className="text-2xl text-yellow-400" aria-hidden="true" />

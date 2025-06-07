@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BsClockHistory } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime } from "../utils/dateUtils";
 
@@ -45,7 +44,7 @@ const DictionaryLogPage = () => {
 
   return (
     <main>
-      <SEO title={`${dictionary.title}`} />
+      {/* <SEO title={`${dictionary.title}`} /> */}
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold flex items-center gap-2">

@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import SEO from "../components/SEO";
 
 const NotFoundPage = () => {
   return (
     <main className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-      <SEO title="404" />
+      {/* <SEO title="404" /> */}
       <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
       <h2 className="text-2xl font-semibold text-gray-600 mb-6">
         페이지를 찾을 수 없습니다.

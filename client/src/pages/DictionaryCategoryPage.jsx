@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BiBook } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 import {
   classifyByInitial,
@@ -63,7 +62,7 @@ function DictionaryCategoryPage({ type }) {
 
   return (
     <main>
-      <SEO title={pageTitle} />
+      {/* <SEO title={pageTitle} /> */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold flex items-center gap-2">

@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { BiPencil } from "react-icons/bi";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import SEO from "../components/SEO";
 import axiosInstance from "../utils/axiosConfig";
 
 const DictionaryWritePage = () => {
@@ -81,7 +80,7 @@ const DictionaryWritePage = () => {
 
   return (
     <main>
-      <SEO title={"문서 작성"} />
+      {/* <SEO title={"문서 작성"} /> */}
       <header>
         <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <BiPencil className="text-2xl text-gray-700" aria-hidden="true" />
