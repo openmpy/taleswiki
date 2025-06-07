@@ -63,10 +63,7 @@ function DictionaryCategoryPage({ type }) {
 
   return (
     <main>
-      <SEO
-        title={pageTitle}
-        description={"누구나 문서를 조회, 작성, 편집할 수 있습니다."}
-      />
+      <SEO title={pageTitle} />
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold flex items-center gap-2">

@@ -75,19 +75,9 @@ const DictionaryViewPage = () => {
     );
   }
 
-  // SEO를 위한 설명 생성
-  const getDescription = () => {
-    if (dictionary.content === null) {
-      return "이 문서는 현재 숨김 상태입니다.";
-    }
-    // 마크다운 컨텐츠에서 첫 번째 문단 추출
-    const firstParagraph = dictionary.content.split("\n\n")[0];
-    return firstParagraph.replace(/[#*`]/g, "").substring(0, 160);
-  };
-
   return (
     <main>
-      <SEO title={dictionary.title} description={getDescription()} />
+      <SEO title={dictionary.title} />
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold flex items-center gap-2">

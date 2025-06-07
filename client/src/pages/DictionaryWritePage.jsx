@@ -81,10 +81,7 @@ const DictionaryWritePage = () => {
 
   return (
     <main>
-      <SEO
-        title={"문서 작성"}
-        description={"누구나 문서를 작성할 수 있습니다."}
-      />
+      <SEO title={"문서 작성"} />
       <header>
         <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
           <BiPencil className="text-2xl text-gray-700" aria-hidden="true" />

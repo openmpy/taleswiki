@@ -45,10 +45,7 @@ const DictionaryLogPage = () => {
 
   return (
     <main>
-      <SEO
-        title={`${dictionary.title}`}
-        description={`${dictionary.title} 문서의 편집 이력을 확인하세요. 문서의 변경 사항과 편집자를 확인할 수 있습니다.`}
-      />
+      <SEO title={`${dictionary.title}`} />
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold flex items-center gap-2">
