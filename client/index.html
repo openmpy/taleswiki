@@ -6,6 +6,21 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>테일즈위키</title>
 
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-82RZJ3LS5S"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-82RZJ3LS5S");
+    </script>
+
     <!-- 기본 SEO 메타 태그 -->
     <meta
       name="description"
@@ -31,21 +46,6 @@
     <meta name="twitter:description" content="자유롭게 위키를 작성해보세요!" />
     <meta name="twitter:image" content="/og-image.png" />
   </head>
-
-  <!-- Google tag (gtag.js) -->
-  <script
-    async
-    src="https://www.googletagmanager.com/gtag/js?id=G-82RZJ3LS5S"
-  ></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-82RZJ3LS5S");
-  </script>
 
   <body>
     <div id="root"></div>
