@@ -20,6 +20,8 @@ services:
       - "6379:6379"
     volumes:
       - redis:/data
+    networks:
+      - monitoring
 
   prometheus:
     container_name: prometheus
