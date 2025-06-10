@@ -21,38 +21,24 @@ const DictionaryComparePage = () => {
     const fetchDictionary = async () => {
       try {
         const response = await axiosInstance.get(
-          `/api/v1/dictionaries/histories/${id}`
+          `/api/v1/dictionaries/${id}/history`
         );
         setDictionary(response.data);
+        setVersions(response.data.histories);
+
+        if (response.data.histories.length >= 2) {
+          setLeftVersion(response.data.histories[1].version);
+          setRightVersion(response.data.histories[0].version);
+        }
+        setLoading(false);
       } catch (error) {
         console.error("사전 정보를 불러오는데 실패했습니다:", error);
+        setError("사전 정보를 불러오는데 실패했습니다.");
+        setLoading(false);
       }
     };
 
     fetchDictionary();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchVersions = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/api/v1/dictionaries/${id}/versions`
-        );
-        const versionData = response.data.versions;
-        setVersions(versionData);
-
-        if (versionData.length >= 2) {
-          setLeftVersion(versionData[versionData.length - 2].version);
-          setRightVersion(versionData[versionData.length - 1].version);
-        }
-        setLoading(false);
-      } catch {
-        setError("버전 정보를 불러오는데 실패했습니다.");
-        setLoading(false);
-      }
-    };
-
-    fetchVersions();
   }, [id]);
 
   useEffect(() => {
