@@ -14,7 +14,9 @@ const DictionaryViewPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [toc, setToc] = useState([]);
   const [isTocOpen, setIsTocOpen] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const viewerRef = useRef(null);
+  const menuRef = useRef(null);
 
   const scrollToHeading = (text, index) => {
     const headings = document.querySelectorAll(
@@ -60,6 +62,17 @@ const DictionaryViewPage = () => {
     fetchDictionary();
   }, [id]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -92,41 +105,97 @@ const DictionaryViewPage = () => {
           >
             뒤로가기
           </button>
-          <button
-            className="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200"
-            onClick={() =>
-              navigate(`/dictionary/${dictionary.dictionaryId}/compare`)
-            }
-            aria-label="버전 비교하기"
-          >
-            버전비교
-          </button>
-          <button
-            className={`w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              dictionary.status === "HIDDEN"
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
-            }`}
-            disabled={dictionary.status === "HIDDEN"}
-            onClick={() =>
-              navigate(`/dictionary/${dictionary.dictionaryId}/log`)
-            }
-            aria-label="편집 로그 보기"
-          >
-            편집로그
-          </button>
-          <button
-            className={`w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              dictionary.status === "ALL_ACTIVE"
-                ? "bg-gray-700 text-white hover:bg-gray-800"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-            disabled={dictionary.status !== "ALL_ACTIVE"}
-            onClick={() => navigate(`/dictionary/${id}/edit`)}
-            aria-label="문서 편집하기"
-          >
-            편집하기
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              className="w-full sm:hidden px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="메뉴 열기"
+            >
+              메뉴
+            </button>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                <div className="py-1">
+                  <button
+                    className="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      navigate(
+                        `/dictionary/${dictionary.dictionaryId}/compare`
+                      );
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    버전비교
+                  </button>
+                  <button
+                    className={`w-full px-4 py-2 text-sm text-left ${
+                      dictionary.status === "HIDDEN"
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    disabled={dictionary.status === "HIDDEN"}
+                    onClick={() => {
+                      navigate(`/dictionary/${dictionary.dictionaryId}/log`);
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    편집로그
+                  </button>
+                  <button
+                    className={`w-full px-4 py-2 text-sm text-left ${
+                      dictionary.status === "ALL_ACTIVE"
+                        ? "text-gray-700 hover:bg-gray-100"
+                        : "text-gray-400 cursor-not-allowed"
+                    }`}
+                    disabled={dictionary.status !== "ALL_ACTIVE"}
+                    onClick={() => {
+                      navigate(`/dictionary/${id}/edit`);
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    편집하기
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="hidden sm:flex gap-2">
+              <button
+                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200"
+                onClick={() =>
+                  navigate(`/dictionary/${dictionary.dictionaryId}/compare`)
+                }
+                aria-label="버전 비교하기"
+              >
+                버전비교
+              </button>
+              <button
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  dictionary.status === "HIDDEN"
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }`}
+                disabled={dictionary.status === "HIDDEN"}
+                onClick={() =>
+                  navigate(`/dictionary/${dictionary.dictionaryId}/log`)
+                }
+                aria-label="편집 로그 보기"
+              >
+                편집로그
+              </button>
+              <button
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  dictionary.status === "ALL_ACTIVE"
+                    ? "bg-gray-700 text-white hover:bg-gray-800"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                disabled={dictionary.status !== "ALL_ACTIVE"}
+                onClick={() => navigate(`/dictionary/${id}/edit`)}
+                aria-label="문서 편집하기"
+              >
+                편집하기
+              </button>
+            </div>
+          </div>
         </nav>
       </header>
 

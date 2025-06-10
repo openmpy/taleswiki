@@ -15,6 +15,22 @@ const DictionaryComparePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [versionContents, setVersionContents] = useState({});
+  const [dictionary, setDictionary] = useState(null);
+
+  useEffect(() => {
+    const fetchDictionary = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/api/v1/dictionaries/histories/${id}`
+        );
+        setDictionary(response.data);
+      } catch (error) {
+        console.error("사전 정보를 불러오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchDictionary();
+  }, [id]);
 
   useEffect(() => {
     const fetchVersions = async () => {
@@ -114,7 +130,7 @@ const DictionaryComparePage = () => {
       </header>
 
       <section>
-        <h2 className="text-lg font-semibold mb-4">{versions[0].title}</h2>
+        <h2 className="text-lg font-semibold mb-4">{dictionary?.title}</h2>
 
         <div className="mb-4">
           <div className="flex justify-between items-center gap-4">
