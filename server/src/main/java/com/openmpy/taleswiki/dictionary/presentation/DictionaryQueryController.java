@@ -7,6 +7,8 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesRespo
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +51,22 @@ public class DictionaryQueryController {
 
     @GetMapping("/{dictionaryId}/history")
     public ResponseEntity<DictionaryGetHistoriesResponse> getHistories(@PathVariable final Long dictionaryId) {
-        DictionaryGetHistoriesResponse response = dictionaryQueryService.getHistories(dictionaryId);
+        final DictionaryGetHistoriesResponse response = dictionaryQueryService.getHistories(dictionaryId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{dictionaryId}/versions")
+    public ResponseEntity<DictionaryGetVersionsResponse> getVersions(@PathVariable final Long dictionaryId) {
+        final DictionaryGetVersionsResponse response = dictionaryQueryService.getVersions(dictionaryId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{dictionaryId}/versions/{version}")
+    public ResponseEntity<DictionaryGetVersionResponse> getVersion(
+            @PathVariable final Long dictionaryId,
+            @PathVariable final Long version
+    ) {
+        final DictionaryGetVersionResponse response = dictionaryQueryService.getVersion(dictionaryId, version);
         return ResponseEntity.ok(response);
     }
 

@@ -23,6 +23,9 @@ const DictionaryEditPage = lazy(() => import("./pages/DictionaryEditPage"));
 const DictionaryLogPage = lazy(() => import("./pages/DictionaryLogPage"));
 const DictionaryViewPage = lazy(() => import("./pages/DictionaryViewPage"));
 const DictionaryWritePage = lazy(() => import("./pages/DictionaryWritePage"));
+const DictionaryComparePage = lazy(() =>
+  import("./pages/DictionaryComparePage")
+);
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 const queryClient = new QueryClient();
@@ -93,6 +96,10 @@ function App() {
                             <Route
                               path="/dictionary/:id/log"
                               element={<DictionaryLogPage />}
+                            />
+                            <Route
+                              path="/dictionary/:id/compare"
+                              element={<DictionaryComparePage />}
                             />
                             <Route path="*" element={<NotFoundPage />} />
                           </Routes>

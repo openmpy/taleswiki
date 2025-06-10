@@ -15,6 +15,8 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesRespo
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
@@ -87,11 +89,27 @@ public class DictionaryQueryService {
     }
 
     @Transactional(readOnly = true)
+    public DictionaryGetVersionsResponse getVersions(final Long dictionaryId) {
+        final Dictionary dictionary = getDictionary(dictionaryId);
+        return DictionaryGetVersionsResponse.of(dictionary);
+    }
+
+    @Transactional(readOnly = true)
     public DictionaryGetRandomResponse getRandomDictionary() {
         final Object randomIds = redisTemplate.opsForSet().randomMember("dictionary:ids");
         final Dictionary dictionary = getDictionary(((Number) randomIds).longValue());
 
         return new DictionaryGetRandomResponse(dictionary.getCurrentHistory().getId());
+    }
+
+    @Transactional(readOnly = true)
+    public DictionaryGetVersionResponse getVersion(final Long dictionaryId, final Long version) {
+        final DictionaryHistory dictionaryHistory = dictionaryHistoryRepository.findByDictionary_IdAndVersion_Value(
+                        dictionaryId, version
+                )
+                .orElseThrow(() -> new CustomException("찾을 수 없는 문서 버전입니다."));
+
+        return DictionaryGetVersionResponse.of(dictionaryHistory);
     }
 
     @Transactional(readOnly = true)

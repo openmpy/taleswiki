@@ -17,4 +17,8 @@ public interface DictionaryHistoryRepository extends JpaRepository<DictionaryHis
     @EntityGraph(attributePaths = {"dictionary"})
     @Override
     Page<DictionaryHistory> findAll(final Pageable pageable);
+
+    Optional<DictionaryHistory> findByDictionary_IdAndVersion_Value(
+            final Long dictionaryId, final Long version
+    );
 }

@@ -93,6 +93,15 @@ const DictionaryViewPage = () => {
             뒤로가기
           </button>
           <button
+            className="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200"
+            onClick={() =>
+              navigate(`/dictionary/${dictionary.dictionaryId}/compare`)
+            }
+            aria-label="버전 비교하기"
+          >
+            버전비교
+          </button>
+          <button
             className={`w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               dictionary.status === "HIDDEN"
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
