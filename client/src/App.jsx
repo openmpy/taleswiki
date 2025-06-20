@@ -30,6 +30,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const KakaoCallbackPage = lazy(() => import("./pages/KakaoCallbackPage"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
+const CommunityPage = lazy(() => import("./pages/CommunityPage"));
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,10 @@ function App() {
                             <Route
                               path="/login/google"
                               element={<GoogleCallbackPage />}
+                            />
+                            <Route
+                              path="/community"
+                              element={<CommunityPage />}
                             />
                             <Route path="*" element={<NotFoundPage />} />
                           </Routes>

@@ -176,6 +176,12 @@ function Header() {
         {/* 오른쪽 메뉴 - 데스크톱 */}
         <div className="hidden md:flex flex-shrink-0 space-x-4 justify-center">
           <Link
+            to="/community"
+            className="hover:text-blue-400 transition-colors"
+          >
+            커뮤니티
+          </Link>
+          <Link
             to="/dictionary/runner"
             className="hover:text-blue-400 transition-colors"
           >
@@ -280,6 +286,13 @@ function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 px-4 pb-4 z-50">
           <div className="flex flex-col items-center">
+            <Link
+              to="/community"
+              className="w-full py-2 hover:text-blue-400 transition-colors text-center border-b border-gray-700"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              커뮤니티
+            </Link>
             <Link
               to="/dictionary/runner"
               className="w-full py-2 hover:text-blue-400 transition-colors text-center border-b border-gray-700"

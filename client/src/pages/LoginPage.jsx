@@ -21,21 +21,20 @@ function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8">로그인</h2>
-        <button
-          onClick={handleKakaoLogin}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 mb-4 bg-yellow-300 text-gray-900 rounded-lg hover:bg-yellow-400 transition-colors text-lg font-bold"
-        >
-          <RiKakaoTalkFill size={28} className="mr-2" />
-          카카오 로그인
-        </button>
+      <div className="w-full max-w-md bg-white rounded-lg">
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-lg font-bold"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 mb-4 bg-white text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors text-base font-bold"
         >
-          <FcGoogle size={28} className="mr-2" />
+          <FcGoogle size={28} className="mr-1" />
           구글 로그인
+        </button>
+        <button
+          onClick={handleKakaoLogin}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-yellow-300 text-gray-900 rounded-lg hover:bg-yellow-400 transition-colors text-base font-bold"
+        >
+          <RiKakaoTalkFill size={28} className="mr-1" />
+          카카오 로그인
         </button>
       </div>
     </div>
