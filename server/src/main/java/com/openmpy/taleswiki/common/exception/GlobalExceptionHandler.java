@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.common.exception;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> customException(final CustomException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> authenticationException(final AuthenticationException e) {
+        log.warn(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

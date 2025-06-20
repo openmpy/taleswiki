@@ -27,6 +27,9 @@ const DictionaryComparePage = lazy(() =>
   import("./pages/DictionaryComparePage")
 );
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const KakaoCallbackPage = lazy(() => import("./pages/KakaoCallbackPage"));
+const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 
 const queryClient = new QueryClient();
 
@@ -100,6 +103,15 @@ function App() {
                             <Route
                               path="/dictionary/:id/compare"
                               element={<DictionaryComparePage />}
+                            />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route
+                              path="/login/kakao"
+                              element={<KakaoCallbackPage />}
+                            />
+                            <Route
+                              path="/login/google"
+                              element={<GoogleCallbackPage />}
                             />
                             <Route path="*" element={<NotFoundPage />} />
                           </Routes>

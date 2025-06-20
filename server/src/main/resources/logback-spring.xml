@@ -11,9 +11,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>logs/spring-boot-application-error.log</file>
+        <file>/logs/spring-boot-application-error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-boot-application-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/logs/spring-boot-application-error.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -27,9 +27,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>logs/spring-boot-application-warn.log</file>
+        <file>/logs/spring-boot-application-warn.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-boot-application-warn.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/logs/spring-boot-application-warn.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -43,9 +43,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>logs/spring-boot-application-info.log</file>
+        <file>/logs/spring-boot-application-info.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-boot-application-info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/logs/spring-boot-application-info.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -59,9 +59,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>logs/spring-boot-application-debug.log</file>
+        <file>/logs/spring-boot-application-debug.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-boot-application-debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/logs/spring-boot-application-debug.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>

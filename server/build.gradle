@@ -50,6 +50,11 @@ dependencies {
     implementation "com.sksamuel.scrimage:scrimage-core:4.3.1"
     implementation "com.sksamuel.scrimage:scrimage-webp:4.3.1"
 
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'com.auth0:java-jwt:4.4.0'
+
     // faker
     implementation 'net.datafaker:datafaker:2.4.2'
 

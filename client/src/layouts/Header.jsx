@@ -10,8 +10,19 @@ function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
   const navigate = useNavigate();
   const searchRef = useRef(null);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -69,6 +80,17 @@ function Header() {
       }
     } catch (error) {
       console.error("랜덤 사전 조회 중 오류 발생:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/api/v1/members/logout");
+      localStorage.removeItem("isLoggedIn");
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch {
+      alert("로그아웃 중 오류가 발생했습니다.");
     }
   };
 
@@ -165,6 +187,18 @@ function Header() {
           >
             길드사전
           </Link>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="hover:text-blue-400 transition-colors"
+            >
+              로그아웃
+            </button>
+          ) : (
+            <Link to="/login" className="hover:text-blue-400 transition-colors">
+              로그인
+            </Link>
+          )}
         </div>
 
         {/* 모바일 메뉴 버튼들 */}
@@ -255,11 +289,30 @@ function Header() {
             </Link>
             <Link
               to="/dictionary/guild"
-              className="w-full py-2 hover:text-blue-400 transition-colors text-center"
+              className="w-full py-2 hover:text-blue-400 transition-colors text-center border-b border-gray-700"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               길드사전
             </Link>
+            {isLoggedIn ? (
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full py-2 hover:text-blue-400 transition-colors text-center"
+              >
+                로그아웃
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="w-full py-2 hover:text-blue-400 transition-colors text-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                로그인
+              </Link>
+            )}
           </div>
         </div>
       )}
