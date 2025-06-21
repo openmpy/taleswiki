@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -30,10 +31,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                 AdminCommandController.class,
                 AdminQueryController.class
         },
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-                WebMvcConfigurer.class
-        })
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+                        WebMvcConfigurer.class,
+                })
+        }
 )
+@Import(TestWebMvcConfig.class)
 public abstract class ControllerTestSupport {
 
     @Autowired

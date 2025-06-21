@@ -20,25 +20,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.openmpy.taleswiki.admin.dto.request.AdminBlacklistSaveRequest;
-import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.helper.ControllerTestSupport;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
 
 class AdminCommandControllerTest extends ControllerTestSupport {
-
-    @Autowired
-    private CookieProperties cookieProperties;
 
     @DisplayName("[통과] 사전 상태를 변경한다.")
     @Test
     void admin_command_controller_test_02() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         // when
         doNothing().when(adminCommandService).changeDictionaryStatus(anyLong(), anyLong(), anyString());
@@ -71,7 +65,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
     @Test
     void admin_command_controller_test_03() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         // when
         doNothing().when(adminCommandService).delete(anyLong(), anyLong());
@@ -100,7 +94,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
     @Test
     void admin_command_controller_test_04() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         // when
         doNothing().when(adminCommandService).changeDictionaryHistoryStatus(anyLong(), anyLong(), anyString());
@@ -133,7 +127,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
     @Test
     void admin_command_controller_test_05() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         final AdminBlacklistSaveRequest request = new AdminBlacklistSaveRequest("127.0.0.1", "사유");
         final String payload = objectMapper.writeValueAsString(request);
@@ -190,16 +184,5 @@ class AdminCommandControllerTest extends ControllerTestSupport {
                         )
                 )
         ;
-    }
-
-    private ResponseCookie createCookie() {
-        return ResponseCookie.from("admin_token", "success")
-                .httpOnly(cookieProperties.httpOnly())
-                .secure(cookieProperties.secure())
-                .domain(cookieProperties.domain())
-                .path(cookieProperties.path())
-                .sameSite(cookieProperties.sameSite())
-                .maxAge(cookieProperties.maxAge())
-                .build();
     }
 }

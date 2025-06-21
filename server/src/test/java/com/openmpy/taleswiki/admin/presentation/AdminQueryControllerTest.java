@@ -35,7 +35,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
     @Test
     void admin_query_controller_test_02() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         final List<AdminGetDictionariesResponse> responses = new ArrayList<>();
 
@@ -96,7 +96,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
     @Test
     void admin_query_controller_test_03() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         final List<AdminGetDictionariesHistoriesResponse> responses = new ArrayList<>();
 
@@ -158,7 +158,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
     @Test
     void admin_query_controller_test_04() throws Exception {
         // given
-        final Cookie cookie = new Cookie("admin_token", "success");
+        final Cookie cookie = new Cookie("access_token", "success");
 
         final List<AdminGetBlacklistResponse> responses = new ArrayList<>();
 
