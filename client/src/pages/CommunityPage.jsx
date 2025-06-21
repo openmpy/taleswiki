@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BiFile, BiImage, BiMessageSquareDetail } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/admin/Pagination";
@@ -14,48 +14,50 @@ function CommunityPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  const fetchBoards = async (page = 0) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchBoards = useCallback(
+    async (page = 0) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const response = await axiosInstance.get(
-        `/api/v1/boards?page=${page}&size=30`
-      );
-      const { content, totalPages: pages } = response.data;
+        const response = await axiosInstance.get(
+          `/api/v1/boards?page=${page}&size=30`
+        );
+        const { content, totalPages: pages } = response.data;
 
-      // 임시로 이미지 유무 데이터 추가
-      const boardsWithImageStatus = content.map((board) => ({
-        ...board,
-        hasImage: Math.random() > 0.7, // 30% 확률로 이미지가 있다고 가정
-      }));
+        // 임시로 이미지 유무 데이터 추가
+        const boardsWithImageStatus = content.map((board) => ({
+          ...board,
+          hasImage: Math.random() > 0.7, // 30% 확률로 이미지가 있다고 가정
+        }));
 
-      setBoards(boardsWithImageStatus);
-      setTotalPages(pages);
-    } catch (err) {
-      if (err.response?.status === 401) {
-        alert("로그인이 필요합니다.");
-        navigate("/login");
-        return;
+        setBoards(boardsWithImageStatus);
+        setTotalPages(pages);
+      } catch (err) {
+        if (err.response?.status === 401) {
+          alert("로그인이 필요합니다.");
+          navigate("/login");
+          return;
+        }
+        console.error("게시글 목록을 불러오는데 실패했습니다:", err);
+        setError("게시글 목록을 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
-      console.error("게시글 목록을 불러오는데 실패했습니다:", err);
-      setError("게시글 목록을 불러오는데 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [navigate]
+  );
 
   useEffect(() => {
     fetchBoards(currentPage);
-  }, [currentPage]);
+  }, [fetchBoards, currentPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleBoardClick = (boardId) => {
-    // 게시글 상세 페이지로 이동 (추후 구현)
-    console.log(`게시글 ${boardId} 클릭`);
+    navigate(`/board/${boardId}`);
   };
 
   if (loading) {

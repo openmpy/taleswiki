@@ -32,6 +32,7 @@ const KakaoCallbackPage = lazy(() => import("./pages/KakaoCallbackPage"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 const CommunityPage = lazy(() => import("./pages/CommunityPage"));
 const BoardWritePage = lazy(() => import("./pages/BoardWritePage"));
+const BoardViewPage = lazy(() => import("./pages/BoardViewPage"));
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,10 @@ function App() {
                             <Route
                               path="/board/write"
                               element={<BoardWritePage />}
+                            />
+                            <Route
+                              path="/board/:boardId"
+                              element={<BoardViewPage />}
                             />
                             <Route path="*" element={<NotFoundPage />} />
                           </Routes>

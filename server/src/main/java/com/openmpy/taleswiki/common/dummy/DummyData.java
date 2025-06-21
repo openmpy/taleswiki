@@ -88,9 +88,21 @@ public class DummyData {
             final Board board;
 
             if (i % 2 == 0) {
-                board = Board.save(("제목" + i).repeat(25), "내용" + i, FAKER.internet().ipV4Address(), member01);
+                board = Board.save(
+                        ("제목" + i).repeat(25),
+                        "내용" + i,
+                        "테붕이" + member01.getId(),
+                        FAKER.internet().ipV4Address(),
+                        member01
+                );
             } else {
-                board = Board.save("제목" + i, "내용" + i, FAKER.internet().ipV4Address(), member02);
+                board = Board.save(
+                        ("제목" + i),
+                        "내용" + i,
+                        "테붕이" + member02.getId(),
+                        FAKER.internet().ipV4Address(),
+                        member02
+                );
             }
 
             boardRepository.save(board);

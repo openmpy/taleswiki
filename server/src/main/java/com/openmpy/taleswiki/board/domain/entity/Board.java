@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.board.domain.entity;
 
+import com.openmpy.taleswiki.board.domain.BoardAuthor;
 import com.openmpy.taleswiki.board.domain.BoardContent;
 import com.openmpy.taleswiki.board.domain.BoardTitle;
 import com.openmpy.taleswiki.board.domain.BoardView;
@@ -39,6 +40,10 @@ public class Board extends BaseEntity {
     private BoardContent content;
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "author", nullable = false))
+    private BoardAuthor author;
+
+    @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "view", nullable = false))
     private BoardView view;
 
@@ -54,25 +59,34 @@ public class Board extends BaseEntity {
     public Board(
             final String title,
             final String content,
+            final String author,
             final Long view,
             final String ip,
             final Member member
     ) {
         this.title = new BoardTitle(title);
         this.content = new BoardContent(content);
+        this.author = new BoardAuthor(author);
         this.view = new BoardView(view);
         this.ip = new ClientIp(ip);
         this.member = member;
     }
 
-    public static Board save(final String title, final String content, final String ip, final Member member) {
+    public static Board save(
+            final String title, final String content, final String author, final String ip, final Member member
+    ) {
         return Board.builder()
                 .title(title)
                 .content(content)
+                .author(author)
                 .view(0L)
                 .ip(ip)
                 .member(member)
                 .build();
+    }
+
+    public void incrementViews(final Long count) {
+        this.view.increment(count);
     }
 
     public String getTitle() {
@@ -81,6 +95,10 @@ public class Board extends BaseEntity {
 
     public String getContent() {
         return content.getValue();
+    }
+
+    public String getAuthor() {
+        return author.getValue();
     }
 
     public Long getView() {
