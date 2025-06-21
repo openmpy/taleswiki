@@ -7,6 +7,7 @@ public record BoardGetsResponse(
         String title,
         String nickname,
         LocalDateTime createdAt,
-        Long view
+        Long view,
+        Boolean hasImage
 ) {
 }

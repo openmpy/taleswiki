@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import "@toast-ui/editor/dist/toastui-editor-viewer.css";
+import { Viewer } from "@toast-ui/react-editor";
+import React, { useEffect, useRef, useState } from "react";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -11,6 +13,7 @@ const BoardViewPage = () => {
   const [board, setBoard] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const viewerRef = useRef(null);
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -92,33 +95,27 @@ const BoardViewPage = () => {
         </nav>
       </header>
 
-      <article>
-        {/* 게시글 헤더 */}
-        <header className="border-b border-gray-200 pb-4 mb-6">
-          <div className="border-t border-gray-400 pt-4 mb-2">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {board.title}
-            </h2>
+      {/* 게시글 헤더 */}
+      <header className="border-b border-gray-200 pb-4 mb-6">
+        <div className="border-t border-gray-400 pt-4 mb-2">
+          <h2 className="text-xl font-semibold text-gray-900">{board.title}</h2>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <span>{board.author}</span>
+            <span className="text-gray-300">|</span>
+            <span>{formatKoreanDateTime(board.createdAt)}</span>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <span>{board.author}</span>
-              <span className="text-gray-300">|</span>
-              <span>{formatKoreanDateTime(board.createdAt)}</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span>조회수 {board.view.toLocaleString()}</span>
-            </div>
+          <div className="flex items-center gap-4">
+            <span>조회수 {board.view.toLocaleString()}</span>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* 게시글 내용 */}
-        <div className="mb-6">
-          <div className="prose max-w-none">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {board.content || "게시글 내용이 없습니다."}
-            </p>
-          </div>
+      {/* 게시글 내용 */}
+      <article>
+        <div className="toastui-editor-viewer" ref={viewerRef}>
+          <Viewer initialValue={board.content || "게시글 내용이 없습니다."} />
         </div>
       </article>
     </main>

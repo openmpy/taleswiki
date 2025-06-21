@@ -25,13 +25,7 @@ function CommunityPage() {
         );
         const { content, totalPages: pages } = response.data;
 
-        // 임시로 이미지 유무 데이터 추가
-        const boardsWithImageStatus = content.map((board) => ({
-          ...board,
-          hasImage: Math.random() > 0.7, // 30% 확률로 이미지가 있다고 가정
-        }));
-
-        setBoards(boardsWithImageStatus);
+        setBoards(content);
         setTotalPages(pages);
       } catch (err) {
         if (err.response?.status === 401) {

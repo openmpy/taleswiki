@@ -10,11 +10,13 @@ import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.common.properties.ImageProperties;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.member.application.MemberService;
 import com.openmpy.taleswiki.member.domain.entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,10 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BoardService {
 
+    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/([a-f0-9\\-]+\\.webp\\))";
+
     private final MemberService memberService;
     private final ImageS3Service imageS3Service;
     private final RedisService redisService;
     private final BoardRepository boardRepository;
+    private final ImageProperties imageProperties;
 
     @Transactional
     public BoardSaveResponse save(
@@ -48,13 +53,18 @@ public class BoardService {
     public PaginatedResponse<BoardGetsResponse> gets(final int page, final int size) {
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<Board> boards = boardRepository.findAll(pageRequest);
+
+        final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());
+        final Pattern imagePattern = Pattern.compile(imageUrlRegex);
+
         final Page<BoardGetsResponse> responses = boards.map(
                 it -> new BoardGetsResponse(
                         it.getId(),
                         it.getTitle(),
                         it.getAuthor(),
                         it.getCreatedAt(),
-                        it.getView()
+                        it.getView(),
+                        imagePattern.matcher(it.getContent()).find()
                 ));
 
         return PaginatedResponse.of(responses);
