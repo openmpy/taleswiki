@@ -3,12 +3,17 @@ package com.openmpy.taleswiki.board.application;
 import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
+import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
+import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.member.application.MemberService;
 import com.openmpy.taleswiki.member.domain.entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,5 +33,21 @@ public class BoardService {
         final Board board = Board.save(request.title(), request.content(), clientIp, member);
         final Board savedBoard = boardRepository.save(board);
         return new BoardSaveResponse(savedBoard.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<BoardGetsResponse> gets(final int page, final int size) {
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final Page<Board> boards = boardRepository.findAll(pageRequest);
+        final Page<BoardGetsResponse> responses = boards.map(
+                it -> new BoardGetsResponse(
+                        it.getId(),
+                        it.getTitle(),
+                        "테붕이" + it.getMember().getId(),
+                        it.getCreatedAt(),
+                        it.getView()
+                ));
+
+        return PaginatedResponse.of(responses);
     }
 }
