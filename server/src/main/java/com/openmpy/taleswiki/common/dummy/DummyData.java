@@ -1,10 +1,16 @@
 package com.openmpy.taleswiki.common.dummy;
 
+import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.member.domain.constants.MemberSocial;
+import com.openmpy.taleswiki.member.domain.entity.Member;
+import com.openmpy.taleswiki.member.domain.repository.MemberRepository;
+import java.util.List;
 import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -22,14 +28,24 @@ public class DummyData {
     @Profile({"dev", "local"})
     @Bean
     private CommandLineRunner init(
-            final DictionaryRepository dictionaryRepository
+            final MemberRepository memberRepository,
+            final DictionaryRepository dictionaryRepository,
+            final BoardRepository boardRepository
     ) {
-        return (args -> saveDictionaries(dictionaryRepository));
+        return (args -> saveDictionaries(memberRepository, dictionaryRepository, boardRepository));
     }
 
     private void saveDictionaries(
-            final DictionaryRepository dictionaryRepository
+            final MemberRepository memberRepository,
+            final DictionaryRepository dictionaryRepository,
+            final BoardRepository boardRepository
     ) {
+        // 회원 관련
+        final Member member01 = Member.create("test@test.com", MemberSocial.KAKAO);
+        final Member member02 = Member.create("test@test.com", MemberSocial.KAKAO);
+        memberRepository.saveAll(List.of(member01, member02));
+
+        // 사전 관련
         for (int i = 1; i <= 1000; i++) {
             Dictionary dictionary;
             String title;
@@ -66,5 +82,20 @@ public class DummyData {
         }
 
         log.info("사전 더미 데이터 {}개 생성", dictionaryRepository.count());
+
+        // 게시글 관련
+        for (int i = 1; i <= 1000; i++) {
+            final Board board;
+
+            if (i % 2 == 0) {
+                board = Board.save("제목" + i, "내용" + i, FAKER.internet().ipV4Address(), member01);
+            } else {
+                board = Board.save("제목" + i, "내용" + i, FAKER.internet().ipV4Address(), member02);
+            }
+
+            boardRepository.save(board);
+        }
+
+        log.info("게시글 더미 데이터 {}개 생성", boardRepository.count());
     }
 }
