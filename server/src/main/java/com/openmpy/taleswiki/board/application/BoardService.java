@@ -5,6 +5,7 @@ import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
+import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.member.application.MemberService;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final MemberService memberService;
+    private final ImageS3Service imageS3Service;
     private final BoardRepository boardRepository;
 
     @Transactional
@@ -30,7 +32,9 @@ public class BoardService {
     ) {
         final Member member = memberService.get(memberId);
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final Board board = Board.save(request.title(), request.content(), clientIp, member);
+        final String content = imageS3Service.processImageReferences(request.content());
+
+        final Board board = Board.save(request.title(), content, clientIp, member);
         final Board savedBoard = boardRepository.save(board);
         return new BoardSaveResponse(savedBoard.getId());
     }

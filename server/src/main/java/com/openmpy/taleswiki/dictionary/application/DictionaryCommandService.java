@@ -3,8 +3,6 @@ package com.openmpy.taleswiki.dictionary.application;
 import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.exception.CustomException;
-import com.openmpy.taleswiki.common.properties.ImageProperties;
-import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
@@ -18,9 +16,6 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DictionaryCommandService {
 
-    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
-
     private final DictionaryQueryService dictionaryQueryService;
     private final ImageS3Service imageS3Service;
     private final RedisService redisService;
     private final DictionaryRepository dictionaryRepository;
-    private final ImageProperties imageProperties;
 
     @Transactional
     public DictionarySaveResponse save(final HttpServletRequest servletRequest, final DictionarySaveRequest request) {
@@ -46,7 +38,7 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String content = processImageReferences(request.content());
+        final String content = imageS3Service.processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
 
         final Dictionary dictionary = Dictionary.create(request.title(), category);
@@ -74,7 +66,7 @@ public class DictionaryCommandService {
         }
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
-        final String content = processImageReferences(request.content());
+        final String content = imageS3Service.processImageReferences(request.content());
         final long contentLength = content.getBytes().length;
         final long version = dictionary.getCurrentHistory().getVersion() + 1;
 
@@ -95,18 +87,6 @@ public class DictionaryCommandService {
     public void incrementViews(final Long dictionaryId, final Long count) {
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
         dictionary.incrementViews(count);
-    }
-
-    private String processImageReferences(final String content) {
-        final List<String> fileNames = FileLoaderUtil.extractImageFileNames(imageProperties.uploadPath(), content);
-        for (final String fileName : fileNames) {
-            imageS3Service.moveToBaseDirectory(fileName);
-        }
-
-        final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());
-        final Pattern pattern = Pattern.compile(imageUrlRegex);
-        final Matcher matcher = pattern.matcher(content);
-        return matcher.replaceAll("$1/$2");
     }
 
     private void validateDictionarySubmission(final String clientIp) {

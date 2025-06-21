@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { BiFile, BiImage, BiMessageSquareDetail } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 import Pagination from "../components/admin/Pagination";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
 import { formatRelativeTime } from "../utils/dateUtils";
 
 function CommunityPage() {
+  const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,6 +33,11 @@ function CommunityPage() {
       setBoards(boardsWithImageStatus);
       setTotalPages(pages);
     } catch (err) {
+      if (err.response?.status === 401) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
       console.error("게시글 목록을 불러오는데 실패했습니다:", err);
       setError("게시글 목록을 불러오는데 실패했습니다.");
     } finally {
@@ -77,7 +84,7 @@ function CommunityPage() {
           </h1>
         </div>
         <button
-          onClick={() => console.log("글쓰기 클릭")}
+          onClick={() => navigate("/board/write")}
           className="w-full sm:w-auto px-4 py-2 text-sm font-medium bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
           aria-label="게시글 작성하기"
         >

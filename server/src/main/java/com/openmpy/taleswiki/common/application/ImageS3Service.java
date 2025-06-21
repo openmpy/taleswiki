@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.common.application;
 
 import com.openmpy.taleswiki.common.dto.ImageUploadResponse;
+import com.openmpy.taleswiki.common.properties.ImageProperties;
 import com.openmpy.taleswiki.common.util.FileLoaderUtil;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
@@ -14,7 +15,10 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 @Service
 public class ImageS3Service {
 
+    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/tmp/([a-f0-9\\-]+\\.webp\\))";
     private static final String IMAGE_TMP_DIR = System.getProperty("user.home") + "/taleswiki/images/tmp";
     private static final String R2_IMAGE_TMP_SOURCE = "taleswiki/images/tmp/";
     private static final String R2_IMAGE_TMP_DIR = "images/tmp/";
@@ -42,6 +47,7 @@ public class ImageS3Service {
     private static final String BUCKET_NAME = "taleswiki";
 
     private final S3Client s3Client;
+    private final ImageProperties imageProperties;
 
     @PostConstruct
     public void init() {
@@ -120,6 +126,18 @@ public class ImageS3Service {
                 .build();
 
         s3Client.deleteObject(deleteObjectRequest);
+    }
+
+    public String processImageReferences(final String content) {
+        final List<String> fileNames = FileLoaderUtil.extractImageFileNames(imageProperties.uploadPath(), content);
+        for (final String fileName : fileNames) {
+            moveToBaseDirectory(fileName);
+        }
+
+        final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());
+        final Pattern pattern = Pattern.compile(imageUrlRegex);
+        final Matcher matcher = pattern.matcher(content);
+        return matcher.replaceAll("$1/$2");
     }
 
     @Scheduled(cron = "0 0 0 * * *")
