@@ -65,7 +65,7 @@ public class DictionaryQueryService {
         final Long dictionaryId = dictionary.getId();
 
         final String clientIp = IpAddressUtil.getClientIp(request);
-        final String key = String.format("dictionary-view:%d:%s", dictionaryId, clientIp);
+        final String key = String.format("dictionary-view_%d:%s", dictionaryId, clientIp);
 
         if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
             final String viewKey = String.format("dictionary-view:%d", dictionaryId);

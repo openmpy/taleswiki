@@ -24,13 +24,13 @@ public class DictionaryScheduler {
             final String[] keys = key.split(":");
             final Long dictionaryId = Long.parseLong(keys[1]);
 
-            final Object value = redisService.get(keys[0] + ":" + dictionaryId);
+            final Object value = redisService.get(key);
             final Long count = value != null ? Long.parseLong(value.toString()) : null;
 
             if (count != null) {
                 dictionaryCommandService.incrementViews(dictionaryId, count);
-                redisService.delete(key);
             }
+            redisService.delete(key);
         });
     }
 
