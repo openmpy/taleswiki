@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.member.application;
 
 import com.openmpy.taleswiki.auth.JwtTokenProvider;
+import com.openmpy.taleswiki.common.exception.AuthenticationException;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.member.domain.constants.MemberAuthority;
 import com.openmpy.taleswiki.member.domain.constants.MemberSocial;
@@ -51,7 +52,7 @@ public class MemberService {
         final Member member = get(memberId);
 
         if (!member.getAuthority().equals(MemberAuthority.ADMIN)) {
-            throw new CustomException("어드민 계정이 아닙니다.");
+            throw new AuthenticationException("어드민 권한이 존재하지 않습니다.");
         }
     }
 
