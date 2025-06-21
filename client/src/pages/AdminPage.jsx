@@ -1,43 +1,46 @@
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaUserShield } from "react-icons/fa";
-import AdminLogin from "../components/admin/AdminLogin";
 import BlacklistTable from "../components/admin/BlacklistTable";
 import ChatTable from "../components/admin/ChatTable";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
 import DictionaryTable from "../components/admin/DictionaryTable";
 import Pagination from "../components/admin/Pagination";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
 
 function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [dictionaries, setDictionaries] = useState([]);
   const [histories, setHistories] = useState([]);
   const [blacklists, setBlacklists] = useState([]);
   const [chats, setChats] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", "blacklists", or "chats"
   const [newBlacklist, setNewBlacklist] = useState({ ip: "", reason: "" });
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAdminAuthority = async () => {
       try {
-        const response = await axiosInstance.get("/api/v1/admin/me");
-        setIsAuthenticated(response.status === 204);
+        const response = await axiosInstance.get("/api/v1/members/me");
+        const isAdmin = response.data.authority === "ADMIN";
+        setIsAuthorized(isAdmin);
       } catch (error) {
-        console.error("인증 확인 중 오류 발생:", error);
-        setIsAuthenticated(false);
+        console.error("권한 확인 중 오류 발생:", error);
+        setIsAuthorized(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    checkAuth();
+    checkAdminAuthority();
   }, []);
 
   useEffect(() => {
     const fetchDictionaries = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthorized) return;
 
       setIsLoading(true);
       try {
@@ -56,11 +59,11 @@ function AdminPage() {
     if (activeTab === "dictionaries") {
       fetchDictionaries();
     }
-  }, [isAuthenticated, currentPage, activeTab]);
+  }, [isAuthorized, currentPage, activeTab]);
 
   useEffect(() => {
     const fetchHistories = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthorized) return;
 
       setIsLoading(true);
       try {
@@ -79,11 +82,11 @@ function AdminPage() {
     if (activeTab === "histories") {
       fetchHistories();
     }
-  }, [isAuthenticated, currentPage, activeTab]);
+  }, [isAuthorized, currentPage, activeTab]);
 
   useEffect(() => {
     const fetchBlacklists = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthorized) return;
 
       setIsLoading(true);
       try {
@@ -102,11 +105,11 @@ function AdminPage() {
     if (activeTab === "blacklists") {
       fetchBlacklists();
     }
-  }, [isAuthenticated, currentPage, activeTab]);
+  }, [isAuthorized, currentPage, activeTab]);
 
   useEffect(() => {
     const fetchChats = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthorized) return;
 
       setIsLoading(true);
       try {
@@ -125,7 +128,7 @@ function AdminPage() {
     if (activeTab === "chats") {
       fetchChats();
     }
-  }, [isAuthenticated, currentPage, activeTab]);
+  }, [isAuthorized, currentPage, activeTab]);
 
   const handleStatusChange = async (dictionaryId, newStatus) => {
     try {
@@ -227,8 +230,18 @@ function AdminPage() {
     }
   };
 
-  if (!isAuthenticated) {
-    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-gray-500 font-medium">
+          관리자 권한이 필요합니다.
+        </div>
+      </div>
+    );
   }
 
   return (

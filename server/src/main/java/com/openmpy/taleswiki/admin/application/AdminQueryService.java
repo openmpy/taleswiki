@@ -9,12 +9,11 @@ import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
 import com.openmpy.taleswiki.chat.domain.entity.ChatMessage;
 import com.openmpy.taleswiki.chat.domain.repository.ChatMessageRepository;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
-import com.openmpy.taleswiki.common.exception.CustomException;
-import com.openmpy.taleswiki.common.properties.AdminProperties;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryHistoryRepository;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.member.application.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,22 +25,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminQueryService {
 
+    private final MemberService memberService;
     private final DictionaryRepository dictionaryRepository;
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
     private final BlacklistRepository blacklistRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final AdminProperties adminProperties;
-
-    @Transactional(readOnly = true)
-    public void me(final String token) {
-        validateToken(token);
-    }
 
     @Transactional(readOnly = true)
     public PaginatedResponse<AdminGetDictionariesResponse> getDictionaries(
-            final String token, final int page, final int size
+            final Long memberId, final int page, final int size
     ) {
-        validateToken(token);
+        memberService.validateAdmin(memberId);
 
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<Dictionary> dictionaries = dictionaryRepository.findAll(pageRequest);
@@ -57,9 +51,9 @@ public class AdminQueryService {
 
     @Transactional(readOnly = true)
     public PaginatedResponse<AdminGetDictionariesHistoriesResponse> getDictionariesHistories(
-            final String token, final int page, final int size
+            final Long memberId, final int page, final int size
     ) {
-        validateToken(token);
+        memberService.validateAdmin(memberId);
 
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<DictionaryHistory> dictionaryHistories = dictionaryHistoryRepository.findAll(pageRequest);
@@ -77,9 +71,9 @@ public class AdminQueryService {
 
     @Transactional(readOnly = true)
     public PaginatedResponse<AdminGetBlacklistResponse> getBlacklist(
-            final String token, final int page, final int size
+            final Long memberId, final int page, final int size
     ) {
-        validateToken(token);
+        memberService.validateAdmin(memberId);
 
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<Blacklist> blacklist = blacklistRepository.findAll(pageRequest);
@@ -91,8 +85,8 @@ public class AdminQueryService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedResponse<AdminGetChatsResponse> getChats(final String token, final int page, final int size) {
-        validateToken(token);
+    public PaginatedResponse<AdminGetChatsResponse> getChats(final Long memberId, final int page, final int size) {
+        memberService.validateAdmin(memberId);
 
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<ChatMessage> chatMessages = chatMessageRepository.findAll(pageRequest);
@@ -101,13 +95,5 @@ public class AdminQueryService {
         ));
 
         return PaginatedResponse.of(responses);
-    }
-
-    public void validateToken(final String token) {
-        final String adminToken = adminProperties.token();
-
-        if (token == null || token.isBlank() || !token.equals(adminToken)) {
-            throw new CustomException("잘못된 토큰 값입니다.");
-        }
     }
 }

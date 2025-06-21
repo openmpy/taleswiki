@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.member.application;
 
 import com.openmpy.taleswiki.auth.JwtTokenProvider;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.member.domain.constants.MemberAuthority;
 import com.openmpy.taleswiki.member.domain.constants.MemberSocial;
 import com.openmpy.taleswiki.member.domain.entity.Member;
 import com.openmpy.taleswiki.member.domain.repository.MemberRepository;
@@ -38,6 +39,20 @@ public class MemberService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException("찾을 수 없는 회원 번호입니다."));
         return MemberResponse.of(member);
+    }
+
+    @Transactional(readOnly = true)
+    public Member get(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException("찾을 수 없는 회원 번호입니다."));
+    }
+
+    public void validateAdmin(final Long memberId) {
+        final Member member = get(memberId);
+
+        if (!member.getAuthority().equals(MemberAuthority.ADMIN)) {
+            throw new CustomException("어드민 계정이 아닙니다.");
+        }
     }
 
     public String generateToken(final MemberLoginResponse response) {

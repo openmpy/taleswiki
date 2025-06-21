@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -18,19 +17,15 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.openmpy.taleswiki.admin.dto.request.AdminBlacklistSaveRequest;
-import com.openmpy.taleswiki.admin.dto.request.AdminSigninRequest;
 import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.helper.ControllerTestSupport;
 import jakarta.servlet.http.Cookie;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 
@@ -39,38 +34,6 @@ class AdminCommandControllerTest extends ControllerTestSupport {
     @Autowired
     private CookieProperties cookieProperties;
 
-    @DisplayName("[통과] 어드민 계정에 로그인한다.")
-    @Test
-    void admin_command_controller_test_01() throws Exception {
-        // given
-        final AdminSigninRequest request = new AdminSigninRequest("admin", "test");
-        final String payload = objectMapper.writeValueAsString(request);
-
-        // when
-        when(adminCommandService.signin(any())).thenReturn("success");
-
-        // then
-        mockMvc.perform(post("/api/v1/admin/signin")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload)
-                )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, Matchers.containsString("admin_token=success")))
-                .andDo(
-                        document(
-                                "admin-signin",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestFields(
-                                        fieldWithPath("nickname").description("닉네임"),
-                                        fieldWithPath("password").description("비밀번호")
-                                )
-                        )
-                )
-        ;
-    }
-
     @DisplayName("[통과] 사전 상태를 변경한다.")
     @Test
     void admin_command_controller_test_02() throws Exception {
@@ -78,7 +41,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
         final Cookie cookie = new Cookie("admin_token", "success");
 
         // when
-        doNothing().when(adminCommandService).changeDictionaryStatus(anyString(), anyLong(), anyString());
+        doNothing().when(adminCommandService).changeDictionaryStatus(anyLong(), anyLong(), anyString());
 
         // then
         mockMvc.perform(patch("/api/v1/admin/dictionaries/{dictionaryId}", 1L)
@@ -111,7 +74,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
         final Cookie cookie = new Cookie("admin_token", "success");
 
         // when
-        doNothing().when(adminCommandService).delete(anyString(), anyLong());
+        doNothing().when(adminCommandService).delete(anyLong(), anyLong());
 
         // then
         mockMvc.perform(delete("/api/v1/admin/dictionaries/{dictionaryId}", 1L)
@@ -140,7 +103,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
         final Cookie cookie = new Cookie("admin_token", "success");
 
         // when
-        doNothing().when(adminCommandService).changeDictionaryHistoryStatus(anyString(), anyLong(), anyString());
+        doNothing().when(adminCommandService).changeDictionaryHistoryStatus(anyLong(), anyLong(), anyString());
 
         // then
         mockMvc.perform(patch("/api/v1/admin/dictionaries/histories/{dictionaryHistoriesId}", 1L)
@@ -176,7 +139,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
         final String payload = objectMapper.writeValueAsString(request);
 
         // when
-        doNothing().when(adminCommandService).saveBlacklist(anyString(), any());
+        doNothing().when(adminCommandService).saveBlacklist(anyLong(), any());
 
         // then
         mockMvc.perform(post("/api/v1/admin/blacklist")
@@ -207,7 +170,7 @@ class AdminCommandControllerTest extends ControllerTestSupport {
         final Cookie cookie = new Cookie("admin_token", "success");
 
         // when
-        doNothing().when(adminCommandService).deleteBlacklist(anyString(), anyLong());
+        doNothing().when(adminCommandService).deleteBlacklist(anyLong(), anyLong());
 
         // then
         mockMvc.perform(delete("/api/v1/admin/blacklist/{blacklistId}", 1L)

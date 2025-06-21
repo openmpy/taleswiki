@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.member.domain.entity;
 
 import com.openmpy.taleswiki.common.domain.entity.BaseEntity;
 import com.openmpy.taleswiki.member.domain.MemberEmail;
+import com.openmpy.taleswiki.member.domain.constants.MemberAuthority;
 import com.openmpy.taleswiki.member.domain.constants.MemberSocial;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -34,16 +35,22 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private MemberSocial social;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberAuthority authority;
+
     @Builder
-    public Member(final String email, final MemberSocial social) {
+    public Member(final String email, final MemberSocial social, final MemberAuthority authority) {
         this.email = new MemberEmail(email);
         this.social = social;
+        this.authority = authority;
     }
 
     public static Member create(final String email, final MemberSocial memberSocial) {
         return Member.builder()
                 .email(email)
                 .social(memberSocial)
+                .authority(MemberAuthority.MEMBER)
                 .build();
     }
 

@@ -1,8 +1,7 @@
 package com.openmpy.taleswiki.admin.presentation;
 
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -32,32 +31,6 @@ import org.springframework.http.MediaType;
 
 class AdminQueryControllerTest extends ControllerTestSupport {
 
-    @DisplayName("[통과] 어드민 토큰을 검증한다.")
-    @Test
-    void admin_query_controller_test_01() throws Exception {
-        // given
-        final Cookie cookie = new Cookie("admin_token", "success");
-
-        // when
-        doNothing().when(adminQueryService).me(anyString());
-
-        // then
-        mockMvc.perform(get("/api/v1/admin/me")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .cookie(cookie)
-                )
-                .andExpect(status().isNoContent())
-                .andDo(print())
-                .andDo(
-                        document(
-                                "admin-me",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint())
-                        )
-                )
-        ;
-    }
-
     @DisplayName("[통과] 모든 사전 목록을 페이지 형식으로 조회한다.")
     @Test
     void admin_query_controller_test_02() throws Exception {
@@ -82,7 +55,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
         );
 
         // when
-        when(adminQueryService.getDictionaries(anyString(), anyInt(), anyInt())).thenReturn(paginatedResponse);
+        when(adminQueryService.getDictionaries(anyLong(), anyInt(), anyInt())).thenReturn(paginatedResponse);
 
         // then
         mockMvc.perform(get("/api/v1/admin/dictionaries")
@@ -143,7 +116,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
         );
 
         // when
-        when(adminQueryService.getDictionariesHistories(anyString(), anyInt(), anyInt())).thenReturn(paginatedResponse);
+        when(adminQueryService.getDictionariesHistories(anyLong(), anyInt(), anyInt())).thenReturn(paginatedResponse);
 
         // then
         mockMvc.perform(get("/api/v1/admin/dictionaries/histories")
@@ -206,7 +179,7 @@ class AdminQueryControllerTest extends ControllerTestSupport {
         );
 
         // when
-        when(adminQueryService.getBlacklist(anyString(), anyInt(), anyInt())).thenReturn(paginatedResponse);
+        when(adminQueryService.getBlacklist(anyLong(), anyInt(), anyInt())).thenReturn(paginatedResponse);
 
         // then
         mockMvc.perform(get("/api/v1/admin/blacklist")
