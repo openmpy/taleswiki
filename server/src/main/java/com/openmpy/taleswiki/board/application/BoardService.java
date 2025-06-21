@@ -45,6 +45,9 @@ public class BoardService {
         final String content = imageS3Service.processImageReferences(request.content());
 
         final Board board = Board.save(request.title(), content, "테붕이" + member.getId(), clientIp, member);
+
+        validateBoardSubmission(clientIp);
+
         final Board savedBoard = boardRepository.save(board);
         return new BoardSaveResponse(savedBoard.getId());
     }
@@ -91,5 +94,13 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException("찾을 수 없는 게시글 번호입니다."));
 
         board.incrementViews(count);
+    }
+
+    private void validateBoardSubmission(final String clientIp) {
+        final String key = String.format("board-save:%s", clientIp);
+
+        if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
+            throw new CustomException("1분 후에 게시글을 작성할 수 있습니다.");
+        }
     }
 }
