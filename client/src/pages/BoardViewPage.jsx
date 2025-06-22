@@ -11,9 +11,25 @@ const BoardViewPage = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
   const [board, setBoard] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const viewerRef = useRef(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -40,8 +56,46 @@ const BoardViewPage = () => {
       }
     };
 
+    const fetchCurrentUser = async () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+      if (!isLoggedIn) {
+        return;
+      }
+
+      try {
+        const response = await axiosInstance.get("/api/v1/members/me");
+        setCurrentUser(response.data);
+      } catch (err) {
+        console.error("현재 사용자 정보를 가져오는데 실패했습니다:", err);
+      }
+    };
+
     fetchBoard();
+    fetchCurrentUser();
   }, [boardId, navigate]);
+
+  const handleEdit = () => {
+    navigate(`/board/edit/${boardId}`);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      await axiosInstance.delete(`/api/v1/boards/${boardId}`);
+      alert("게시글이 삭제되었습니다.");
+      navigate("/community");
+    } catch (err) {
+      console.error("게시글 삭제에 실패했습니다:", err);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
+
+  const isAuthor =
+    currentUser && board && currentUser.memberId === board.memberId;
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -85,13 +139,77 @@ const BoardViewPage = () => {
           >
             뒤로가기
           </button>
-          <button
-            className="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-700 text-white hover:bg-gray-800"
-            onClick={() => navigate("/board/write")}
-            aria-label="게시글 작성하기"
-          >
-            작성하기
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              className="w-full sm:hidden px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="메뉴 열기"
+            >
+              메뉴
+            </button>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                <div className="py-1">
+                  {isAuthor && (
+                    <>
+                      <button
+                        className="w-full px-4 py-2 text-sm text-left hover:bg-red-50"
+                        onClick={() => {
+                          handleDelete();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        삭제하기
+                      </button>
+                      <button
+                        className="w-full px-4 py-2 text-sm text-left hover:bg-blue-50"
+                        onClick={() => {
+                          handleEdit();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        수정하기
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
+                    onClick={() => {
+                      navigate("/board/write");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    작성하기
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="hidden sm:flex gap-2">
+              {isAuthor && (
+                <>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-red-100 text-red-700 hover:bg-red-200"
+                  >
+                    삭제하기
+                  </button>
+                  <button
+                    onClick={handleEdit}
+                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
+                  >
+                    수정하기
+                  </button>
+                </>
+              )}
+              <button
+                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-700 text-white hover:bg-gray-800"
+                onClick={() => navigate("/board/write")}
+                aria-label="게시글 작성하기"
+              >
+                작성하기
+              </button>
+            </div>
+          </div>
         </nav>
       </header>
 

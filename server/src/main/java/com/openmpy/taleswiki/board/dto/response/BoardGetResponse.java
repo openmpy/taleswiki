@@ -9,7 +9,8 @@ public record BoardGetResponse(
         String author,
         String content,
         LocalDateTime createdAt,
-        Long view
+        Long view,
+        Long memberId
 ) {
 
     public static BoardGetResponse of(final Board board) {
@@ -19,7 +20,8 @@ public record BoardGetResponse(
                 board.getAuthor(),
                 board.getContent(),
                 board.getCreatedAt(),
-                board.getView()
+                board.getView(),
+                board.getMember().getId()
         );
     }
 }

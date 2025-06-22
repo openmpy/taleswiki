@@ -75,9 +75,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardGetResponse get(final HttpServletRequest request, final Long boardId) {
-        final Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException("찾을 수 없는 게시글 번호입니다."));
-
+        final Board board = getBoard(boardId);
         final String clientIp = IpAddressUtil.getClientIp(request);
         final String key = String.format("board-view_%d:%s", boardId, clientIp);
 
@@ -90,10 +88,20 @@ public class BoardService {
 
     @Transactional
     public void incrementViews(final Long boardId, final Long count) {
-        final Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException("찾을 수 없는 게시글 번호입니다."));
-
+        final Board board = getBoard(boardId);
         board.incrementViews(count);
+    }
+
+    @Transactional
+    public void delete(final Long memberId, final Long boardId) {
+        final Member member = memberService.get(memberId);
+        final Board board = getBoard(boardId);
+
+        if (!board.getMember().equals(member)) {
+            throw new CustomException("게시글 작성자가 일치하지 않습니다.");
+        }
+
+        boardRepository.delete(board);
     }
 
     private void validateBoardSubmission(final String clientIp) {
@@ -102,5 +110,10 @@ public class BoardService {
         if (!redisService.setIfAbsent(key, "true", Duration.ofMinutes(1L))) {
             throw new CustomException("1분 후에 게시글을 작성할 수 있습니다.");
         }
+    }
+
+    private Board getBoard(final Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException("찾을 수 없는 게시글 번호입니다."));
     }
 }

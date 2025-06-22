@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,5 +53,11 @@ public class BoardController {
     ) {
         final BoardGetResponse response = boardService.get(request, boardId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> delete(@Login final Long memberId, @PathVariable final Long boardId) {
+        boardService.delete(memberId, boardId);
+        return ResponseEntity.noContent().build();
     }
 }
