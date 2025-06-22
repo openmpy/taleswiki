@@ -129,7 +129,10 @@ public class DictionaryQueryService {
 
     public Dictionary getDictionary(final Long dictionaryId) {
         return dictionaryRepository.findById(dictionaryId)
-                .orElseThrow(() -> new CustomException("찾을 수 없는 문서 번호입니다."));
+                .orElseThrow(() -> {
+                    final String message = String.format("찾을 수 없는 문서 번호입니다. [%d]", dictionaryId);
+                    return new CustomException(message);
+                });
     }
 
     public DictionaryHistory getDictionaryHistory(final Long dictionaryHistoryId) {
