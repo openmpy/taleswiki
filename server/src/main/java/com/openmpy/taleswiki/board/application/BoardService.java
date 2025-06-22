@@ -3,9 +3,11 @@ package com.openmpy.taleswiki.board.application;
 import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
+import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
+import com.openmpy.taleswiki.board.dto.response.BoardUpdateResponse;
 import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
@@ -102,6 +104,21 @@ public class BoardService {
         }
 
         boardRepository.delete(board);
+    }
+
+    @Transactional
+    public BoardUpdateResponse update(final Long memberId, final Long boardId, final BoardUpdateRequest request) {
+        final Member member = memberService.get(memberId);
+        final Board board = getBoard(boardId);
+
+        if (!board.getMember().equals(member)) {
+            throw new CustomException("게시글 작성자가 일치하지 않습니다.");
+        }
+
+        final String content = imageS3Service.processImageReferences(request.content());
+        board.update(request.title(), content);
+
+        return new BoardUpdateResponse(board.getId());
     }
 
     private void validateBoardSubmission(final String clientIp) {

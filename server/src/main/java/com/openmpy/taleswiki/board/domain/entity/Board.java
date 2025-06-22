@@ -96,6 +96,11 @@ public class Board extends BaseEntity {
         this.view.increment(count);
     }
 
+    public void update(final String title, final String content) {
+        this.title = new BoardTitle(title);
+        this.content = new BoardContent(content);
+    }
+
     public String getTitle() {
         return title.getValue();
     }

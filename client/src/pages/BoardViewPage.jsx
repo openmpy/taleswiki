@@ -76,7 +76,7 @@ const BoardViewPage = () => {
   }, [boardId, navigate]);
 
   const handleEdit = () => {
-    navigate(`/board/edit/${boardId}`);
+    navigate(`/board/${boardId}/edit`);
   };
 
   const handleDelete = async () => {
@@ -134,7 +134,7 @@ const BoardViewPage = () => {
         <nav className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
           <button
             className="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/community")}
             aria-label="이전 페이지로 돌아가기"
           >
             뒤로가기
