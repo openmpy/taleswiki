@@ -2,6 +2,7 @@ import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { Viewer } from "@toast-ui/react-editor";
 import React, { useEffect, useRef, useState } from "react";
 import { BiMessageSquareDetail } from "react-icons/bi";
+import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
@@ -74,6 +75,33 @@ const BoardViewPage = () => {
     fetchBoard();
     fetchCurrentUser();
   }, [boardId, navigate]);
+
+  const handleVoteAction = async (action) => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const actionKorean = action === "like" ? "추천" : "비추천";
+
+    try {
+      await axiosInstance.post(`/api/v1/boards/${action}/${boardId}`);
+      const response = await axiosInstance.get(`/api/v1/boards/${boardId}`);
+      setBoard(response.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+      } else if (err.response?.status === 400) {
+        alert(err.response.data.message || "요청 처리에 실패했습니다.");
+      } else {
+        console.error(`${actionKorean} 처리에 실패했습니다:`, err);
+        alert(`${actionKorean} 처리에 실패했습니다.`);
+      }
+    }
+  };
 
   const handleEdit = () => {
     navigate(`/board/${boardId}/edit`);
@@ -224,8 +252,10 @@ const BoardViewPage = () => {
             <span className="text-gray-300">|</span>
             <span>{formatKoreanDateTime(board.createdAt)}</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span>조회수 {board.view.toLocaleString()}</span>
+            <span className="text-gray-300">|</span>
+            <span>추천수 {board.likes.toLocaleString()}</span>
           </div>
         </div>
       </header>
@@ -236,6 +266,30 @@ const BoardViewPage = () => {
           <Viewer initialValue={board.content || "게시글 내용이 없습니다."} />
         </div>
       </article>
+
+      {/* 추천/비추천 버튼 */}
+      <div className="flex justify-center items-center gap-2 my-6">
+        <button
+          onClick={() => handleVoteAction("like")}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+          aria-label={`추천 ${board.likes.toLocaleString()}개`}
+        >
+          <FaRegThumbsUp className="text-blue-500 text-lg" />
+          <span className="font-medium text-gray-700 text-sm">
+            추천 {board.like.toLocaleString()}
+          </span>
+        </button>
+        <button
+          onClick={() => handleVoteAction("unlike")}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+          aria-label={`비추천 ${board.unlike?.toLocaleString() || 0}개`}
+        >
+          <FaRegThumbsDown className="text-red-500 text-lg" />
+          <span className="font-medium text-gray-700 text-sm">
+            비추천 {board.unlike?.toLocaleString() || 0}
+          </span>
+        </button>
+      </div>
     </main>
   );
 };

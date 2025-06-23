@@ -107,7 +107,7 @@ function CommunityPage() {
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       제목
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-36">
                       글쓴이
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-30">
@@ -115,6 +115,9 @@ function CommunityPage() {
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                       조회
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                      추천
                     </th>
                   </tr>
                 </thead>
@@ -138,14 +141,17 @@ function CommunityPage() {
                           <span className="truncate">{board.title}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 w-40 text-center">
+                      <td className="px-4 py-3 text-sm text-gray-500 w-36 text-center">
                         {board.nickname}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500 w-24 text-center">
                         {formatRelativeTime(board.createdAt)}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 w-20 text-center">
+                      <td className="px-4 py-3 text-sm text-gray-500 w-10 text-center">
                         {board.view.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500 w-10 text-center">
+                        {board.likes.toLocaleString()}
                       </td>
                     </tr>
                   ))}
@@ -177,6 +183,8 @@ function CommunityPage() {
                     <span>{formatRelativeTime(board.createdAt)}</span>
                     <span className="text-gray-300">|</span>
                     <span>조회 {board.view.toLocaleString()}</span>
+                    <span className="text-gray-300">|</span>
+                    <span>추천 {board.likes.toLocaleString()}</span>
                   </div>
                 </article>
               ))}

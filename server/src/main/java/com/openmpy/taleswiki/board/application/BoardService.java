@@ -75,6 +75,7 @@ public class BoardService {
                         it.getAuthor(),
                         it.getCreatedAt(),
                         it.getView(),
+                        it.getLikes().size() - it.getUnlikes().size(),
                         imagePattern.matcher(it.getContent()).find()
                 ));
 

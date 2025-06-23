@@ -10,6 +10,9 @@ public record BoardGetResponse(
         String content,
         LocalDateTime createdAt,
         Long view,
+        Integer likes,
+        Integer like,
+        Integer unlike,
         Long memberId
 ) {
 
@@ -21,6 +24,9 @@ public record BoardGetResponse(
                 board.getContent(),
                 board.getCreatedAt(),
                 board.getView(),
+                board.getLikes().size() - board.getUnlikes().size(),
+                board.getLikes().size(),
+                board.getUnlikes().size(),
                 board.getMember().getId()
         );
     }

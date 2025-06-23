@@ -8,6 +8,7 @@ public record BoardGetsResponse(
         String nickname,
         LocalDateTime createdAt,
         Long view,
+        Integer likes,
         Boolean hasImage
 ) {
 }
