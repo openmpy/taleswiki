@@ -1,16 +1,23 @@
 package com.openmpy.taleswiki.board.application;
 
+import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.common.application.RedisService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class BoardScheduler {
 
+    private static final int LIMIT_BOARD_UNLIKES_COUNT = -10;
+
     private final RedisService redisService;
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void syncViewCountsToDataBase() {
@@ -26,5 +33,19 @@ public class BoardScheduler {
             }
             redisService.delete(key);
         });
+    }
+
+    @Scheduled(cron = "0 0 0 * * 0")
+    @Transactional
+    public void deleteUnlikeBoard() {
+        final List<Board> boards = boardRepository.findAll();
+
+        for (final Board board : boards) {
+            final int size = board.getLikes().size() - board.getUnlikes().size();
+
+            if (size <= LIMIT_BOARD_UNLIKES_COUNT) {
+                boardRepository.delete(board);
+            }
+        }
     }
 }
