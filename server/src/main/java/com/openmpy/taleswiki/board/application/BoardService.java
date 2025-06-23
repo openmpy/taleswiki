@@ -1,6 +1,8 @@
 package com.openmpy.taleswiki.board.application;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.entity.BoardLike;
+import com.openmpy.taleswiki.board.domain.repository.BoardLikeRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
@@ -36,6 +38,7 @@ public class BoardService {
     private final ImageS3Service imageS3Service;
     private final RedisService redisService;
     private final BoardRepository boardRepository;
+    private final BoardLikeRepository boardLikeRepository;
     private final ImageProperties imageProperties;
 
     @Transactional
@@ -119,6 +122,19 @@ public class BoardService {
         board.update(request.title(), content);
 
         return new BoardUpdateResponse(board.getId());
+    }
+
+    @Transactional
+    public void like(final Long memberId, final Long boardId) {
+        final Member member = memberService.get(memberId);
+        final Board board = getBoard(boardId);
+
+        if (boardLikeRepository.existsByBoardAndMember(board, member)) {
+            throw new CustomException("이미 좋아요를 누른 게시글입니다.");
+        }
+
+        final BoardLike boardLike = BoardLike.save(board, member);
+        board.addLike(boardLike);
     }
 
     private void validateBoardSubmission(final String clientIp) {

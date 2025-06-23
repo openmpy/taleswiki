@@ -73,4 +73,10 @@ public class BoardController {
         final BoardUpdateResponse response = boardService.update(memberId, boardId, request);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/like/{boardId}")
+    public ResponseEntity<Void> like(@Login final Long memberId, @PathVariable final Long boardId) {
+        boardService.like(memberId, boardId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -8,6 +8,7 @@ import com.openmpy.taleswiki.common.domain.ClientIp;
 import com.openmpy.taleswiki.common.domain.entity.BaseEntity;
 import com.openmpy.taleswiki.member.domain.entity.Member;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -17,6 +18,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,6 +63,9 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<BoardLike> likes = new ArrayList<>();
+
     @Column(name = "is_deleted")
     private final Boolean isDeleted = false;
 
@@ -99,6 +106,10 @@ public class Board extends BaseEntity {
     public void update(final String title, final String content) {
         this.title = new BoardTitle(title);
         this.content = new BoardContent(content);
+    }
+
+    public void addLike(final BoardLike like) {
+        this.likes.add(like);
     }
 
     public String getTitle() {
