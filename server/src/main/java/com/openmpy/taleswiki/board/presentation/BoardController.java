@@ -79,4 +79,10 @@ public class BoardController {
         boardService.like(memberId, boardId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/unlike/{boardId}")
+    public ResponseEntity<Void> unlike(@Login final Long memberId, @PathVariable final Long boardId) {
+        boardService.unlike(memberId, boardId);
+        return ResponseEntity.noContent().build();
+    }
 }

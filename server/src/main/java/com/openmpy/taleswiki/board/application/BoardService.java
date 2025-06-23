@@ -2,8 +2,10 @@ package com.openmpy.taleswiki.board.application;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.board.domain.entity.BoardLike;
+import com.openmpy.taleswiki.board.domain.entity.BoardUnlike;
 import com.openmpy.taleswiki.board.domain.repository.BoardLikeRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
+import com.openmpy.taleswiki.board.domain.repository.BoardUnlikeRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
@@ -39,6 +41,7 @@ public class BoardService {
     private final RedisService redisService;
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final BoardUnlikeRepository boardUnlikeRepository;
     private final ImageProperties imageProperties;
 
     @Transactional
@@ -135,6 +138,19 @@ public class BoardService {
 
         final BoardLike boardLike = BoardLike.save(board, member);
         board.addLike(boardLike);
+    }
+
+    @Transactional
+    public void unlike(final Long memberId, final Long boardId) {
+        final Member member = memberService.get(memberId);
+        final Board board = getBoard(boardId);
+
+        if (boardUnlikeRepository.existsByBoardAndMember(board, member)) {
+            throw new CustomException("이미 싫어요를 누른 게시글입니다.");
+        }
+
+        final BoardUnlike boardUnlike = BoardUnlike.save(board, member);
+        board.addUnlike(boardUnlike);
     }
 
     private void validateBoardSubmission(final String clientIp) {
