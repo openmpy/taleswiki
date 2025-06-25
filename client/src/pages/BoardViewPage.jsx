@@ -4,9 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import CommentInput from "../components/CommentInput";
 import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
-import { formatKoreanDateTime } from "../utils/dateUtils";
+import { formatKoreanDateTime, formatRelativeTime } from "../utils/dateUtils";
 
 const BoardViewPage = () => {
   const { boardId } = useParams();
@@ -18,6 +19,8 @@ const BoardViewPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const viewerRef = useRef(null);
   const menuRef = useRef(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -124,6 +127,49 @@ const BoardViewPage = () => {
 
   const isAuthor =
     currentUser && board && currentUser.memberId === board.memberId;
+
+  // 댓글 수정
+  const handleEditComment = (comment) => {
+    setEditingCommentId(comment.commentId);
+    setEditingContent(comment.content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingContent("");
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editingContent.trim()) {
+      alert("댓글 내용을 입력해주세요.");
+      return;
+    }
+    try {
+      await axiosInstance.put(`/api/v1/boards/comments/${commentId}`, {
+        content: editingContent,
+      });
+      // 새로고침
+      const response = await axiosInstance.get(`/api/v1/boards/${boardId}`);
+      setBoard(response.data);
+      setEditingCommentId(null);
+      setEditingContent("");
+    } catch {
+      alert("댓글 수정에 실패했습니다.");
+    }
+  };
+
+  // 댓글 삭제
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) return;
+    try {
+      await axiosInstance.delete(`/api/v1/boards/comments/${commentId}`);
+      // 새로고침
+      const response = await axiosInstance.get(`/api/v1/boards/${boardId}`);
+      setBoard(response.data);
+    } catch {
+      alert("댓글 삭제에 실패했습니다.");
+    }
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -252,10 +298,24 @@ const BoardViewPage = () => {
             <span className="text-gray-300">|</span>
             <span>{formatKoreanDateTime(board.createdAt)}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span>조회수 {board.view.toLocaleString()}</span>
+          <div className="flex items-center gap-2 text-[12px]">
+            <span>조회 {board.view.toLocaleString()}</span>
             <span className="text-gray-300">|</span>
-            <span>추천수 {board.likes.toLocaleString()}</span>
+            <span>
+              추천{" "}
+              <span className="text-orange-500">
+                {board.likes.toLocaleString()}
+              </span>
+            </span>
+            <span className="text-gray-300">|</span>
+            <span className="inline-block bg-gray-100 text-xs px-2 py-0.5 rounded-full align-middle border border-gray-300">
+              댓글{" "}
+              <span className="text-orange-500">
+                {Array.isArray(board.comments)
+                  ? board.comments.length.toLocaleString()
+                  : 0}
+              </span>
+            </span>
           </div>
         </div>
       </header>
@@ -290,6 +350,107 @@ const BoardViewPage = () => {
           </span>
         </button>
       </div>
+
+      {/* 댓글 목록 */}
+      <section className="mt-8">
+        <hr className="border-t border-gray-200 mb-6" />
+        <h3 className="text-lg font-semibold mb-4">
+          댓글{" "}
+          <span className="text-orange-500">
+            {Array.isArray(board.comments) ? board.comments.length : 0}
+          </span>
+        </h3>
+        {Array.isArray(board.comments) && board.comments.length > 0 ? (
+          <ul>
+            {board.comments.map((comment, idx) => (
+              <li key={comment.commentId}>
+                {/* 닉네임 + 작성일자 */}
+                <div className="flex items-center gap-2 font-bold text-gray-800 text-sm mb-1">
+                  <span>{comment.author}</span>
+                  <span className="text-gray-400 text-xs font-normal">
+                    {formatRelativeTime(comment.createdAt)}
+                  </span>
+                </div>
+                {/* 내용 or 수정폼 */}
+                {editingCommentId === comment.commentId ? (
+                  <div className="mb-1">
+                    <textarea
+                      className="w-full border border-gray-300 rounded p-2 resize-none min-h-[40px] text-sm"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      maxLength={500}
+                    />
+                    <div className="flex gap-2 mt-1 justify-end">
+                      <button
+                        className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        onClick={handleCancelEdit}
+                      >
+                        닫기
+                      </button>
+                      <button
+                        className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        onClick={() => handleUpdateComment(comment.commentId)}
+                      >
+                        수정
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-700 text-[15px] whitespace-pre-line break-words mb-1">
+                    {comment.content}
+                  </div>
+                )}
+                {/* 본인 댓글만 수정/삭제 버튼 */}
+                {currentUser &&
+                  comment.memberId === currentUser.memberId &&
+                  editingCommentId !== comment.commentId && (
+                    <div className="flex gap-2 mb-2 justify-end">
+                      <button
+                        className="px-2 py-0.5 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
+                        onClick={() => handleDeleteComment(comment.commentId)}
+                      >
+                        삭제
+                      </button>
+                      <button
+                        className="px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
+                        onClick={() => handleEditComment(comment)}
+                      >
+                        수정
+                      </button>
+                    </div>
+                  )}
+                {idx !== board.comments.length - 1 && (
+                  <hr className="border-t border-gray-200 my-2" />
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-gray-400 text-sm text-center py-4 bg-gray-50 rounded-xl border border-gray-100">
+            아직 댓글이 없습니다.
+          </div>
+        )}
+      </section>
+
+      {/* 댓글 입력 */}
+      <section>
+        <CommentInput
+          boardId={boardId}
+          onCommentAdded={() => {
+            // 댓글 등록 후 게시글 정보 새로고침
+            (async () => {
+              try {
+                const response = await axiosInstance.get(
+                  `/api/v1/boards/${boardId}`
+                );
+                setBoard(response.data);
+              } catch {
+                // 무시
+              }
+            })();
+          }}
+        />
+      </section>
     </main>
   );
 };

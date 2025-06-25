@@ -9,6 +9,7 @@ public record BoardGetsResponse(
         LocalDateTime createdAt,
         Long view,
         Integer likes,
-        Boolean hasImage
+        Boolean hasImage,
+        Integer commentsCount
 ) {
 }

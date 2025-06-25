@@ -4,6 +4,8 @@ import com.openmpy.taleswiki.auth.annotation.Login;
 import com.openmpy.taleswiki.board.application.BoardService;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentSaveRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
@@ -83,6 +85,36 @@ public class BoardController {
     @PostMapping("/unlike/{boardId}")
     public ResponseEntity<Void> unlike(@Login final Long memberId, @PathVariable final Long boardId) {
         boardService.unlike(memberId, boardId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/comments/{boardId}")
+    public ResponseEntity<Void> saveComment(
+            @Login final Long memberId,
+            @PathVariable final Long boardId,
+            final HttpServletRequest servletRequest,
+            @RequestBody final CommentSaveRequest request
+    ) {
+        boardService.saveComment(memberId, boardId, servletRequest, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<Void> updateComment(
+            @Login final Long memberId,
+            @PathVariable final Long commentId,
+            @RequestBody final CommentUpdateRequest request
+    ) {
+        boardService.updateComment(memberId, commentId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @Login final Long memberId,
+            @PathVariable final Long commentId
+    ) {
+        boardService.deleteComment(memberId, commentId);
         return ResponseEntity.noContent().build();
     }
 }

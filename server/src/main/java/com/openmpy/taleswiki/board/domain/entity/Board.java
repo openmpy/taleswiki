@@ -69,6 +69,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<BoardUnlike> unlikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<BoardComment> comments = new ArrayList<>();
+
     @Column(name = "is_deleted")
     private final Boolean isDeleted = false;
 
@@ -117,6 +120,10 @@ public class Board extends BaseEntity {
 
     public void addUnlike(final BoardUnlike unlike) {
         this.unlikes.add(unlike);
+    }
+
+    public void addComment(final BoardComment comment) {
+        this.comments.add(comment);
     }
 
     public String getTitle() {

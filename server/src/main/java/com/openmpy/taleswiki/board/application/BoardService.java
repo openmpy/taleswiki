@@ -1,13 +1,17 @@
 package com.openmpy.taleswiki.board.application;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.entity.BoardComment;
 import com.openmpy.taleswiki.board.domain.entity.BoardLike;
 import com.openmpy.taleswiki.board.domain.entity.BoardUnlike;
+import com.openmpy.taleswiki.board.domain.repository.BoardCommentRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardLikeRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardUnlikeRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentSaveRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
@@ -42,6 +46,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final BoardUnlikeRepository boardUnlikeRepository;
+    private final BoardCommentRepository boardCommentRepository;
     private final ImageProperties imageProperties;
 
     @Transactional
@@ -76,7 +81,8 @@ public class BoardService {
                         it.getCreatedAt(),
                         it.getView(),
                         it.getLikes().size() - it.getUnlikes().size(),
-                        imagePattern.matcher(it.getContent()).find()
+                        imagePattern.matcher(it.getContent()).find(),
+                        it.getComments().size()
                 ));
 
         return PaginatedResponse.of(responses);
@@ -154,6 +160,48 @@ public class BoardService {
         board.addUnlike(boardUnlike);
     }
 
+    @Transactional
+    public void saveComment(
+            final Long memberId,
+            final Long boardId,
+            final HttpServletRequest servletRequest,
+            final CommentSaveRequest request
+    ) {
+        final Member member = memberService.get(memberId);
+        final Board board = getBoard(boardId);
+
+        final String clientIp = IpAddressUtil.getClientIp(servletRequest);
+        final BoardComment comment = BoardComment.save(
+                "테붕이" + member.getId(), request.content(), clientIp, member, board
+        );
+
+        board.addComment(comment);
+    }
+
+    @Transactional
+    public void updateComment(final Long memberId, final Long commentId, final CommentUpdateRequest request) {
+        final Member member = memberService.get(memberId);
+        final BoardComment comment = getComment(commentId);
+
+        if (!member.equals(comment.getMember())) {
+            throw new CustomException("댓글 작성자가 일치하지 않습니다.");
+        }
+
+        comment.update(request.content());
+    }
+
+    @Transactional
+    public void deleteComment(final Long memberId, final Long commentId) {
+        final Member member = memberService.get(memberId);
+        final BoardComment comment = getComment(commentId);
+
+        if (!member.equals(comment.getMember())) {
+            throw new CustomException("댓글 작성자가 일치하지 않습니다.");
+        }
+
+        boardCommentRepository.delete(comment);
+    }
+
     private void validateBoardSubmission(final String clientIp) {
         final String key = String.format("board-save:%s", clientIp);
 
@@ -165,5 +213,10 @@ public class BoardService {
     private Board getBoard(final Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException("찾을 수 없는 게시글 번호입니다."));
+    }
+
+    private BoardComment getComment(final Long commentId) {
+        return boardCommentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException("찾을 수 없는 댓글 번호입니다."));
     }
 }

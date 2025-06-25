@@ -139,6 +139,12 @@ function CommunityPage() {
                             <BiFile className="text-gray-400 flex-shrink-0 text-lg" />
                           )}
                           <span className="truncate">{board.title}</span>
+                          {typeof board.commentsCount === "number" &&
+                            board.commentsCount > 0 && (
+                              <span className="text-xs text-gray-400 font-semibold">
+                                [{board.commentsCount}]
+                              </span>
+                            )}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500 w-36 text-center">
@@ -175,6 +181,12 @@ function CommunityPage() {
                         <BiFile className="text-gray-400 flex-shrink-0 text-sm" />
                       )}
                       <span className="truncate">{board.title}</span>
+                      {typeof board.commentsCount === "number" &&
+                        board.commentsCount > 0 && (
+                          <span className="text-xs text-gray-400 font-semibold">
+                            [{board.commentsCount}]
+                          </span>
+                        )}
                     </div>
                   </h3>
                   <div className="flex items-center text-xs text-gray-500 space-x-2">
