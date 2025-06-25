@@ -24,16 +24,28 @@ public record BoardGetResponse(
             String author,
             String content,
             LocalDateTime createdAt,
-            Long memberId
+            Long memberId,
+            Long parentId,
+            Boolean isDeleted,
+            Integer depth
     ) {
 
         public static BoardCommentResponse of(final BoardComment comment) {
+            String content = comment.getContent();
+
+            if (comment.getIsDeleted()) {
+                content = null;
+            }
+
             return new BoardCommentResponse(
                     comment.getId(),
                     comment.getAuthor(),
-                    comment.getContent(),
+                    content,
                     comment.getCreatedAt(),
-                    comment.getMember().getId()
+                    comment.getMember().getId(),
+                    comment.getParent() != null ? comment.getParent().getId() : null,
+                    comment.getIsDeleted(),
+                    comment.getDepth()
             );
         }
     }

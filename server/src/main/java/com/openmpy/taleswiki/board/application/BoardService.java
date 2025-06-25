@@ -171,8 +171,19 @@ public class BoardService {
         final Board board = getBoard(boardId);
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
+        BoardComment parent = null;
+
+        if (request.parentId() != null) {
+            parent = boardCommentRepository.findById(request.parentId())
+                    .orElseThrow(() -> new CustomException("존재하지 않는 부모 댓글입니다."));
+
+            if (parent.getIsDeleted() == Boolean.TRUE) {
+                throw new CustomException("삭제된 댓글에 대댓글을 작성할 수 없습니다.");
+            }
+        }
+
         final BoardComment comment = BoardComment.save(
-                "테붕이" + member.getId(), request.content(), clientIp, member, board
+                "테붕이" + member.getId(), request.content(), clientIp, member, board, parent
         );
 
         board.addComment(comment);
@@ -186,6 +197,9 @@ public class BoardService {
         if (!member.equals(comment.getMember())) {
             throw new CustomException("댓글 작성자가 일치하지 않습니다.");
         }
+        if (comment.getIsDeleted() == Boolean.TRUE) {
+            throw new CustomException("삭제된 댓글은 수정할 수 없습니다.");
+        }
 
         comment.update(request.content());
     }
@@ -198,8 +212,11 @@ public class BoardService {
         if (!member.equals(comment.getMember())) {
             throw new CustomException("댓글 작성자가 일치하지 않습니다.");
         }
+        if (comment.getIsDeleted() == Boolean.TRUE) {
+            throw new CustomException("이미 삭제된 댓글입니다.");
+        }
 
-        boardCommentRepository.delete(comment);
+        comment.toggleDelete(Boolean.TRUE);
     }
 
     private void validateBoardSubmission(final String clientIp) {

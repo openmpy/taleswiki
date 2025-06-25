@@ -21,6 +21,7 @@ const BoardViewPage = () => {
   const menuRef = useRef(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -169,6 +170,151 @@ const BoardViewPage = () => {
     } catch {
       alert("댓글 삭제에 실패했습니다.");
     }
+  };
+
+  // 댓글 트리 구조로 렌더링하는 함수 추가
+  const renderComments = (comments, parentId = null, depth = 0) => {
+    return comments
+      .filter((comment) => comment.parentId === parentId)
+      .flatMap((comment) => {
+        const childComments = comments.filter(
+          (c) => c.parentId === comment.commentId
+        );
+        const nodes = [
+          <li key={comment.commentId} className="relative">
+            <div className={depth > 0 ? `flex items-center` : undefined}>
+              {depth > 0 && <div style={{ width: `${depth * 16}px` }} />}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 font-bold text-gray-800 text-sm">
+                    {/* 대댓글일 경우 들여쓰기 아이콘 */}
+                    {depth > 0 && (
+                      <span className="text-gray-400 text-lg">↳</span>
+                    )}
+                    <span>{comment.author}</span>
+                    <span className="text-gray-400 text-xs font-normal">
+                      {formatRelativeTime(comment.createdAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* 답글/수정/삭제 버튼: 삭제된 댓글이면 모두 숨김 */}
+                    {!comment.isDeleted &&
+                      editingCommentId !== comment.commentId && (
+                        <>
+                          <span
+                            className="text-gray-500 text-xs cursor-pointer underline underline-offset-2 hover:text-gray-800 transition-colors"
+                            onClick={() =>
+                              setReplyingTo(
+                                replyingTo === comment.commentId
+                                  ? null
+                                  : comment.commentId
+                              )
+                            }
+                          >
+                            {replyingTo === comment.commentId
+                              ? "답글 취소"
+                              : "답글"}
+                          </span>
+                          {currentUser &&
+                            comment.memberId === currentUser.memberId && (
+                              <>
+                                <span
+                                  className="text-gray-500 text-xs cursor-pointer underline underline-offset-2 hover:text-gray-800 transition-colors"
+                                  onClick={() => handleEditComment(comment)}
+                                >
+                                  수정
+                                </span>
+                                <span
+                                  className="text-gray-500 text-xs cursor-pointer underline underline-offset-2 hover:text-gray-800 transition-colors"
+                                  onClick={() =>
+                                    handleDeleteComment(comment.commentId)
+                                  }
+                                >
+                                  삭제
+                                </span>
+                              </>
+                            )}
+                        </>
+                      )}
+                  </div>
+                </div>
+                {/* 댓글 본문: 삭제된 댓글이면 텍스트만 표시, 수정/입력 UI 숨김 */}
+                {comment.isDeleted ? (
+                  <div className="text-gray-400 italic text-[15px] whitespace-pre-line break-words flex items-center">
+                    삭제된 댓글입니다.
+                  </div>
+                ) : editingCommentId === comment.commentId ? (
+                  <div className="mb-1">
+                    <textarea
+                      className="w-full border border-gray-300 rounded p-2 resize-none min-h-[40px] text-sm"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      maxLength={500}
+                    />
+                    <div className="flex gap-2 mt-1 justify-end">
+                      <span
+                        className="text-gray-500 text-xs cursor-pointer underline underline-offset-2 hover:text-gray-800 transition-colors"
+                        onClick={handleCancelEdit}
+                      >
+                        닫기
+                      </span>
+                      <span
+                        className="text-gray-500 text-xs cursor-pointer underline underline-offset-2 hover:text-gray-800 transition-colors"
+                        onClick={() => handleUpdateComment(comment.commentId)}
+                      >
+                        수정
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-700 text-[15px] whitespace-pre-line break-words flex items-center">
+                    {depth > 0 &&
+                      (() => {
+                        const parentComment = comments.find(
+                          (c) => c.commentId === comment.parentId
+                        );
+                        return parentComment ? (
+                          <span className="text-xs text-gray-400 mr-2">
+                            {parentComment.author}
+                          </span>
+                        ) : null;
+                      })()}
+                    {comment.content}
+                  </div>
+                )}
+                {/* 답글 입력: 삭제된 댓글이면 숨김 */}
+                {!comment.isDeleted && replyingTo === comment.commentId && (
+                  <div className="ml-4 mb-2">
+                    <CommentInput
+                      boardId={boardId}
+                      parentId={comment.commentId}
+                      onCommentAdded={async () => {
+                        try {
+                          const response = await axiosInstance.get(
+                            `/api/v1/boards/${boardId}`
+                          );
+                          setBoard(response.data);
+                          setReplyingTo(null);
+                        } catch {
+                          // 무시
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </li>,
+          <hr
+            key={`hr-${comment.commentId}`}
+            className="border-t border-gray-200 my-2 w-full"
+          />,
+        ];
+        if (childComments.length > 0) {
+          nodes.push(...renderComments(comments, comment.commentId, depth + 1));
+        }
+        return nodes;
+      });
   };
 
   if (isLoading) {
@@ -361,70 +507,7 @@ const BoardViewPage = () => {
           </span>
         </h3>
         {Array.isArray(board.comments) && board.comments.length > 0 ? (
-          <ul>
-            {board.comments.map((comment, idx) => (
-              <li key={comment.commentId}>
-                {/* 닉네임 + 작성일자 */}
-                <div className="flex items-center gap-2 font-bold text-gray-800 text-sm mb-1">
-                  <span>{comment.author}</span>
-                  <span className="text-gray-400 text-xs font-normal">
-                    {formatRelativeTime(comment.createdAt)}
-                  </span>
-                </div>
-                {/* 내용 or 수정폼 */}
-                {editingCommentId === comment.commentId ? (
-                  <div className="mb-1">
-                    <textarea
-                      className="w-full border border-gray-300 rounded p-2 resize-none min-h-[40px] text-sm"
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                      maxLength={500}
-                    />
-                    <div className="flex gap-2 mt-1 justify-end">
-                      <button
-                        className="px-3 py-1 text-xs rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        onClick={handleCancelEdit}
-                      >
-                        닫기
-                      </button>
-                      <button
-                        className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        onClick={() => handleUpdateComment(comment.commentId)}
-                      >
-                        수정
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-gray-700 text-[15px] whitespace-pre-line break-words mb-1">
-                    {comment.content}
-                  </div>
-                )}
-                {/* 본인 댓글만 수정/삭제 버튼 */}
-                {currentUser &&
-                  comment.memberId === currentUser.memberId &&
-                  editingCommentId !== comment.commentId && (
-                    <div className="flex gap-2 mb-2 justify-end">
-                      <button
-                        className="px-2 py-0.5 text-xs rounded bg-red-100 text-red-700 hover:bg-red-200"
-                        onClick={() => handleDeleteComment(comment.commentId)}
-                      >
-                        삭제
-                      </button>
-                      <button
-                        className="px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        onClick={() => handleEditComment(comment)}
-                      >
-                        수정
-                      </button>
-                    </div>
-                  )}
-                {idx !== board.comments.length - 1 && (
-                  <hr className="border-t border-gray-200 my-2" />
-                )}
-              </li>
-            ))}
-          </ul>
+          <ul className="w-full">{renderComments(board.comments)}</ul>
         ) : (
           <div className="text-gray-400 text-sm text-center py-4 bg-gray-50 rounded-xl border border-gray-100">
             아직 댓글이 없습니다.
