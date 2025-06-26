@@ -275,4 +275,13 @@ class DictionaryQueryServiceTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessage("찾을 수 없는 문서 버전입니다.");
     }
+
+    @DisplayName("[예외] 문서를 조회할 수 없다.")
+    @Test
+    void 예외_dictionary_query_service_test_04() {
+        // when & then
+        assertThatThrownBy(() -> dictionaryQueryService.getDictionary(999L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("찾을 수 없는 문서 번호입니다. [999]");
+    }
 }
