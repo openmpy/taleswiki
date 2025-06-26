@@ -8,8 +8,10 @@ import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +73,41 @@ class DictionaryQueryServiceTest {
 
         // then
         assertThat(response.dictionaries()).hasSize(10);
+    }
+
+    @DisplayName("[통과] 문서를 카테고리별로 조회하고 이니셜로 그룹화한다.")
+    @Test
+    void dictionary_query_service_test_02() {
+        // given
+        final Dictionary dictionary01 = Dictionary.create("가나다", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory01 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        final Dictionary dictionary02 = Dictionary.create("나다가", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory02 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        final Dictionary dictionary03 = Dictionary.create("다가나", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory03 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        dictionary01.addHistory(dictionaryHistory01);
+        dictionary02.addHistory(dictionaryHistory02);
+        dictionary03.addHistory(dictionaryHistory03);
+
+        dictionaryRepository.saveAll(List.of(dictionary01, dictionary02, dictionary03));
+
+        // when
+        final DictionaryGetGroupResponse response = dictionaryQueryService.getGroupDictionaries("person");
+
+        // then
+        assertThat(response.groups()).hasSize(3);
+        assertThat(response.groups().getFirst().initial()).isEqualTo('ㄱ');
+        assertThat(response.groups().getFirst().dictionaries().getFirst().title()).isEqualTo("가나다");
+        assertThat(response.groups().getLast().initial()).isEqualTo('ㄷ');
+        assertThat(response.groups().getLast().dictionaries().getFirst().title()).isEqualTo("다가나");
     }
 }
