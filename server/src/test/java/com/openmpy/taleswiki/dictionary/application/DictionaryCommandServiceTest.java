@@ -51,9 +51,7 @@ class DictionaryCommandServiceTest {
 
     @BeforeEach
     void setUp() {
-        redisTemplate.getConnectionFactory()
-                .getConnection()
-                .flushDb();
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
     }
 
     @DisplayName("[통과] 문서를 작성한다.")

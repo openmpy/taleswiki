@@ -22,6 +22,7 @@ import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.helper.Fixture;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,11 @@ class DictionaryQueryServiceTest {
 
     @MockitoBean
     private S3Client s3Client;
+
+    @BeforeEach
+    void setUp() {
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+    }
 
     @DisplayName("[통과] 최근 작성/편집된 문서 20개를 조회한다.")
     @Test
@@ -125,7 +131,7 @@ class DictionaryQueryServiceTest {
         assertThat(response.groups().getLast().dictionaries().getFirst().title()).isEqualTo("다가나");
     }
 
-    @DisplayName("[통과] 문서 기록을 조회한다.")
+    @DisplayName("[통과] 문서 기록을 처음으로 조회한다.")
     @Test
     void dictionary_query_service_test_03() {
         // given
@@ -143,6 +149,9 @@ class DictionaryQueryServiceTest {
 
         final String key = String.format("dictionary-view_%d:%s", dictionary.getId(), "127.0.0.1");
         assertThat(redisTemplate.hasKey(key)).isTrue();
+
+        final String viewKey = String.format("dictionary-view:%d", dictionary.getId());
+        assertThat(redisTemplate.opsForValue().get(viewKey)).isEqualTo(1);
     }
 
     @DisplayName("[통과] 문서 기록 목록을 조회한다.")
@@ -237,6 +246,26 @@ class DictionaryQueryServiceTest {
         assertThat(response.dictionaries()).hasSize(3);
         assertThat(response.dictionaries().getFirst().currentHistoryId()).isEqualTo(savedDictionary01.getId());
         assertThat(response.dictionaries().getLast().currentHistoryId()).isEqualTo(savedDictionary03.getId());
+    }
+
+    @DisplayName("[통과] 문서 기록을 중복으로 조회한다.")
+    @Test
+    void dictionary_query_service_test_09() {
+        // given
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        final String key = String.format("dictionary-view_%d:%s", dictionary.getId(), "127.0.0.1");
+        redisTemplate.opsForSet().add(key, "true");
+
+        // when
+        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest, dictionary.getId());
+
+        // then
+        assertThat(response.title()).isEqualTo("제목");
+        assertThat(response.content()).isEqualTo("내용");
+        assertThat(response.status()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
+        assertThat(response.historyStatus()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
     }
 
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
