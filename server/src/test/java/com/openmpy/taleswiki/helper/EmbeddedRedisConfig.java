@@ -1,4 +1,4 @@
-package com.openmpy.taleswiki;
+package com.openmpy.taleswiki.helper;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

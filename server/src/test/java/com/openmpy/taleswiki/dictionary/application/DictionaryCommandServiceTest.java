@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.openmpy.taleswiki.EmbeddedRedisConfig;
+import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
@@ -79,6 +79,20 @@ class DictionaryCommandServiceTest {
 
         // then
         assertThat(response.dictionaryHistoryId()).isNotNull();
+    }
+
+    @DisplayName("[통과] 문서 조회수를 증가시킨다.")
+    @Test
+    void dictionary_command_service_test_03() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        dictionaryCommandService.incrementViews(dictionary.getId(), 10L);
+
+        // then
+        final Dictionary foundDictionary = dictionaryRepository.findById(dictionary.getId()).get();
+        assertThat(foundDictionary.getView()).isEqualTo(10L);
     }
 
     @DisplayName("[예외] 문서 카테고리가 올바르지 않다.")
