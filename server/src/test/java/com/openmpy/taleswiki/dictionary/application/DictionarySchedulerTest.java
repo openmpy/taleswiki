@@ -60,4 +60,18 @@ class DictionarySchedulerTest {
         final Dictionary foundDictionary = dictionaryRepository.findById(dictionary.getId()).get();
         assertThat(foundDictionary.getView()).isEqualTo(10L);
     }
+
+    @DisplayName("[통과] 문서 인기도 수치를 내린다.")
+    @Test
+    void dictionary_scheduler_test_02() {
+        // given
+        redisTemplate.opsForZSet().incrementScore("popular_dictionaries", 1L, 1.0);
+
+        // when
+        dictionaryScheduler.decayPopularDictionaryScores();
+
+        // then
+        final Double score = redisTemplate.opsForZSet().score("popular_dictionaries", 1L);
+        assertThat(score).isEqualTo(0.9);
+    }
 }
