@@ -1,8 +1,10 @@
 package com.openmpy.taleswiki.dictionary.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.openmpy.taleswiki.common.application.ImageS3Service;
+import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
@@ -10,7 +12,10 @@ import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
+import com.openmpy.taleswiki.helper.Fixture;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -32,6 +38,9 @@ class DictionaryQueryServiceTest {
 
     @Autowired
     private DictionaryRepository dictionaryRepository;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @MockitoBean
     private ImageS3Service imageS3Service;
@@ -109,5 +118,37 @@ class DictionaryQueryServiceTest {
         assertThat(response.groups().getFirst().dictionaries().getFirst().title()).isEqualTo("가나다");
         assertThat(response.groups().getLast().initial()).isEqualTo('ㄷ');
         assertThat(response.groups().getLast().dictionaries().getFirst().title()).isEqualTo("다가나");
+    }
+
+    @DisplayName("[통과] 문서 기록을 조회한다.")
+    @Test
+    void dictionary_query_service_test_03() {
+        // given
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest, dictionary.getId());
+
+        // then
+        assertThat(response.title()).isEqualTo("제목");
+        assertThat(response.content()).isEqualTo("내용");
+        assertThat(response.status()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
+        assertThat(response.historyStatus()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
+
+        final String key = String.format("dictionary-view_%d:%s", dictionary.getId(), "127.0.0.1");
+        assertThat(redisTemplate.hasKey(key)).isTrue();
+    }
+
+    @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
+    @Test
+    void 예외_dictionary_query_service_test_01() {
+        // given
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+
+        // when & then
+        assertThatThrownBy(() -> dictionaryQueryService.get(servletRequest, 999L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("찾을 수 없는 문서 기록 번호입니다.");
     }
 }
