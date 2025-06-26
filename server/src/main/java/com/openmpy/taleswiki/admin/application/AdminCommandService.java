@@ -53,7 +53,7 @@ public class AdminCommandService {
 
         final DictionaryHistory dictionaryHistory = dictionaryQueryService.getDictionaryHistory(dictionaryHistoriesId);
 
-        dictionaryHistory.changeStatus(status);
+        dictionaryHistory.changeStatus(DictionaryStatus.fromName(status));
     }
 
     @Transactional

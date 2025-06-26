@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.helper;
 
 import com.openmpy.taleswiki.common.application.ImageS3Service;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,11 @@ public abstract class ServiceTestSupport {
 
     @BeforeEach
     void setUp() {
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+    }
+
+    @AfterEach
+    void tearDown() {
         redisTemplate.getConnectionFactory().getConnection().flushDb();
     }
 }

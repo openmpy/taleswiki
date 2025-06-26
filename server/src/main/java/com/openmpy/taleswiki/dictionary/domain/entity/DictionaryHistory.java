@@ -121,8 +121,8 @@ public class DictionaryHistory extends BaseEntity {
                 .build();
     }
 
-    public void changeStatus(final String status) {
-        this.status = DictionaryStatus.fromName(status);
+    public void changeStatus(final DictionaryStatus status) {
+        this.status = status;
     }
 
     public String getAuthor() {

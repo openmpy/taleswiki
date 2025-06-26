@@ -92,7 +92,7 @@ class DictionaryHistoryTest {
         final DictionaryHistory dictionaryHistory = Fixture.DICTIONARY_HISTORY_01;
 
         // when
-        dictionaryHistory.changeStatus("hidden");
+        dictionaryHistory.changeStatus(DictionaryStatus.HIDDEN);
 
         // then
         assertThat(dictionaryHistory.getStatus()).isEqualTo(DictionaryStatus.HIDDEN);

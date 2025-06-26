@@ -110,21 +110,31 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
     void dictionary_query_service_test_03() {
         // given
         final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
-        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+        final Dictionary dictionary01 = dictionaryRepository.save(Fixture.createDictionary());
+        final Dictionary dictionary02 = dictionaryRepository.save(Fixture.createDictionary());
+
+        dictionary02.changeStatus(DictionaryStatus.HIDDEN);
+        dictionary02.getCurrentHistory().changeStatus(DictionaryStatus.HIDDEN);
 
         // when
-        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest, dictionary.getId());
+        final DictionaryHistoryResponse response01 = dictionaryQueryService.get(servletRequest, dictionary01.getId());
+        final DictionaryHistoryResponse response02 = dictionaryQueryService.get(servletRequest, dictionary02.getId());
 
         // then
-        assertThat(response.title()).isEqualTo("제목");
-        assertThat(response.content()).isEqualTo("내용");
-        assertThat(response.status()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
-        assertThat(response.historyStatus()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
+        assertThat(response01.title()).isEqualTo("제목");
+        assertThat(response01.content()).isEqualTo("내용");
+        assertThat(response01.status()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
+        assertThat(response01.historyStatus()).isEqualTo(DictionaryStatus.ALL_ACTIVE.name());
 
-        final String key = String.format("dictionary-view_%d:%s", dictionary.getId(), "127.0.0.1");
+        assertThat(response02.title()).isEqualTo("제목");
+        assertThat(response02.content()).isNull();
+        assertThat(response02.status()).isEqualTo(DictionaryStatus.HIDDEN.name());
+        assertThat(response02.historyStatus()).isEqualTo(DictionaryStatus.HIDDEN.name());
+
+        final String key = String.format("dictionary-view_%d:%s", dictionary01.getId(), "127.0.0.1");
         assertThat(redisTemplate.hasKey(key)).isTrue();
 
-        final String viewKey = String.format("dictionary-view:%d", dictionary.getId());
+        final String viewKey = String.format("dictionary-view:%d", dictionary01.getId());
         assertThat(redisTemplate.opsForValue().get(viewKey)).isEqualTo(1);
     }
 
@@ -173,13 +183,17 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
     @Test
     void dictionary_query_service_test_07() {
         // given
-        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+        final Dictionary dictionary01 = dictionaryRepository.save(Fixture.createDictionary());
+        final Dictionary dictionary02 = dictionaryRepository.save(Fixture.createDictionary());
+        dictionary02.getCurrentHistory().changeStatus(DictionaryStatus.HIDDEN);
 
         // when
-        final DictionaryGetVersionResponse response = dictionaryQueryService.getVersion(dictionary.getId(), 1L);
+        final DictionaryGetVersionResponse response01 = dictionaryQueryService.getVersion(dictionary01.getId(), 1L);
+        final DictionaryGetVersionResponse response02 = dictionaryQueryService.getVersion(dictionary02.getId(), 1L);
 
         // then
-        assertThat(response.content()).isEqualTo("내용");
+        assertThat(response01.content()).isEqualTo("내용");
+        assertThat(response02.content()).isNull();
     }
 
     @DisplayName("[통과] 실시간 인기 문서 목록을 조회한다.")
