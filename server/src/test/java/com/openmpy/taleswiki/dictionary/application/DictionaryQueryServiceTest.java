@@ -14,6 +14,7 @@ import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
@@ -184,6 +185,19 @@ class DictionaryQueryServiceTest {
         assertThat(response.currentHistoryId()).isEqualTo(dictionary.getId());
     }
 
+    @DisplayName("[통과] 문서 버전을 조회한다.")
+    @Test
+    void dictionary_query_service_test_07() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        final DictionaryGetVersionResponse response = dictionaryQueryService.getVersion(dictionary.getId(), 1L);
+
+        // then
+        assertThat(response.content()).isEqualTo("내용");
+    }
+
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
     @Test
     void 예외_dictionary_query_service_test_01() {
@@ -207,5 +221,17 @@ class DictionaryQueryServiceTest {
         assertThatThrownBy(() -> dictionaryQueryService.getHistories(dictionary.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("숨김 처리된 문서입니다.");
+    }
+
+    @DisplayName("[예외] 문서 버전을 조회할 수 없다.")
+    @Test
+    void 예외_dictionary_query_service_test_03() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when & then
+        assertThatThrownBy(() -> dictionaryQueryService.getVersion(dictionary.getId(), 999L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("찾을 수 없는 문서 버전입니다.");
     }
 }
