@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
@@ -14,45 +13,20 @@ import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
-import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.helper.Fixture;
+import com.openmpy.taleswiki.helper.ServiceTestSupport;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.s3.S3Client;
 
-@Transactional
-@Import(EmbeddedRedisConfig.class)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class DictionaryCommandServiceTest {
+class DictionaryCommandServiceTest extends ServiceTestSupport {
 
     @Autowired
     private DictionaryCommandService dictionaryCommandService;
 
     @Autowired
     private DictionaryRepository dictionaryRepository;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @MockitoBean
-    private ImageS3Service imageS3Service;
-
-    @MockitoBean
-    private S3Client s3Client;
-
-    @BeforeEach
-    void setUp() {
-        redisTemplate.getConnectionFactory().getConnection().flushDb();
-    }
 
     @DisplayName("[통과] 문서를 작성한다.")
     @Test
