@@ -13,6 +13,7 @@ import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.helper.Fixture;
@@ -153,6 +154,19 @@ class DictionaryQueryServiceTest {
         // then
         assertThat(response.title()).isEqualTo("제목");
         assertThat(response.histories()).hasSize(1);
+    }
+
+    @DisplayName("[통과] 문서 버전 목록을 조회한다.")
+    @Test
+    void dictionary_query_service_test_05() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        final DictionaryGetVersionsResponse response = dictionaryQueryService.getVersions(dictionary.getId());
+
+        // then
+        assertThat(response.versions()).hasSize(1);
     }
 
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
