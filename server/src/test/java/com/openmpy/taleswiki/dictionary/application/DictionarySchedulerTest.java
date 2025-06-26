@@ -67,13 +67,17 @@ class DictionarySchedulerTest {
     void dictionary_scheduler_test_02() {
         // given
         redisTemplate.opsForZSet().incrementScore("popular_dictionaries", 1L, 1.0);
+        redisTemplate.opsForZSet().incrementScore("popular_dictionaries", 2L, 0.1);
 
         // when
         dictionaryScheduler.decayPopularDictionaryScores();
 
         // then
-        final Double score = redisTemplate.opsForZSet().score("popular_dictionaries", 1L);
-        assertThat(score).isEqualTo(0.9);
+        final Double score01 = redisTemplate.opsForZSet().score("popular_dictionaries", 1L);
+        final Double score02 = redisTemplate.opsForZSet().score("popular_dictionaries", 2L);
+
+        assertThat(score01).isEqualTo(0.9);
+        assertThat(score02).isNull();
     }
 
     @DisplayName("[통과] 문서 번호 전체를 동기화한다.")
