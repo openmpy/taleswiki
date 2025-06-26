@@ -7,6 +7,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.helper.Fixture;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,5 +74,23 @@ class DictionarySchedulerTest {
         // then
         final Double score = redisTemplate.opsForZSet().score("popular_dictionaries", 1L);
         assertThat(score).isEqualTo(0.9);
+    }
+
+    @DisplayName("[통과] 문서 번호 전체를 동기화한다.")
+    @Test
+    void dictionary_scheduler_test_03() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        dictionaryScheduler.cacheAllDictionaryIds();
+
+        // then
+        final Set<Object> values = redisTemplate.opsForSet().members("dictionary:ids");
+
+        for (Object value : values) {
+            final Long dictionaryId = Long.valueOf(value.toString());
+            assertThat(dictionaryId).isEqualTo(dictionary.getId());
+        }
     }
 }
