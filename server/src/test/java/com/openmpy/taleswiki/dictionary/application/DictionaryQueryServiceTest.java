@@ -12,6 +12,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionsResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
@@ -167,6 +168,20 @@ class DictionaryQueryServiceTest {
 
         // then
         assertThat(response.versions()).hasSize(1);
+    }
+
+    @DisplayName("[통과] 문서를 랜덤으로 조회한다.")
+    @Test
+    void dictionary_query_service_test_06() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+        redisTemplate.opsForSet().add("dictionary:ids", List.of(dictionary.getId()).toArray());
+
+        // when
+        final DictionaryGetRandomResponse response = dictionaryQueryService.getRandomDictionary();
+
+        // then
+        assertThat(response.currentHistoryId()).isEqualTo(dictionary.getId());
     }
 
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
