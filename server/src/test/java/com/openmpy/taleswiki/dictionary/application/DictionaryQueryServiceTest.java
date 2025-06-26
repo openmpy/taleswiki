@@ -11,6 +11,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryHistoryResponse;
 import com.openmpy.taleswiki.helper.EmbeddedRedisConfig;
@@ -140,6 +141,20 @@ class DictionaryQueryServiceTest {
         assertThat(redisTemplate.hasKey(key)).isTrue();
     }
 
+    @DisplayName("[통과] 문서 기록 목록을 조회한다.")
+    @Test
+    void dictionary_query_service_test_04() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+
+        // when
+        final DictionaryGetHistoriesResponse response = dictionaryQueryService.getHistories(dictionary.getId());
+
+        // then
+        assertThat(response.title()).isEqualTo("제목");
+        assertThat(response.histories()).hasSize(1);
+    }
+
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
     @Test
     void 예외_dictionary_query_service_test_01() {
@@ -150,5 +165,18 @@ class DictionaryQueryServiceTest {
         assertThatThrownBy(() -> dictionaryQueryService.get(servletRequest, 999L))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("찾을 수 없는 문서 기록 번호입니다.");
+    }
+
+    @DisplayName("[예외] 숨김 처리된 문서의 기록을 조회할 수 없다.")
+    @Test
+    void 예외_dictionary_query_service_test_02() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+        dictionary.changeStatus(DictionaryStatus.HIDDEN);
+
+        // when & then
+        assertThatThrownBy(() -> dictionaryQueryService.getHistories(dictionary.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("숨김 처리된 문서입니다.");
     }
 }
