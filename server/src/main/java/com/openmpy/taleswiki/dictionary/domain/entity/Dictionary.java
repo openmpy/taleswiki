@@ -69,12 +69,14 @@ public class Dictionary extends BaseEntity {
             final String title,
             final DictionaryCategory category,
             final DictionaryStatus status,
-            final Long view
+            final Long view,
+            final LocalDateTime modifiedAt
     ) {
         this.title = new DictionaryTitle(title);
         this.category = category;
         this.status = status;
         this.view = new DictionaryView(view);
+        this.modifiedAt = modifiedAt;
     }
 
     public static Dictionary create(final String title, final DictionaryCategory category) {
@@ -83,6 +85,7 @@ public class Dictionary extends BaseEntity {
                 .category(category)
                 .status(ALL_ACTIVE)
                 .view(0L)
+                .modifiedAt(LocalDateTime.now())
                 .build();
     }
 

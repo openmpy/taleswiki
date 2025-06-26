@@ -27,7 +27,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6378
       timeout: 5000
 
 management:
@@ -55,16 +55,30 @@ cookie:
   same-site: none
   max-age: 7D
 
-admin:
-  nickname: admin
-  password: test
-  token: success
-
 image:
-  upload-path: https://r2.taleswiki.shop
+  upload-path: https://r2.taleswiki.com
 
 s3:
-  endpoint: endpoint
-  access-key: access-key
-  secret-key: secret-key
+  endpoint: test
+  access-key: test
+  secret-key: test
   region: auto
+
+security:
+  jwt:
+    token:
+      secret-key: secret
+      expire-length: 604800000
+
+kakao:
+  client-id: test
+  redirect-uri: http://localhost:5173/login/kakao
+  oauth-token-uri: https://kauth.kakao.com/oauth/token
+  grant-type: authorization_code
+
+google:
+  client-id: test
+  client-secret: test
+  redirect-uri: http://localhost:5173/login/google
+  oauth-token-uri: https://oauth2.googleapis.com/token
+  grant-type: authorization_code

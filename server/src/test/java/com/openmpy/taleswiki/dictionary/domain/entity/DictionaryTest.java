@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.helper.Fixture;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class DictionaryTest {
         final long view = 0L;
 
         // when
-        final Dictionary dictionary = new Dictionary(title, person, allActive, view);
+        final Dictionary dictionary = new Dictionary(title, person, allActive, view, LocalDateTime.now());
 
         // then
         assertThat(dictionary.getTitle()).isEqualTo("title");

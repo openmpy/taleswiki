@@ -50,7 +50,6 @@ public class DictionaryCommandService {
 
         dictionary.addHistory(dictionaryHistory);
         final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
-        savedDictionary.updateModifiedAt(LocalDateTime.now());
 
         return new DictionarySaveResponse(savedDictionary.getCurrentHistory().getId());
     }

@@ -58,10 +58,8 @@ dependencies {
     // faker
     implementation 'net.datafaker:datafaker:2.4.2'
 
-    // testcontainers
-    testImplementation 'org.testcontainers:testcontainers:1.21.0'
-    testImplementation 'org.testcontainers:junit-jupiter:1.21.0'
-    testImplementation 'org.testcontainers:elasticsearch:1.21.0'
+    // embedded-redis
+    testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 }
 
 ext {
