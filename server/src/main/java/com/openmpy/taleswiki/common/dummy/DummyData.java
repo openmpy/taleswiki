@@ -72,7 +72,7 @@ public class DummyData {
             }
 
             dictionary = Dictionary.create(title, category);
-            dictionary.changeStatus(status.name());
+            dictionary.changeStatus(status);
             dictionaryHistory = DictionaryHistory.create(
                     "작성자" + i, "내용" + i, 10L, FAKER.internet().ipV4Address(), dictionary
             );

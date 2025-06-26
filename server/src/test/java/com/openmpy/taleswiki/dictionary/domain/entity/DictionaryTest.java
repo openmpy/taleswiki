@@ -54,7 +54,7 @@ class DictionaryTest {
         final Dictionary dictionary = Fixture.DICTIONARY_01;
 
         // when
-        dictionary.changeStatus("read_only");
+        dictionary.changeStatus(DictionaryStatus.READ_ONLY);
 
         // then
         assertThat(dictionary.getStatus()).isEqualTo(DictionaryStatus.READ_ONLY);

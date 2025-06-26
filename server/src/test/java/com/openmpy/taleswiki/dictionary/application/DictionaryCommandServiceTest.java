@@ -8,10 +8,13 @@ import static org.mockito.Mockito.when;
 import com.openmpy.taleswiki.EmbeddedRedisConfig;
 import com.openmpy.taleswiki.common.application.ImageS3Service;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.request.DictionarySaveRequest;
+import com.openmpy.taleswiki.dictionary.dto.request.DictionaryUpdateRequest;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionarySaveResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryUpdateResponse;
 import com.openmpy.taleswiki.helper.Fixture;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -58,6 +61,26 @@ class DictionaryCommandServiceTest {
         assertThat(response.dictionaryHistoryId()).isNotNull();
     }
 
+    @DisplayName("[통과] 문서를 편집한다.")
+    @Test
+    void dictionary_command_service_test_02() {
+        // given
+        final Dictionary dictionary = dictionaryRepository.save(Fixture.createDictionary());
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final DictionaryUpdateRequest request = new DictionaryUpdateRequest("수정_작성자", "수정_내용");
+
+        // stub
+        when(imageS3Service.processImageReferences(anyString())).thenReturn("수정_내용");
+
+        // when
+        final DictionaryUpdateResponse response = dictionaryCommandService.update(
+                dictionary.getId(), servletRequest, request
+        );
+
+        // then
+        assertThat(response.dictionaryHistoryId()).isNotNull();
+    }
+
     @DisplayName("[예외] 문서 카테고리가 올바르지 않다.")
     @Test
     void 예외_dictionary_command_service_test_01() {
@@ -85,5 +108,22 @@ class DictionaryCommandServiceTest {
         assertThatThrownBy(() -> dictionaryCommandService.save(servletRequest, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 작성된 문서입니다.");
+    }
+
+    @DisplayName("[예외] 편집할 수 없는 문서이다.")
+    @Test
+    void 예외_dictionary_command_service_test_03() {
+        // given
+        final Dictionary dictionary = Fixture.createDictionary();
+        dictionary.changeStatus(DictionaryStatus.HIDDEN);
+        final Dictionary savedDictionary = dictionaryRepository.save(dictionary);
+
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final DictionaryUpdateRequest request = new DictionaryUpdateRequest("수정_작성자", "수정_내용");
+
+        // when & then
+        assertThatThrownBy(() -> dictionaryCommandService.update(savedDictionary.getId(), servletRequest, request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("편집할 수 없는 문서입니다.");
     }
 }

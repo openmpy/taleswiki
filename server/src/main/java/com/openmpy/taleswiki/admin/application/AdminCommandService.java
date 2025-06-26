@@ -7,6 +7,7 @@ import com.openmpy.taleswiki.chat.domain.entity.ChatMessage;
 import com.openmpy.taleswiki.chat.domain.repository.ChatMessageRepository;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.dictionary.application.DictionaryQueryService;
+import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryStatus;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
@@ -30,8 +31,9 @@ public class AdminCommandService {
         memberService.validateAdmin(memberId);
 
         final Dictionary dictionary = dictionaryQueryService.getDictionary(dictionaryId);
+        final DictionaryStatus dictionaryStatus = DictionaryStatus.fromName(status);
 
-        dictionary.changeStatus(status);
+        dictionary.changeStatus(dictionaryStatus);
     }
 
     @Transactional
