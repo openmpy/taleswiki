@@ -12,6 +12,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetGroupResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetHistoriesResponse;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetPopularResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetRandomResponse;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetTop20Response;
 import com.openmpy.taleswiki.dictionary.dto.response.DictionaryGetVersionResponse;
@@ -196,6 +197,46 @@ class DictionaryQueryServiceTest {
 
         // then
         assertThat(response.content()).isEqualTo("내용");
+    }
+
+    @DisplayName("[통과] 실시간 인기 문서 목록을 조회한다.")
+    @Test
+    void dictionary_query_service_test_08() {
+        // given
+        final Dictionary dictionary01 = Dictionary.create("가나다", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory01 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        final Dictionary dictionary02 = Dictionary.create("나다가", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory02 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        final Dictionary dictionary03 = Dictionary.create("다가나", DictionaryCategory.PERSON);
+        final DictionaryHistory dictionaryHistory03 = DictionaryHistory.create(
+                "작성자", "내용", 10L, "127.0.0.1", dictionary01
+        );
+
+        dictionary01.addHistory(dictionaryHistory01);
+        dictionary02.addHistory(dictionaryHistory02);
+        dictionary03.addHistory(dictionaryHistory03);
+
+        final Dictionary savedDictionary01 = dictionaryRepository.save(dictionary01);
+        final Dictionary savedDictionary02 = dictionaryRepository.save(dictionary02);
+        final Dictionary savedDictionary03 = dictionaryRepository.save(dictionary03);
+
+        redisTemplate.opsForZSet().incrementScore("popular_dictionaries", savedDictionary01.getId(), 1.0);
+        redisTemplate.opsForZSet().incrementScore("popular_dictionaries", savedDictionary02.getId(), 0.9);
+        redisTemplate.opsForZSet().incrementScore("popular_dictionaries", savedDictionary03.getId(), 0.8);
+
+        // when
+        final DictionaryGetPopularResponse response = dictionaryQueryService.getPopular();
+
+        // then
+        assertThat(response.dictionaries()).hasSize(3);
+        assertThat(response.dictionaries().getFirst().currentHistoryId()).isEqualTo(savedDictionary01.getId());
+        assertThat(response.dictionaries().getLast().currentHistoryId()).isEqualTo(savedDictionary03.getId());
     }
 
     @DisplayName("[예외] 문서 기록 번호를 찾을 수 없다.")
