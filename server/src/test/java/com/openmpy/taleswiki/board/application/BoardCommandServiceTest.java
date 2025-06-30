@@ -386,4 +386,24 @@ class BoardCommandServiceTest extends ServiceTestSupport {
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 삭제된 댓글입니다.");
     }
+
+    @DisplayName("[예외] 연속으로 게시글을 작성할 수 없다.")
+    @Test
+    void 예외_board_command_service_test_11() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final BoardSaveRequest request = new BoardSaveRequest("제목", "내용");
+
+        redisTemplate.opsForValue().set("board-save:127.0.0.1", "true");
+
+        // stub
+        when(imageS3Service.processImageReferences(anyString())).thenReturn("내용");
+
+        // when & then
+        assertThatThrownBy(() -> boardCommandService.save(member.getId(), servletRequest, request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("1분 후에 게시글을 작성할 수 있습니다.");
+    }
 }
