@@ -203,6 +203,22 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThat(first.getContent()).isEqualTo("수정_내용");
     }
 
+    @DisplayName("[통과] 댓글을 삭제한다.")
+    @Test
+    void board_command_service_test_10() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        // when
+        final BoardComment first = boardCommentRepository.findAll().getFirst();
+        boardCommandService.deleteComment(member.getId(), first.getId());
+
+        // then
+        assertThat(first.getIsDeleted()).isTrue();
+    }
+
     @DisplayName("[예외] 작성자가 일치하지 않아 게시글을 삭제할 수 없다.")
     @Test
     void 예외_board_command_service_test_01() {
@@ -335,5 +351,39 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThatThrownBy(() -> boardCommandService.updateComment(member.getId(), comment.getId(), request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("삭제된 댓글은 수정할 수 없습니다.");
+    }
+
+    @DisplayName("[예외] 댓글 작성자가 일치하지 않아 삭제할 수 없다.")
+    @Test
+    void 예외_board_command_service_test_09() {
+        // given
+        final Member member1 = memberRepository.save(Fixture.createMember());
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member1, board, null));
+
+        // when & then
+        final BoardComment first = boardCommentRepository.findAll().getFirst();
+        assertThatThrownBy(() -> boardCommandService.deleteComment(member2.getId(), first.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("댓글 작성자가 일치하지 않습니다.");
+    }
+
+    @DisplayName("[예외] 이미 삭제된 댓글이다.")
+    @Test
+    void 예외_board_command_service_test_10() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        final BoardComment first = board.getComments().getFirst();
+        first.toggleDelete(Boolean.TRUE);
+
+        // when & then
+        final BoardComment comment = boardCommentRepository.findAll().getFirst();
+        assertThatThrownBy(() -> boardCommandService.deleteComment(member.getId(), comment.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이미 삭제된 댓글입니다.");
     }
 }
