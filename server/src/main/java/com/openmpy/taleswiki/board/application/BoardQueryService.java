@@ -9,7 +9,6 @@ import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
-import com.openmpy.taleswiki.common.properties.ImageProperties;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
@@ -30,7 +29,6 @@ public class BoardQueryService {
     private final RedisService redisService;
     private final BoardRepository boardRepository;
     private final BoardCommentRepository boardCommentRepository;
-    private final ImageProperties imageProperties;
 
     @Transactional(readOnly = true)
     public PaginatedResponse<BoardGetsResponse> gets(final int page, final int size) {
