@@ -16,6 +16,7 @@ import com.openmpy.taleswiki.board.domain.repository.BoardUnlikeRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
 import com.openmpy.taleswiki.board.dto.request.CommentSaveRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardUpdateResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
@@ -184,6 +185,24 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThat(foundBoard.getComments()).hasSize(2);
     }
 
+    @DisplayName("[통과] 댓글 내용을 수정한다.")
+    @Test
+    void board_command_service_test_09() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        final CommentUpdateRequest request = new CommentUpdateRequest("수정_내용");
+
+        // when
+        final BoardComment first = boardCommentRepository.findAll().getFirst();
+        boardCommandService.updateComment(member.getId(), first.getId(), request);
+
+        // then
+        assertThat(first.getContent()).isEqualTo("수정_내용");
+    }
+
     @DisplayName("[예외] 작성자가 일치하지 않아 게시글을 삭제할 수 없다.")
     @Test
     void 예외_board_command_service_test_01() {
@@ -278,5 +297,43 @@ class BoardCommandServiceTest extends ServiceTestSupport {
                 () -> boardCommandService.saveComment(member.getId(), board.getId(), servletRequest, request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("삭제된 댓글에 대댓글을 작성할 수 없습니다.");
+    }
+
+    @DisplayName("[예외] 댓글 작성자가 일치하지 않아 수정할 수 없다.")
+    @Test
+    void 예외_board_command_service_test_07() {
+        // given
+        final Member member1 = memberRepository.save(Fixture.createMember());
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member1, board, null));
+
+        final CommentUpdateRequest request = new CommentUpdateRequest("수정_내용");
+
+        // when & then
+        final BoardComment first = boardCommentRepository.findAll().getFirst();
+        assertThatThrownBy(() -> boardCommandService.updateComment(member2.getId(), first.getId(), request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("댓글 작성자가 일치하지 않습니다.");
+    }
+
+    @DisplayName("[예외] 삭제된 댓글은 수정할 수 없다.")
+    @Test
+    void 예외_board_command_service_test_08() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        final BoardComment first = board.getComments().getFirst();
+        first.toggleDelete(Boolean.TRUE);
+
+        final CommentUpdateRequest request = new CommentUpdateRequest("수정_내용");
+
+        // when & then
+        final BoardComment comment = boardCommentRepository.findAll().getFirst();
+        assertThatThrownBy(() -> boardCommandService.updateComment(member.getId(), comment.getId(), request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("삭제된 댓글은 수정할 수 없습니다.");
     }
 }
