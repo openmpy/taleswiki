@@ -29,42 +29,29 @@ class BoardQueryServiceTest extends ServiceTestSupport {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("[통과] 이미지가 없는 게시글을 조회한다.")
+    @DisplayName("[통과] 이미지가 없는 게시글 목록을 조회한다.")
     @Test
     void board_query_service_test_01() {
         // given
         final Member member = memberRepository.save(Fixture.createMember());
-        boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+
+        final String content = "![](https://r2.taleswiki.com/images/test.webp)";
+        boardRepository.save(Board.save("제목01", "내용", "테붕이01", "127.0.0.1", member));
+        boardRepository.save(Board.save("제목02", content, "테붕이01", "127.0.0.1", member));
 
         // when
         final PaginatedResponse<BoardGetsResponse> response = boardQueryService.gets(0, 10);
 
         // then
         final BoardGetsResponse first = response.content().getFirst();
+        final BoardGetsResponse last = response.content().getLast();
 
-        assertThat(first.title()).isEqualTo("제목");
-        assertThat(first.hasImage()).isFalse();
-        assertThat(first.likes()).isZero();
-        assertThat(first.commentsCount()).isZero();
-        assertThat(first.nickname()).isEqualTo("테붕이01");
-    }
+        assertThat(first.title()).isEqualTo("제목02");
+        assertThat(last.title()).isEqualTo("제목01");
 
-    @DisplayName("[통과] 이미지가 있는 게시글을 조회한다.")
-    @Test
-    void board_query_service_test_02() {
-        // given
-        final Member member = memberRepository.save(Fixture.createMember());
-        final String content = "![](https://r2.taleswiki.com/images/15b6a88d-4606-4015-a6d6-fcb2c8db1696.webp)";
-        boardRepository.save(Board.save("제목", content, "테붕이01", "127.0.0.1", member));
-
-        // when
-        final PaginatedResponse<BoardGetsResponse> response = boardQueryService.gets(0, 10);
-
-        // then
-        final BoardGetsResponse first = response.content().getFirst();
-
-        assertThat(first.title()).isEqualTo("제목");
         assertThat(first.hasImage()).isTrue();
+        assertThat(last.hasImage()).isFalse();
+
         assertThat(first.likes()).isZero();
         assertThat(first.commentsCount()).isZero();
         assertThat(first.nickname()).isEqualTo("테붕이01");
