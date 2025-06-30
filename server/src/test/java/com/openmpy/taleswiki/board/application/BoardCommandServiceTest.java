@@ -6,7 +6,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.entity.BoardLike;
+import com.openmpy.taleswiki.board.domain.entity.BoardUnlike;
+import com.openmpy.taleswiki.board.domain.repository.BoardLikeRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
+import com.openmpy.taleswiki.board.domain.repository.BoardUnlikeRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
@@ -32,6 +36,12 @@ class BoardCommandServiceTest extends ServiceTestSupport {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private BoardLikeRepository boardLikeRepository;
+
+    @Autowired
+    private BoardUnlikeRepository boardUnlikeRepository;
 
     @DisplayName("[통과] 게시글을 작성한다.")
     @Test
@@ -101,6 +111,36 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThat(response.boardId()).isNotNull();
     }
 
+    @DisplayName("[통과] 게시글에 좋아요를 누른다.")
+    @Test
+    void board_command_service_test_05() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+
+        // when
+        boardCommandService.like(member.getId(), board.getId());
+
+        // then
+        final Board foundBoard = boardRepository.findById(board.getId()).get();
+        assertThat(foundBoard.getLikes()).hasSize(1);
+    }
+
+    @DisplayName("[통과] 게시글에 싫어요를 누른다.")
+    @Test
+    void board_command_service_test_06() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+
+        // when
+        boardCommandService.unlike(member.getId(), board.getId());
+
+        // then
+        final Board foundBoard = boardRepository.findById(board.getId()).get();
+        assertThat(foundBoard.getUnlikes()).hasSize(1);
+    }
+
     @DisplayName("[예외] 작성자가 일치하지 않아 게시글을 삭제할 수 없다.")
     @Test
     void 예외_board_command_service_test_01() {
@@ -128,5 +168,33 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThatThrownBy(() -> boardCommandService.update(member2.getId(), board.getId(), request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("게시글 작성자가 일치하지 않습니다.");
+    }
+
+    @DisplayName("[예외] 이미 좋아요를 누른 게시글이다.")
+    @Test
+    void 예외_board_command_service_test_03() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        boardLikeRepository.save(BoardLike.save(board, member));
+
+        // when & then
+        assertThatThrownBy(() -> boardCommandService.like(member.getId(), board.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이미 좋아요를 누른 게시글입니다.");
+    }
+
+    @DisplayName("[예외] 이미 싫어요를 누른 게시글이다.")
+    @Test
+    void 예외_board_command_service_test_04() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        boardUnlikeRepository.save(BoardUnlike.save(board, member));
+
+        // when & then
+        assertThatThrownBy(() -> boardCommandService.unlike(member.getId(), board.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이미 싫어요를 누른 게시글입니다.");
     }
 }
