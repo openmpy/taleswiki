@@ -6,13 +6,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.entity.BoardComment;
 import com.openmpy.taleswiki.board.domain.entity.BoardLike;
 import com.openmpy.taleswiki.board.domain.entity.BoardUnlike;
+import com.openmpy.taleswiki.board.domain.repository.BoardCommentRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardLikeRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardUnlikeRepository;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
+import com.openmpy.taleswiki.board.dto.request.CommentSaveRequest;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardUpdateResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
@@ -42,6 +45,9 @@ class BoardCommandServiceTest extends ServiceTestSupport {
 
     @Autowired
     private BoardUnlikeRepository boardUnlikeRepository;
+
+    @Autowired
+    private BoardCommentRepository boardCommentRepository;
 
     @DisplayName("[통과] 게시글을 작성한다.")
     @Test
@@ -141,6 +147,43 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThat(foundBoard.getUnlikes()).hasSize(1);
     }
 
+    @DisplayName("[통과] 댓글을 작성한다.")
+    @Test
+    void board_command_service_test_07() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final CommentSaveRequest request = new CommentSaveRequest(null, "댓글_내용");
+
+        // when
+        boardCommandService.saveComment(member.getId(), board.getId(), servletRequest, request);
+
+        // then
+        final Board foundBoard = boardRepository.findById(board.getId()).get();
+        assertThat(foundBoard.getComments()).hasSize(1);
+    }
+
+    @DisplayName("[통과] 대댓글을 작성한다.")
+    @Test
+    void board_command_service_test_08() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final CommentSaveRequest request = new CommentSaveRequest(board.getComments().getFirst().getId(), "댓글_내용");
+
+        // when
+        boardCommandService.saveComment(member.getId(), board.getId(), servletRequest, request);
+
+        // then
+        final Board foundBoard = boardRepository.findById(board.getId()).get();
+        assertThat(foundBoard.getComments()).hasSize(2);
+    }
+
     @DisplayName("[예외] 작성자가 일치하지 않아 게시글을 삭제할 수 없다.")
     @Test
     void 예외_board_command_service_test_01() {
@@ -196,5 +239,44 @@ class BoardCommandServiceTest extends ServiceTestSupport {
         assertThatThrownBy(() -> boardCommandService.unlike(member.getId(), board.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 싫어요를 누른 게시글입니다.");
+    }
+
+    @DisplayName("[예외] 부모가 존재하지 않는 댓글에 대댓글을 작성한다.")
+    @Test
+    void 예외_board_command_service_test_05() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final CommentSaveRequest request = new CommentSaveRequest(999L, "댓글_내용");
+
+        // when & then
+        assertThatThrownBy(
+                () -> boardCommandService.saveComment(member.getId(), board.getId(), servletRequest, request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("존재하지 않는 부모 댓글입니다.");
+    }
+
+    @DisplayName("[예외] 삭제된 댓글에 대댓글을 작성한다.")
+    @Test
+    void 예외_board_command_service_test_06() {
+        // given
+        final Member member = memberRepository.save(Fixture.createMember());
+        final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member, board, null));
+
+        final BoardComment first = board.getComments().getFirst();
+        first.toggleDelete(Boolean.TRUE);
+
+        final BoardComment comment = boardCommentRepository.findAll().getFirst();
+        final HttpServletRequest servletRequest = Fixture.createMockHttpServletRequest();
+        final CommentSaveRequest request = new CommentSaveRequest(comment.getId(), "댓글_내용");
+
+        // when & then
+        assertThatThrownBy(
+                () -> boardCommandService.saveComment(member.getId(), board.getId(), servletRequest, request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("삭제된 댓글에 대댓글을 작성할 수 없습니다.");
     }
 }
