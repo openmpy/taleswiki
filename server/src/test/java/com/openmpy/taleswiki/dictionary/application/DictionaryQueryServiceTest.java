@@ -117,8 +117,10 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
         dictionary02.getCurrentHistory().changeStatus(DictionaryStatus.HIDDEN);
 
         // when
-        final DictionaryHistoryResponse response01 = dictionaryQueryService.get(servletRequest, dictionary01.getId());
-        final DictionaryHistoryResponse response02 = dictionaryQueryService.get(servletRequest, dictionary02.getId());
+        final DictionaryHistoryResponse response01 = dictionaryQueryService.get(servletRequest,
+                dictionary01.getCurrentHistory().getId());
+        final DictionaryHistoryResponse response02 = dictionaryQueryService.get(servletRequest,
+                dictionary02.getCurrentHistory().getId());
 
         // then
         assertThat(response01.title()).isEqualTo("제목");
@@ -176,7 +178,7 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
         final DictionaryGetRandomResponse response = dictionaryQueryService.getRandomDictionary();
 
         // then
-        assertThat(response.currentHistoryId()).isEqualTo(dictionary.getId());
+        assertThat(response.currentHistoryId()).isEqualTo(dictionary.getCurrentHistory().getId());
     }
 
     @DisplayName("[통과] 문서 버전을 조회한다.")
@@ -232,8 +234,10 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
 
         // then
         assertThat(response.dictionaries()).hasSize(3);
-        assertThat(response.dictionaries().getFirst().currentHistoryId()).isEqualTo(savedDictionary01.getId());
-        assertThat(response.dictionaries().getLast().currentHistoryId()).isEqualTo(savedDictionary03.getId());
+        assertThat(response.dictionaries().getFirst().currentHistoryId())
+                .isEqualTo(savedDictionary01.getCurrentHistory().getId());
+        assertThat(response.dictionaries().getLast().currentHistoryId())
+                .isEqualTo(savedDictionary03.getCurrentHistory().getId());
     }
 
     @DisplayName("[통과] 문서 기록을 중복으로 조회한다.")
@@ -247,7 +251,8 @@ class DictionaryQueryServiceTest extends ServiceTestSupport {
         redisTemplate.opsForSet().add(key, "true");
 
         // when
-        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest, dictionary.getId());
+        final DictionaryHistoryResponse response = dictionaryQueryService.get(servletRequest,
+                dictionary.getCurrentHistory().getId());
 
         // then
         assertThat(response.title()).isEqualTo("제목");
