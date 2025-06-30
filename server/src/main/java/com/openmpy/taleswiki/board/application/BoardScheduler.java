@@ -16,7 +16,7 @@ public class BoardScheduler {
     private static final int LIMIT_BOARD_UNLIKES_COUNT = -10;
 
     private final RedisService redisService;
-    private final BoardService boardService;
+    private final BoardCommandService boardCommandService;
     private final BoardRepository boardRepository;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
@@ -29,7 +29,7 @@ public class BoardScheduler {
             final Long count = value != null ? Long.parseLong(value.toString()) : null;
 
             if (count != null) {
-                boardService.incrementViews(boardId, count);
+                boardCommandService.incrementViews(boardId, count);
             }
             redisService.delete(key);
         });

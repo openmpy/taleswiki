@@ -1,36 +1,31 @@
 package com.openmpy.taleswiki.board.presentation;
 
 import com.openmpy.taleswiki.auth.annotation.Login;
-import com.openmpy.taleswiki.board.application.BoardService;
+import com.openmpy.taleswiki.board.application.BoardCommandService;
 import com.openmpy.taleswiki.board.dto.request.BoardSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.BoardUpdateRequest;
 import com.openmpy.taleswiki.board.dto.request.CommentSaveRequest;
 import com.openmpy.taleswiki.board.dto.request.CommentUpdateRequest;
-import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
-import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardSaveResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardUpdateResponse;
-import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/boards")
 @RestController
-public class BoardController {
+public class BoardCommandController {
 
-    private final BoardService boardService;
+    private final BoardCommandService boardCommandService;
 
     @PostMapping
     public ResponseEntity<BoardSaveResponse> save(
@@ -38,31 +33,13 @@ public class BoardController {
             final HttpServletRequest servletRequest,
             @RequestBody final BoardSaveRequest request
     ) {
-        final BoardSaveResponse response = boardService.save(memberId, servletRequest, request);
+        final BoardSaveResponse response = boardCommandService.save(memberId, servletRequest, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping
-    public ResponseEntity<PaginatedResponse<BoardGetsResponse>> gets(
-            @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "30") final int size
-    ) {
-        final PaginatedResponse<BoardGetsResponse> response = boardService.gets(page, size);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{boardId}")
-    public ResponseEntity<BoardGetResponse> get(
-            final HttpServletRequest request,
-            @PathVariable final Long boardId
-    ) {
-        final BoardGetResponse response = boardService.get(request, boardId);
-        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> delete(@Login final Long memberId, @PathVariable final Long boardId) {
-        boardService.delete(memberId, boardId);
+        boardCommandService.delete(memberId, boardId);
         return ResponseEntity.noContent().build();
     }
 
@@ -72,19 +49,19 @@ public class BoardController {
             @PathVariable final Long boardId,
             @RequestBody final BoardUpdateRequest request
     ) {
-        final BoardUpdateResponse response = boardService.update(memberId, boardId, request);
+        final BoardUpdateResponse response = boardCommandService.update(memberId, boardId, request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/like/{boardId}")
     public ResponseEntity<Void> like(@Login final Long memberId, @PathVariable final Long boardId) {
-        boardService.like(memberId, boardId);
+        boardCommandService.like(memberId, boardId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/unlike/{boardId}")
     public ResponseEntity<Void> unlike(@Login final Long memberId, @PathVariable final Long boardId) {
-        boardService.unlike(memberId, boardId);
+        boardCommandService.unlike(memberId, boardId);
         return ResponseEntity.noContent().build();
     }
 
@@ -95,7 +72,7 @@ public class BoardController {
             final HttpServletRequest servletRequest,
             @RequestBody final CommentSaveRequest request
     ) {
-        boardService.saveComment(memberId, boardId, servletRequest, request);
+        boardCommandService.saveComment(memberId, boardId, servletRequest, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -105,7 +82,7 @@ public class BoardController {
             @PathVariable final Long commentId,
             @RequestBody final CommentUpdateRequest request
     ) {
-        boardService.updateComment(memberId, commentId, request);
+        boardCommandService.updateComment(memberId, commentId, request);
         return ResponseEntity.noContent().build();
     }
 
@@ -114,7 +91,7 @@ public class BoardController {
             @Login final Long memberId,
             @PathVariable final Long commentId
     ) {
-        boardService.deleteComment(memberId, commentId);
+        boardCommandService.deleteComment(memberId, commentId);
         return ResponseEntity.noContent().build();
     }
 }
