@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BoardQueryService {
 
-    private static final String IMAGE_URL_PATTERN = "(!\\[[^]]*]\\(%s/images)/([a-f0-9\\-]+\\.webp\\))";
+    private static final String IMAGE_URL_PATTERN = "!\\[[^]]*]\\(https?://[^)]+/images/[a-f0-9\\-]+\\.webp\\)";
 
     private final RedisService redisService;
     private final BoardRepository boardRepository;
@@ -37,9 +37,7 @@ public class BoardQueryService {
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<Board> boards = boardRepository.findAll(pageRequest);
 
-        final String imageUrlRegex = String.format(IMAGE_URL_PATTERN, imageProperties.uploadPath());
-        final Pattern imagePattern = Pattern.compile(imageUrlRegex);
-
+        final Pattern imagePattern = Pattern.compile(IMAGE_URL_PATTERN);
         final Page<BoardGetsResponse> responses = boards.map(
                 it -> new BoardGetsResponse(
                         it.getId(),

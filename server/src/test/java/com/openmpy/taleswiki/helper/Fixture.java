@@ -3,6 +3,8 @@ package com.openmpy.taleswiki.helper;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
+import com.openmpy.taleswiki.member.domain.constants.MemberSocial;
+import com.openmpy.taleswiki.member.domain.entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -21,6 +23,10 @@ public class Fixture {
 
         dictionary.addHistory(dictionaryHistory);
         return dictionary;
+    }
+
+    public static Member createMember() {
+        return Member.create("test@test.com", MemberSocial.GOOGLE);
     }
 
     public static HttpServletRequest createMockHttpServletRequest() {
