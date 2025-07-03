@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.helper;
 
+import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.dictionary.domain.constants.DictionaryCategory;
 import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import com.openmpy.taleswiki.dictionary.domain.entity.DictionaryHistory;
@@ -27,6 +28,10 @@ public class Fixture {
 
     public static Member createMember() {
         return Member.create("test@test.com", MemberSocial.GOOGLE);
+    }
+
+    public static Board createBoard() {
+        return Board.save("제목", "내용", "작성자", "127.0.0.1", null);
     }
 
     public static HttpServletRequest createMockHttpServletRequest() {
