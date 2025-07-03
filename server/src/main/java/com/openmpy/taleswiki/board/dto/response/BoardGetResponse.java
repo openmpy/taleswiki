@@ -33,7 +33,7 @@ public record BoardGetResponse(
         public static BoardCommentResponse of(final BoardComment comment) {
             String content = comment.getContent();
 
-            if (comment.getIsDeleted()) {
+            if (Boolean.TRUE.equals(comment.getIsDeleted())) {
                 content = null;
             }
 

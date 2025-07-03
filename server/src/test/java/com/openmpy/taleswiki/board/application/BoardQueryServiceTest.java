@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.entity.BoardComment;
+import com.openmpy.taleswiki.board.domain.repository.BoardCommentRepository;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
@@ -28,6 +30,9 @@ class BoardQueryServiceTest extends ServiceTestSupport {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private BoardCommentRepository boardCommentRepository;
 
     @DisplayName("[통과] 이미지가 없는 게시글 목록을 조회한다.")
     @Test
@@ -65,6 +70,16 @@ class BoardQueryServiceTest extends ServiceTestSupport {
 
         final Member member = memberRepository.save(Fixture.createMember());
         final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member));
+        final BoardComment comment = boardCommentRepository.save(
+                BoardComment.save("작정자", "내용", "127.0.0.1", member, board, null)
+        );
+
+        final BoardComment comment01 = BoardComment.save("작성자01", "내용01", "127.0.0.1", member, board, null);
+        board.addComment(comment01);
+
+        final BoardComment comment02 = BoardComment.save("작성자02", "내용02", "127.0.0.1", member, board, comment);
+        comment02.toggleDelete(Boolean.TRUE);
+        board.addComment(comment02);
 
         // when
         final BoardGetResponse response = boardQueryService.get(servletRequest, board.getId());
@@ -76,7 +91,11 @@ class BoardQueryServiceTest extends ServiceTestSupport {
         assertThat(response.likes()).isZero();
         assertThat(response.like()).isZero();
         assertThat(response.unlike()).isZero();
-        assertThat(response.comments()).isEmpty();
+        assertThat(response.comments()).hasSize(2);
+        assertThat(response.comments().getFirst().content()).isEqualTo("내용01");
+        assertThat(response.comments().getFirst().parentId()).isNull();
+        assertThat(response.comments().getLast().content()).isNull();
+        assertThat(response.comments().getLast().parentId()).isNotNull();
 
         final String key = String.format("board-view_%d:%s", board.getId(), "127.0.0.1");
         assertThat(redisTemplate.hasKey(key)).isTrue();
