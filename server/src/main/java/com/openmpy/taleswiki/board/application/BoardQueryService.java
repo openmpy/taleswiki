@@ -12,11 +12,7 @@ import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,36 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BoardQueryService {
 
-    private static final String IMAGE_URL_PATTERN = "!\\[[^]]*]\\(https?://[^)]+\\.(webp|png|jpg|jpeg|gif|bmp|svg)\\)";
-
     private final RedisService redisService;
     private final BoardRepository boardRepository;
     private final BoardCommentRepository boardCommentRepository;
 
     @Transactional(readOnly = true)
     public PaginatedResponse<BoardGetsResponse> gets(final int page, final int size) {
-        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        final Page<Board> boards = boardRepository.findAll(pageRequest);
-
-        final Pattern imagePattern = Pattern.compile(IMAGE_URL_PATTERN);
-        final Page<BoardGetsResponse> responses = boards.map(
-                it -> new BoardGetsResponse(
-                        it.getId(),
-                        it.getTitle(),
-                        it.getAuthor(),
-                        it.getCreatedAt(),
-                        it.getView(),
-                        it.getLikes().size() - it.getUnlikes().size(),
-                        imagePattern.matcher(it.getContent()).find(),
-                        it.getComments().size()
-                ));
-
-        return PaginatedResponse.of(responses);
+        return boardRepository.gets(page, size);
     }
 
     @Transactional(readOnly = true)
     public BoardGetResponse get(final HttpServletRequest request, final Long boardId) {
-        final Board board = getBoard(boardId);
+        final BoardGetResponse response = boardRepository.get(boardId);
+
         final String clientIp = IpAddressUtil.getClientIp(request);
         final String key = String.format("board-view_%d:%s", boardId, clientIp);
 
@@ -61,7 +40,7 @@ public class BoardQueryService {
             final String viewKey = String.format("board-view:%d", boardId);
             redisService.increment(viewKey);
         }
-        return BoardGetResponse.of(board);
+        return response;
     }
 
     public Board getBoard(final Long boardId) {
