@@ -32,14 +32,7 @@ public class BoardQueryService {
     @Transactional(readOnly = true)
     public BoardGetResponse get(final HttpServletRequest request, final Long boardId) {
         final BoardGetResponse response = boardRepository.get(boardId);
-
-        final String clientIp = IpAddressUtil.getClientIp(request);
-        final String key = String.format("board-view_%d:%s", boardId, clientIp);
-
-        if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
-            final String viewKey = String.format("board-view:%d", boardId);
-            redisService.increment(viewKey);
-        }
+        preventDuplicateViewAndCount(request, boardId);
         return response;
     }
 
@@ -51,5 +44,15 @@ public class BoardQueryService {
     public BoardComment getComment(final Long commentId) {
         return boardCommentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException("찾을 수 없는 댓글 번호입니다."));
+    }
+
+    private void preventDuplicateViewAndCount(final HttpServletRequest request, final Long boardId) {
+        final String clientIp = IpAddressUtil.getClientIp(request);
+        final String key = String.format("board-view_%d:%s", boardId, clientIp);
+
+        if (redisService.setIfAbsent(key, "true", Duration.ofHours(1L))) {
+            final String viewKey = String.format("board-view:%d", boardId);
+            redisService.increment(viewKey);
+        }
     }
 }
