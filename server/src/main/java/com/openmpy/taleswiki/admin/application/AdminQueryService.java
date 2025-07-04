@@ -3,9 +3,12 @@ package com.openmpy.taleswiki.admin.application;
 import com.openmpy.taleswiki.admin.domain.entity.Blacklist;
 import com.openmpy.taleswiki.admin.domain.repository.BlacklistRepository;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetBlacklistResponse;
+import com.openmpy.taleswiki.admin.dto.response.AdminGetBoardsResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetChatsResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesHistoriesResponse;
 import com.openmpy.taleswiki.admin.dto.response.AdminGetDictionariesResponse;
+import com.openmpy.taleswiki.board.domain.entity.Board;
+import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.chat.domain.entity.ChatMessage;
 import com.openmpy.taleswiki.chat.domain.repository.ChatMessageRepository;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
@@ -30,6 +33,7 @@ public class AdminQueryService {
     private final DictionaryHistoryRepository dictionaryHistoryRepository;
     private final BlacklistRepository blacklistRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final BoardRepository boardRepository;
 
     @Transactional(readOnly = true)
     public PaginatedResponse<AdminGetDictionariesResponse> getDictionaries(
@@ -94,6 +98,18 @@ public class AdminQueryService {
                 it.getId(), it.getSender(), it.getContent(), it.getNickname(), it.getCreatedAt()
         ));
 
+        return PaginatedResponse.of(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<AdminGetBoardsResponse> getBoards(final Long memberId, final int page, final int size) {
+        memberService.validateAdmin(memberId);
+
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final Page<Board> boards = boardRepository.findAll(pageRequest);
+        final Page<AdminGetBoardsResponse> responses = boards.map(it -> new AdminGetBoardsResponse(
+                it.getId(), it.getAuthor(), it.getIp(), it.getTitle(), it.getContent(), it.getCreatedAt()
+        ));
         return PaginatedResponse.of(responses);
     }
 }
