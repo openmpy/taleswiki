@@ -108,7 +108,7 @@ public class AdminQueryService {
         final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         final Page<Board> boards = boardRepository.findAll(pageRequest);
         final Page<AdminGetBoardsResponse> responses = boards.map(it -> new AdminGetBoardsResponse(
-                it.getId(), it.getAuthor(), it.getIp(), it.getTitle(), it.getContent(), it.getCreatedAt()
+                it.getId(), it.getAuthor(), it.getIp(), it.getTitle(), it.getCreatedAt()
         ));
         return PaginatedResponse.of(responses);
     }

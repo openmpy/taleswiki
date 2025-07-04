@@ -7,7 +7,6 @@ public record AdminGetBoardsResponse(
         String author,
         String ip,
         String title,
-        String content,
         LocalDateTime createdAt
 ) {
 }

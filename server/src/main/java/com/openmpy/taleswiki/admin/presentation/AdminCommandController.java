@@ -76,4 +76,10 @@ public class AdminCommandController {
         adminCommandService.deleteChat(memberId, chatId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@Login final Long memberId, @PathVariable final Long boardId) {
+        adminCommandService.deleteBoard(memberId, boardId);
+        return ResponseEntity.noContent().build();
+    }
 }
