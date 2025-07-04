@@ -3,6 +3,7 @@ package com.openmpy.taleswiki.board.application;
 import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.board.domain.repository.BoardRepository;
 import com.openmpy.taleswiki.common.application.RedisService;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,7 +39,8 @@ public class BoardScheduler {
     @Scheduled(cron = "0 0 0 * * 0")
     @Transactional
     public void deleteUnlikeBoard() {
-        final List<Board> boards = boardRepository.findAll();
+        final LocalDateTime now = LocalDateTime.now();
+        final List<Board> boards = boardRepository.findAllByCreatedAtBetween(now.minusWeeks(1L), now);
 
         for (final Board board : boards) {
             final int size = board.getLikes().size() - board.getUnlikes().size();
