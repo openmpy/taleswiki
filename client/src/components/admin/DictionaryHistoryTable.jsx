@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function DictionaryHistoryTable({ histories, onStatusChange }) {
   const navigate = useNavigate();
+  const [copiedIp, setCopiedIp] = useState(null);
+
+  const handleCopyIp = async (ip) => {
+    try {
+      await navigator.clipboard.writeText(ip);
+      setCopiedIp(ip);
+      setTimeout(() => setCopiedIp(null), 1000);
+    } catch {
+      alert("클립보드 복사에 실패했습니다.");
+    }
+  };
 
   const handleRowClick = (dictionaryHistoryId) => {
     navigate(`/dictionary/${dictionaryHistoryId}`);
@@ -29,7 +40,7 @@ function DictionaryHistoryTable({ histories, onStatusChange }) {
               상태
             </th>
             <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              상태 수정
+              관리
             </th>
           </tr>
         </thead>
@@ -65,8 +76,17 @@ function DictionaryHistoryTable({ histories, onStatusChange }) {
                   {history.category}
                 </span>
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-center">
+              <td
+                className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-center cursor-pointer relative"
+                onClick={() => handleCopyIp(history.ip)}
+                title="클릭 시 복사"
+              >
                 {history.ip}
+                {copiedIp === history.ip && (
+                  <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-0.5 bg-gray-700 text-white text-xs rounded shadow z-10 whitespace-nowrap">
+                    복사됨!
+                  </span>
+                )}
               </td>
               <td
                 className="px-4 py-2 whitespace-nowrap text-center cursor-pointer"

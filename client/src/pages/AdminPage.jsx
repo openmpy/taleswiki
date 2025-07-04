@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { FaUserShield } from "react-icons/fa";
 import BlacklistTable from "../components/admin/BlacklistTable";
+import BoardTable from "../components/admin/BoardTable";
 import ChatTable from "../components/admin/ChatTable";
 import DictionaryHistoryTable from "../components/admin/DictionaryHistoryTable";
 import DictionaryTable from "../components/admin/DictionaryTable";
@@ -16,6 +17,7 @@ function AdminPage() {
   const [histories, setHistories] = useState([]);
   const [blacklists, setBlacklists] = useState([]);
   const [chats, setChats] = useState([]);
+  const [boards, setBoards] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [activeTab, setActiveTab] = useState("dictionaries"); // "dictionaries", "histories", "blacklists", or "chats"
@@ -104,6 +106,27 @@ function AdminPage() {
 
     if (activeTab === "blacklists") {
       fetchBlacklists();
+    }
+  }, [isAuthorized, currentPage, activeTab]);
+
+  useEffect(() => {
+    const fetchBoards = async () => {
+      if (!isAuthorized) return;
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get(
+          `/api/v1/admin/boards?page=${currentPage}&size=100`
+        );
+        setBoards(response.data.content);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("게시판 목록을 가져오는 중 오류 발생:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (activeTab === "boards") {
+      fetchBoards();
     }
   }, [isAuthorized, currentPage, activeTab]);
 
@@ -200,6 +223,23 @@ function AdminPage() {
     }
   };
 
+  const handleBoardDelete = async (boardId) => {
+    if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      return;
+    }
+    try {
+      await axiosInstance.delete(`/api/v1/admin/boards/${boardId}`);
+      const response = await axiosInstance.get(
+        `/api/v1/admin/boards?page=${currentPage}&size=100`
+      );
+      setBoards(response.data.content);
+      alert("게시글이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("게시글 삭제 중 오류 발생:", error);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
+
   const handleChatDelete = async (chatId) => {
     try {
       await axiosInstance.delete(`/api/v1/admin/chats/${chatId}`);
@@ -251,49 +291,57 @@ function AdminPage() {
         관리자 페이지
       </h2>
 
-      <div className="mb-4 flex justify-between items-center">
-        <div>
-          <button
-            className={`px-3 py-1.5 mr-2 text-sm rounded ${
-              activeTab === "dictionaries"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-            onClick={() => setActiveTab("dictionaries")}
-          >
-            사전 목록
-          </button>
-          <button
-            className={`px-3 py-1.5 mr-2 text-sm rounded ${
-              activeTab === "histories"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-            onClick={() => setActiveTab("histories")}
-          >
-            사전 기록
-          </button>
-          <button
-            className={`px-3 py-1.5 mr-2 text-sm rounded ${
-              activeTab === "blacklists"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-            onClick={() => setActiveTab("blacklists")}
-          >
-            블랙리스트
-          </button>
-          <button
-            className={`px-3 py-1.5 text-sm rounded ${
-              activeTab === "chats"
-                ? "bg-gray-600 text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-            onClick={() => setActiveTab("chats")}
-          >
-            채팅 기록
-          </button>
-        </div>
+      <div className="mb-4 flex flex-nowrap gap-1 items-center overflow-x-auto">
+        <button
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "dictionaries"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("dictionaries")}
+        >
+          사전
+        </button>
+        <button
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "histories"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("histories")}
+        >
+          기록
+        </button>
+        <button
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "blacklists"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("blacklists")}
+        >
+          블랙
+        </button>
+        <button
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "boards"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("boards")}
+        >
+          게시판
+        </button>
+        <button
+          className={`px-2 py-1 text-xs rounded ${
+            activeTab === "chats"
+              ? "bg-gray-600 text-white"
+              : "bg-gray-100 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("chats")}
+        >
+          채팅
+        </button>
       </div>
 
       {isLoading ? (
@@ -351,6 +399,8 @@ function AdminPage() {
                 onDelete={handleBlacklistDelete}
               />
             </>
+          ) : activeTab === "boards" ? (
+            <BoardTable boards={boards} onDelete={handleBoardDelete} />
           ) : (
             <ChatTable chats={chats} onDelete={handleChatDelete} />
           )}

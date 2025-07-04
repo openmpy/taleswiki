@@ -20,7 +20,7 @@ function DictionaryTable({ dictionaries, onStatusChange, onDelete }) {
               상태 수정
             </th>
             <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              삭제
+              관리
             </th>
           </tr>
         </thead>
