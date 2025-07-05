@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.board.domain.repository;
 
+import com.openmpy.taleswiki.admin.dto.response.AdminGetBoardsResponse;
 import com.openmpy.taleswiki.board.domain.entity.Board;
 import com.openmpy.taleswiki.board.domain.entity.QBoard;
 import com.openmpy.taleswiki.board.domain.entity.QBoardComment;
@@ -139,5 +140,46 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 foundBoard.getMember().getId(),
                 commentResponses
         );
+    }
+
+    @Override
+    public PaginatedResponse<AdminGetBoardsResponse> getsAdmin(final int page, final int size) {
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        final QBoard board = QBoard.board;
+
+        final List<Tuple> tuples = jpaQueryFactory
+                .select(
+                        board.id,
+                        board.author,
+                        board.ip,
+                        board.title,
+                        board.createdAt
+                )
+                .from(board)
+                .orderBy(board.createdAt.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+        final List<AdminGetBoardsResponse> responses = tuples.stream()
+                .map(tuple -> {
+                    final Long boardId = tuple.get(board.id);
+                    final String author = Objects.requireNonNull(tuple.get(board.author)).getValue();
+                    final String ip = Objects.requireNonNull(tuple.get(board.ip)).getValue();
+                    final String title = Objects.requireNonNull(tuple.get(board.title)).getValue();
+                    final LocalDateTime createdAt = tuple.get(board.createdAt);
+
+                    return new AdminGetBoardsResponse(
+                            boardId, author, ip, title, createdAt
+                    );
+                })
+                .toList();
+
+        final Long total = jpaQueryFactory
+                .select(board.count())
+                .from(board)
+                .fetchOne();
+
+        return PaginatedResponse.of(new PageImpl<>(responses, pageRequest, total));
     }
 }
