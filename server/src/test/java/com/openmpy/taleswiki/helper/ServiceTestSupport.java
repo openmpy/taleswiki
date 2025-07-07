@@ -1,6 +1,7 @@
 package com.openmpy.taleswiki.helper;
 
 import com.openmpy.taleswiki.common.application.ImageS3Service;
+import com.openmpy.taleswiki.dictionary.application.DictionarySearchService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public abstract class ServiceTestSupport {
 
     @Autowired
     protected RedisTemplate<String, Object> redisTemplate;
+
+    @MockitoBean
+    protected DictionarySearchService dictionarySearchService;
 
     @MockitoBean
     protected ImageS3Service imageS3Service;
