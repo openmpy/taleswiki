@@ -9,6 +9,7 @@ services:
       - ./logs:/logs
     depends_on:
       - redis
+      - meilisearch
     networks:
       - monitoring
 
