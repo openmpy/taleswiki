@@ -82,3 +82,7 @@ google:
   redirect-uri: http://localhost:5173/login/google
   oauth-token-uri: https://oauth2.googleapis.com/token
   grant-type: authorization_code
+
+meili:
+  master-key: MASTER_KEY
+  host: http://localhost:7700

@@ -47,7 +47,7 @@ function Header() {
               params: { title: searchTerm },
             }
           );
-          setSearchResults(response.data.dictionaries);
+          setSearchResults(response.data.hits);
         } catch (error) {
           console.error("검색 중 오류 발생:", error);
           setSearchResults([]);

@@ -276,10 +276,10 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.dictionaries").isArray())
-                .andExpect(jsonPath("$.dictionaries[0].currentHistoryId").value(1))
-                .andExpect(jsonPath("$.dictionaries[0].title").value("apple1"))
-                .andExpect(jsonPath("$.dictionaries[0].category").value("런너"))
+                .andExpect(jsonPath("$.hits").isArray())
+                .andExpect(jsonPath("$.hits[0].currentHistoryId").value(1))
+                .andExpect(jsonPath("$.hits[0].title").value("apple1"))
+                .andExpect(jsonPath("$.hits[0].category").value("런너"))
                 .andDo(
                         document(
                                 "dictionary-searchByTitle",
@@ -289,9 +289,9 @@ class DictionaryQueryControllerTest extends ControllerTestSupport {
                                         parameterWithName("title").description("검색할 게시글 제목")
                                 ),
                                 responseFields(
-                                        fieldWithPath("dictionaries[].currentHistoryId").description("최근 사전 기록 ID"),
-                                        fieldWithPath("dictionaries[].title").description("제목"),
-                                        fieldWithPath("dictionaries[].category").description("카테고리")
+                                        fieldWithPath("hits[].currentHistoryId").description("최근 사전 기록 ID"),
+                                        fieldWithPath("hits[].title").description("제목"),
+                                        fieldWithPath("hits[].category").description("카테고리")
                                 )
                         )
                 )

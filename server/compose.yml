@@ -76,6 +76,17 @@ services:
     networks:
       - monitoring
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.15
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: ${MS_MASTER_KEY}
+    volumes:
+      - ./meili_data:/meili_data
+    restart: unless-stopped
+
 volumes:
   redis:
 

@@ -2,6 +2,7 @@ package com.openmpy.taleswiki.dictionary.application;
 
 import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.dictionary.domain.repository.DictionaryRepository;
+import com.openmpy.taleswiki.dictionary.dto.response.DictionarySearchDictionariesResponse.DictionarySearchDictionariesItemResponse;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class DictionaryScheduler {
     private final RedisService redisService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final DictionaryCommandService dictionaryCommandService;
+    private final DictionarySearchService dictionarySearchService;
     private final DictionaryRepository dictionaryRepository;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
@@ -62,5 +64,17 @@ public class DictionaryScheduler {
         final List<Long> ids = dictionaryRepository.findAllByIds();
         redisService.delete("dictionary:ids");
         redisTemplate.opsForSet().add("dictionary:ids", ids.toArray());
+    }
+
+    @Scheduled(fixedRate = 10 * 60 * 1000)
+    public void syncAllDictionariesToMeilisearch() {
+        final List<DictionarySearchDictionariesItemResponse> responses = dictionaryRepository.findAll().stream()
+                .map(it -> new DictionarySearchDictionariesItemResponse(
+                        it.getCurrentHistory().getId(), it.getTitle(), it.getCategory().getValue()
+                ))
+                .toList();
+
+        dictionarySearchService.deleteDictionaries();
+        dictionarySearchService.indexDictionaries(responses);
     }
 }

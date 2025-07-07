@@ -4,7 +4,7 @@ import com.openmpy.taleswiki.dictionary.domain.entity.Dictionary;
 import java.util.List;
 
 public record DictionarySearchDictionariesResponse(
-        List<DictionarySearchDictionariesItemResponse> dictionaries
+        List<DictionarySearchDictionariesItemResponse> hits
 ) {
 
     public record DictionarySearchDictionariesItemResponse(Long currentHistoryId, String title, String category) {
