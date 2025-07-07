@@ -86,6 +86,8 @@ services:
     volumes:
       - ./meili_data:/meili_data
     restart: unless-stopped
+    networks:
+      - monitoring
 
 volumes:
   redis:
