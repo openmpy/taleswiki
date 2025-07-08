@@ -41,8 +41,8 @@ public class DummyData {
             final BoardRepository boardRepository
     ) {
         // 회원 관련
-        final Member member01 = Member.create("test@test.com", MemberSocial.KAKAO);
-        final Member member02 = Member.create("test@test.com", MemberSocial.KAKAO);
+        final Member member01 = Member.create("test@test.com", "테붕이01", MemberSocial.KAKAO);
+        final Member member02 = Member.create("test@test.com", "테붕이02", MemberSocial.KAKAO);
         memberRepository.saveAll(List.of(member01, member02));
 
         // 사전 관련

@@ -5,6 +5,7 @@ import com.openmpy.taleswiki.common.properties.CookieProperties;
 import com.openmpy.taleswiki.member.application.GoogleService;
 import com.openmpy.taleswiki.member.application.KakaoService;
 import com.openmpy.taleswiki.member.application.MemberService;
+import com.openmpy.taleswiki.member.dto.MemberChangeNicknameRequest;
 import com.openmpy.taleswiki.member.dto.MemberLoginResponse;
 import com.openmpy.taleswiki.member.dto.MemberResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +58,15 @@ public class MemberController {
     public ResponseEntity<MemberResponse> me(@Login final Long memberId) {
         final MemberResponse response = memberService.me(memberId);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("/nickname")
+    public ResponseEntity<Void> changeNickname(
+            @Login final Long memberId,
+            @RequestBody final MemberChangeNicknameRequest request
+    ) {
+        memberService.changeNickname(memberId, request);
+        return ResponseEntity.noContent().build();
     }
 
     private ResponseCookie createCookie(final String token) {

@@ -43,11 +43,11 @@ public class BoardCommandService {
     public BoardSaveResponse save(
             final Long memberId, final HttpServletRequest servletRequest, final BoardSaveRequest request
     ) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
         final String content = imageS3Service.processImageReferences(request.content());
 
-        final Board board = Board.save(request.title(), content, "테붕이" + member.getId(), clientIp, member);
+        final Board board = Board.save(request.title(), content, member.getNickname(), clientIp, member);
 
         validateBoardSubmission(clientIp);
 
@@ -63,7 +63,7 @@ public class BoardCommandService {
 
     @Transactional
     public void delete(final Long memberId, final Long boardId) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final Board board = boardQueryService.getBoard(boardId);
 
         if (!board.getMember().equals(member)) {
@@ -75,7 +75,7 @@ public class BoardCommandService {
 
     @Transactional
     public BoardUpdateResponse update(final Long memberId, final Long boardId, final BoardUpdateRequest request) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final Board board = boardQueryService.getBoard(boardId);
 
         if (!board.getMember().equals(member)) {
@@ -90,7 +90,7 @@ public class BoardCommandService {
 
     @Transactional
     public void like(final Long memberId, final Long boardId) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final Board board = boardQueryService.getBoard(boardId);
 
         if (boardLikeRepository.existsByBoardAndMember(board, member)) {
@@ -103,7 +103,7 @@ public class BoardCommandService {
 
     @Transactional
     public void unlike(final Long memberId, final Long boardId) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final Board board = boardQueryService.getBoard(boardId);
 
         if (boardUnlikeRepository.existsByBoardAndMember(board, member)) {
@@ -121,7 +121,7 @@ public class BoardCommandService {
             final HttpServletRequest servletRequest,
             final CommentSaveRequest request
     ) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final Board board = boardQueryService.getBoard(boardId);
 
         final String clientIp = IpAddressUtil.getClientIp(servletRequest);
@@ -137,7 +137,7 @@ public class BoardCommandService {
         }
 
         final BoardComment comment = BoardComment.save(
-                "테붕이" + member.getId(), request.content(), clientIp, member, board, parent
+                member.getNickname(), request.content(), clientIp, member, board, parent
         );
 
         board.addComment(comment);
@@ -145,7 +145,7 @@ public class BoardCommandService {
 
     @Transactional
     public void updateComment(final Long memberId, final Long commentId, final CommentUpdateRequest request) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final BoardComment comment = boardQueryService.getComment(commentId);
 
         if (!member.equals(comment.getMember())) {
@@ -160,7 +160,7 @@ public class BoardCommandService {
 
     @Transactional
     public void deleteComment(final Long memberId, final Long commentId) {
-        final Member member = memberService.get(memberId);
+        final Member member = memberService.getMember(memberId);
         final BoardComment comment = boardQueryService.getComment(commentId);
 
         if (!member.equals(comment.getMember())) {

@@ -194,12 +194,20 @@ function Header() {
             길드사전
           </Link>
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="hover:text-blue-400 transition-colors"
-            >
-              로그아웃
-            </button>
+            <>
+              <Link
+                to="/mypage"
+                className="hover:text-blue-400 transition-colors"
+              >
+                마이페이지
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="hover:text-blue-400 transition-colors"
+              >
+                로그아웃
+              </button>
+            </>
           ) : (
             <Link to="/login" className="hover:text-blue-400 transition-colors">
               로그인
@@ -308,15 +316,24 @@ function Header() {
               길드사전
             </Link>
             {isLoggedIn ? (
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full py-2 hover:text-blue-400 transition-colors text-center"
-              >
-                로그아웃
-              </button>
+              <>
+                <Link
+                  to="/mypage"
+                  className="w-full py-2 hover:text-blue-400 transition-colors text-center border-b border-gray-700"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  마이페이지
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full py-2 hover:text-blue-400 transition-colors text-center"
+                >
+                  로그아웃
+                </button>
+              </>
             ) : (
               <Link
                 to="/login"
