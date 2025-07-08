@@ -21,7 +21,7 @@ function CommunityPage() {
         setError(null);
 
         const response = await axiosInstance.get(
-          `/api/v1/boards?page=${page}&size=30`
+          `/api/v1/boards?page=${page}&size=20`
         );
         const { content, totalPages: pages } = response.data;
 

@@ -1,5 +1,6 @@
 package com.openmpy.taleswiki.board.presentation;
 
+import com.openmpy.taleswiki.auth.annotation.Login;
 import com.openmpy.taleswiki.board.application.BoardQueryService;
 import com.openmpy.taleswiki.board.dto.response.BoardGetResponse;
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
@@ -35,6 +36,16 @@ public class BoardQueryController {
             @PathVariable final Long boardId
     ) {
         final BoardGetResponse response = boardQueryService.get(request, boardId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/member")
+    public ResponseEntity<PaginatedResponse<BoardGetsResponse>> getsOfMember(
+            @Login final Long memberId,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        final PaginatedResponse<BoardGetsResponse> response = boardQueryService.getsOfMember(memberId, page, size);
         return ResponseEntity.ok(response);
     }
 }

@@ -34,6 +34,7 @@ const CommunityPage = lazy(() => import("./pages/CommunityPage"));
 const BoardWritePage = lazy(() => import("./pages/BoardWritePage"));
 const BoardViewPage = lazy(() => import("./pages/BoardViewPage"));
 const BoardEditPage = lazy(() => import("./pages/BoardEditPage"));
+const MyPage = lazy(() => import("./pages/MyPage"));
 
 const queryClient = new QueryClient();
 
@@ -117,6 +118,7 @@ function App() {
                               path="/login/google"
                               element={<GoogleCallbackPage />}
                             />
+                            <Route path="/mypage" element={<MyPage />} />
                             <Route
                               path="/community"
                               element={<CommunityPage />}

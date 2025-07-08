@@ -10,6 +10,8 @@ import com.openmpy.taleswiki.common.application.RedisService;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
 import com.openmpy.taleswiki.common.util.IpAddressUtil;
+import com.openmpy.taleswiki.member.application.MemberService;
+import com.openmpy.taleswiki.member.domain.entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class BoardQueryService {
     private final RedisService redisService;
     private final BoardRepository boardRepository;
     private final BoardCommentRepository boardCommentRepository;
+    private final MemberService memberService;
 
     @Transactional(readOnly = true)
     public PaginatedResponse<BoardGetsResponse> gets(final int page, final int size) {
@@ -34,6 +37,12 @@ public class BoardQueryService {
         final BoardGetResponse response = boardRepository.get(boardId);
         preventDuplicateViewAndCount(request, boardId);
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<BoardGetsResponse> getsOfMember(final Long memberId, final int page, final int size) {
+        final Member member = memberService.getMember(memberId);
+        return boardRepository.getsOfMember(member, page, size);
     }
 
     public Board getBoard(final Long boardId) {

@@ -11,6 +11,7 @@ import com.openmpy.taleswiki.board.dto.response.BoardGetResponse.BoardCommentRes
 import com.openmpy.taleswiki.board.dto.response.BoardGetsResponse;
 import com.openmpy.taleswiki.common.dto.PaginatedResponse;
 import com.openmpy.taleswiki.common.exception.CustomException;
+import com.openmpy.taleswiki.member.domain.entity.Member;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
@@ -178,6 +179,73 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
         final Long total = jpaQueryFactory
                 .select(board.count())
                 .from(board)
+                .fetchOne();
+
+        return PaginatedResponse.of(new PageImpl<>(responses, pageRequest, total));
+    }
+
+    @Override
+    public PaginatedResponse<BoardGetsResponse> getsOfMember(final Member member, final int page, final int size) {
+        final PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        final QBoard board = QBoard.board;
+        final QBoardComment comment = QBoardComment.boardComment;
+        final QBoardLike like = QBoardLike.boardLike;
+        final QBoardUnlike unlike = QBoardUnlike.boardUnlike;
+
+        final List<Tuple> tuples = jpaQueryFactory
+                .select(
+                        board.id,
+                        board.title,
+                        board.author,
+                        board.createdAt,
+                        board.view,
+                        board.content,
+                        like.countDistinct(),
+                        unlike.countDistinct(),
+                        comment.countDistinct()
+                )
+                .from(board)
+                .leftJoin(like).on(like.board.eq(board))
+                .leftJoin(unlike).on(unlike.board.eq(board))
+                .leftJoin(comment).on(comment.board.eq(board))
+                .where(board.member.eq(member))
+                .groupBy(board.id)
+                .orderBy(board.createdAt.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+
+        final List<BoardGetsResponse> responses = tuples.stream()
+                .map(tuple -> {
+                    final Long boardId = tuple.get(board.id);
+                    final String title = Objects.requireNonNull(tuple.get(board.title)).getValue();
+                    final String author = Objects.requireNonNull(tuple.get(board.author)).getValue();
+                    final LocalDateTime createdAt = tuple.get(board.createdAt);
+                    final long view = Objects.requireNonNull(tuple.get(board.view)).getValue();
+                    final String content = Objects.requireNonNull(tuple.get(board.content)).getValue();
+                    int likeCount = Objects.requireNonNull(tuple.get(like.countDistinct())).intValue();
+                    int unlikeCount = Objects.requireNonNull(tuple.get(unlike.countDistinct())).intValue();
+                    int commentCount = Objects.requireNonNull(tuple.get(comment.countDistinct())).intValue();
+                    boolean hasImage = IMAGE_PATTERN.matcher(content).find();
+
+                    return new BoardGetsResponse(
+                            boardId,
+                            title,
+                            author,
+                            createdAt,
+                            view,
+                            likeCount - unlikeCount,
+                            hasImage,
+                            commentCount
+                    );
+                })
+                .toList();
+
+        final Long total = jpaQueryFactory
+                .select(board.count())
+                .from(board)
+                .where(board.member.eq(member))
                 .fetchOne();
 
         return PaginatedResponse.of(new PageImpl<>(responses, pageRequest, total));
