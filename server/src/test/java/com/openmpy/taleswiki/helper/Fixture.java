@@ -27,7 +27,7 @@ public class Fixture {
     }
 
     public static Member createMember() {
-        return Member.create("test@test.com", MemberSocial.GOOGLE);
+        return Member.create("test@test.com", "테붕이", MemberSocial.GOOGLE);
     }
 
     public static Board createBoard() {

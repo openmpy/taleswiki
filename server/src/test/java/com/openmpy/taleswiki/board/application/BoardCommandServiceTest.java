@@ -224,7 +224,7 @@ class BoardCommandServiceTest extends ServiceTestSupport {
     void 예외_board_command_service_test_01() {
         // given
         final Member member1 = memberRepository.save(Fixture.createMember());
-        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", "테붕이", MemberSocial.KAKAO));
         final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
 
         // when & then
@@ -238,7 +238,7 @@ class BoardCommandServiceTest extends ServiceTestSupport {
     void 예외_board_command_service_test_02() {
         // given
         final Member member1 = memberRepository.save(Fixture.createMember());
-        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", "테붕이", MemberSocial.KAKAO));
         final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
         final BoardUpdateRequest request = new BoardUpdateRequest("수정_제목", "수정_내용");
 
@@ -320,7 +320,7 @@ class BoardCommandServiceTest extends ServiceTestSupport {
     void 예외_board_command_service_test_07() {
         // given
         final Member member1 = memberRepository.save(Fixture.createMember());
-        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", "테붕이", MemberSocial.KAKAO));
         final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
         board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member1, board, null));
 
@@ -358,7 +358,7 @@ class BoardCommandServiceTest extends ServiceTestSupport {
     void 예외_board_command_service_test_09() {
         // given
         final Member member1 = memberRepository.save(Fixture.createMember());
-        final Member member2 = memberRepository.save(Member.create("test2@test.com", MemberSocial.KAKAO));
+        final Member member2 = memberRepository.save(Member.create("test2@test.com", "테붕이", MemberSocial.KAKAO));
         final Board board = boardRepository.save(Board.save("제목", "내용", "테붕이01", "127.0.0.1", member1));
         board.addComment(BoardComment.save("테붕이01", "내용", "127.0.0.1", member1, board, null));
 

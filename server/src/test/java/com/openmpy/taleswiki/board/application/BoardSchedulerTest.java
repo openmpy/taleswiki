@@ -52,7 +52,7 @@ class BoardSchedulerTest extends ServiceTestSupport {
 
         for (int i = 0; i < 10; i++) {
             final String email = "test" + i + "@test.com";
-            final Member customMember = memberRepository.save(Member.create(email, MemberSocial.GOOGLE));
+            final Member customMember = memberRepository.save(Member.create(email, "테붕이", MemberSocial.GOOGLE));
             final BoardUnlike unlike = BoardUnlike.save(board, customMember);
 
             board.addUnlike(unlike);
