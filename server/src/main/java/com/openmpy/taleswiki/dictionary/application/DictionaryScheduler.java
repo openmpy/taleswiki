@@ -36,7 +36,7 @@ public class DictionaryScheduler {
         });
     }
 
-    @Scheduled(fixedRate = 10 * 60 * 1000)
+    @Scheduled(fixedRate = 120 * 60 * 1000)
     public void decayPopularDictionaryScores() {
         final Set<Object> dictionaries = redisService.range("popular_dictionaries", 0, -1);
 
