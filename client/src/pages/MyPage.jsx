@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BiFile, BiImage, BiMessageSquareDetail } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/admin/Pagination";
+import LoadingSpinner from "../components/LoadingSpinner";
 import axiosInstance from "../utils/axiosConfig";
 import { formatKoreanDateTime, formatRelativeTime } from "../utils/dateUtils";
 
@@ -122,14 +123,7 @@ function MyPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">로딩 중...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -271,12 +265,7 @@ function MyPage() {
         {/* 게시글 목록 */}
         <div aria-label="게시글 목록">
           {isLoadingBoards ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-600">
-                게시글 목록을 불러오는 중입니다...
-              </p>
-            </div>
+            <LoadingSpinner />
           ) : myBoards.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 px-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="text-gray-500 font-medium">
